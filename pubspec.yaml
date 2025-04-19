@@ -1,0 +1,22 @@
+name: bloc_event_status
+description: "Add status to your BLoC Events"
+version: 0.0.1
+homepage: null
+
+environment:
+  sdk: ^3.6.1
+  flutter: ">=1.17.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_bloc: ^9.1.0
+  meta: ^1.15.0
+  nested: ^1.0.0
+
+dev_dependencies:
+  flutter_lints: ^5.0.0
+  flutter_test:
+    sdk: flutter
+
+flutter: null

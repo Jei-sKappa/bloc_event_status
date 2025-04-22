@@ -28,9 +28,9 @@ class LoadingEventStatus extends EventStatus {
 }
 
 class SuccessEventStatus<TData> extends EventStatus {
-  const SuccessEventStatus(this.data);
+  const SuccessEventStatus([this.data]);
 
-  final TData data;
+  final TData? data;
 
   @override
   String toString() => 'SuccessEventStatus($data)';
@@ -40,9 +40,9 @@ class SuccessEventStatus<TData> extends EventStatus {
 }
 
 class FailureEventStatus<TFailure> extends EventStatus {
-  const FailureEventStatus(this.error);
+  const FailureEventStatus([this.error]);
 
-  final TFailure error;
+  final TFailure? error;
 
   @override
   String toString() => 'FailureEventStatus($error)';

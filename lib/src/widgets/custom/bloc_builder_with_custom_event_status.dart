@@ -1,22 +1,20 @@
+import 'package:bloc_event_status/bloc_event_status.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import 'bloc_event_status_builder.dart';
-import 'bloc_event_status_mixin.dart';
-
-typedef BlocWidgetBuilderWithEventStatus<TState, TStatus> = Widget Function(
+typedef BlocWidgetBuilderWithCustomEventStatus<TState, TStatus> = Widget Function(
   BuildContext context,
   TState state,
   TStatus? status,
 );
 
-class BlocBuilderWithEventStatus<
-    TBloc extends BlocEventStatusMixin<TEvent, TState, TStatus>,
+class BlocBuilderWithCustomEventStatus<
+    TBloc extends BlocCustomEventStatusMixin<TEvent, TState, TStatus>,
     TEvent,
     TEventSubType extends TEvent,
     TState,
     TStatus> extends StatelessWidget {
-  const BlocBuilderWithEventStatus({
+  const BlocBuilderWithCustomEventStatus({
     required this.builder,
     super.key,
     this.bloc,
@@ -32,13 +30,13 @@ class BlocBuilderWithEventStatus<
 
   final BlocBuilderCondition<TState>? buildWhenState;
 
-  final BlocEventStatusBuilderCondition<TStatus>? buildWhenStatus;
+  final BlocCustomEventStatusBuilderCondition<TStatus>? buildWhenStatus;
 
-  final BlocWidgetBuilderWithEventStatus<TState, TStatus> builder;
+  final BlocWidgetBuilderWithCustomEventStatus<TState, TStatus> builder;
 
   @override
   Widget build(BuildContext context) {
-    return BlocEventStatusBuilder<TBloc, TEvent, TEventSubType, TStatus>(
+    return BlocCustomEventStatusBuilder<TBloc, TEvent, TEventSubType, TState, TStatus>(
       bloc: bloc,
       event: event,
       buildWhen: buildWhenStatus,

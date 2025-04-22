@@ -8,7 +8,12 @@ typedef _EventStatusRecord<TStatus> = ({
   StreamController<TStatus> streamController,
 });
 
-mixin BlocEventStatusMixin<TEvent, TState, TStatus> on Bloc<TEvent, TState> {
+@visibleForTesting
+class BlocEventStatusContainer<TEvent, TState, TStatus> {
+  BlocEventStatusContainer(this._bloc);
+
+  final Bloc<TEvent, TState> _bloc;
+
   // Retrieved only by type
   final Map<Type, _EventStatusRecord<TStatus>> _singleInstanceEventsStatusMap =
       {};
@@ -48,14 +53,13 @@ mixin BlocEventStatusMixin<TEvent, TState, TStatus> on Bloc<TEvent, TState> {
     }
   }
 
-  @protected
   void emitEventStatus<TEventSubType extends TEvent>(
     TEventSubType event,
     TStatus status, {
     bool allowMultipleInstances = false,
   }) {
     try {
-      if (isClosed) {
+      if (_bloc.isClosed) {
         throw StateError('Cannot emit new states after calling close');
       }
 
@@ -85,12 +89,13 @@ mixin BlocEventStatusMixin<TEvent, TState, TStatus> on Bloc<TEvent, TState> {
         streamController.add(status);
       }
     } catch (error, stackTrace) {
-      onError(error, stackTrace);
+      // This class is wrapping a Bloc
+      // ignore: invalid_use_of_protected_member
+      _bloc.onError(error, stackTrace);
       rethrow;
     }
   }
 
-  @override
   @mustCallSuper
   Future<void> close() async {
     // Single instance events
@@ -103,6 +108,6 @@ mixin BlocEventStatusMixin<TEvent, TState, TStatus> on Bloc<TEvent, TState> {
       await record.streamController.close();
     }
     _multiInstanceEventsStatusMap.clear();
-    await super.close();
+    await _bloc.close();
   }
 }

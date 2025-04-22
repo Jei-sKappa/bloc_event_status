@@ -1,15 +1,14 @@
 import 'dart:async';
 
+import 'package:bloc_event_status/bloc_event_status.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:nested/nested.dart';
 
-import 'bloc_event_status_mixin.dart';
-
 /// Signature for the `listener` function which takes the `BuildContext` along
 /// with the `event` and is responsible for executing in response to
 /// new events.
-typedef BlocEventStatusWidgetListener<TStatus> = void Function(
+typedef BlocCustomEventStatusWidgetListener<TStatus> = void Function(
   BuildContext context,
   TStatus status,
 );
@@ -18,7 +17,7 @@ typedef BlocEventStatusWidgetListener<TStatus> = void Function(
 /// and the current `state` and is responsible for returning a [bool] which
 /// determines whether or not to call [BlocWidgetListener] of [BlocListener]
 /// with the current `state`.
-typedef BlocEventStatusListenerCondition<TStatus> = bool Function(
+typedef BlocCustomEventStatusListenerCondition<TStatus> = bool Function(
   TStatus? previous,
   TStatus current,
 );
@@ -26,14 +25,14 @@ typedef BlocEventStatusListenerCondition<TStatus> = bool Function(
 /// A widget that listens to events from a bloc or cubit and invokes a listener
 /// function in response to new events.
 ///
-/// This widget is used to interact with [BlocEventStatusMixin] and listen
+/// This widget is used to interact with [BlocCustomEventStatusMixin] and listen
 /// to events of type [P]. When a new event of type [P] is emitted by the Bloc,
 /// the provided [listener] function is called with the current [BuildContext]
 /// and the event itself.
 ///
 /// Example:
 /// ```dart
-/// BlocEventStatusListener<MyBloc, MyEvent>(
+/// BlocCustomEventStatusListener<MyBloc, MyEvent>(
 ///   listener: (context, event) {
 ///     // Handle the event here
 ///   },
@@ -41,12 +40,12 @@ typedef BlocEventStatusListenerCondition<TStatus> = bool Function(
 ///   child: SomeWidget(),
 /// )
 /// ```
-class BlocEventStatusListener<
-    TBloc extends BlocEventStatusMixin<TEvent, dynamic, TStatus>,
+class BlocCustomEventStatusListener<
+    TBloc extends BlocCustomEventStatusMixin<TEvent, dynamic, TStatus>,
     TEvent,
     TEventSubType extends TEvent,
     TStatus> extends SingleChildStatefulWidget {
-  /// Creates a [BlocEventStatusListener].
+  /// Creates a [BlocCustomEventStatusListener].
   ///
   /// The [listener] function is required and will be called with the
   /// current [BuildContext] and the event of type [P] when new events are
@@ -55,7 +54,7 @@ class BlocEventStatusListener<
   /// The [bloc] parameter is optional and can be used to specify the
   /// Bloc to listen to. If not provided, the nearest ancestor Bloc of
   /// type [TBloc] in the widget tree will be used.
-  const BlocEventStatusListener({
+  const BlocCustomEventStatusListener({
     super.key,
     required this.listener,
     this.bloc,
@@ -74,24 +73,24 @@ class BlocEventStatusListener<
   /// A function that defines the behavior when a new event of type [P] is
   /// emitted by the Bloc. It takes the current [BuildContext] and the
   /// event itself as parameters and is responsible for handling the event.
-  final BlocEventStatusWidgetListener<TStatus> listener;
+  final BlocCustomEventStatusWidgetListener<TStatus> listener;
 
-  final BlocEventStatusListenerCondition<TStatus>? listenWhen;
+  final BlocCustomEventStatusListenerCondition<TStatus>? listenWhen;
 
   @override
   SingleChildState<
-          BlocEventStatusListener<TBloc, TEvent, TEventSubType, TStatus>>
-      createState() => _BlocEventStatusListenerBaseState<TBloc, TEvent,
+          BlocCustomEventStatusListener<TBloc, TEvent, TEventSubType, TStatus>>
+      createState() => _BloCustomcEventStatusListenerBaseState<TBloc, TEvent,
           TEventSubType, TStatus>();
 }
 
-class _BlocEventStatusListenerBaseState<
-        TBloc extends BlocEventStatusMixin<TEvent, dynamic, TStatus>,
+class _BloCustomcEventStatusListenerBaseState<
+        TBloc extends BlocCustomEventStatusMixin<TEvent, dynamic, TStatus>,
         TEvent,
         TEventSubType extends TEvent,
         TStatus>
     extends SingleChildState<
-        BlocEventStatusListener<TBloc, TEvent, TEventSubType, TStatus>> {
+        BlocCustomEventStatusListener<TBloc, TEvent, TEventSubType, TStatus>> {
   StreamSubscription<TStatus>? _streamSubscription;
   late TBloc _bloc;
   late TStatus? _previousStatus;
@@ -108,7 +107,7 @@ class _BlocEventStatusListenerBaseState<
 
   @override
   void didUpdateWidget(
-    BlocEventStatusListener<TBloc, TEvent, TEventSubType, TStatus> oldWidget,
+    BlocCustomEventStatusListener<TBloc, TEvent, TEventSubType, TStatus> oldWidget,
   ) {
     super.didUpdateWidget(oldWidget);
 

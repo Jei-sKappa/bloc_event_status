@@ -1,28 +1,27 @@
+import 'package:bloc_event_status/bloc_event_status.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
-import 'bloc_event_status_listener.dart';
-import 'bloc_event_status_mixin.dart';
 
 /// Signature for the `builder` function which takes the `BuildContext` and
 /// [state] and is responsible for returning a widget which is to be rendered.
 /// This is analogous to the `builder` function in [StreamBuilder].
-typedef BlocEventStatusWidgetBuilder<TStatus> = Widget Function(
+typedef BlocCustomEventStatusWidgetBuilder<TStatus> = Widget Function(
     BuildContext context, TStatus? status);
 
 /// Signature for the `buildWhen` function which takes the previous `state` and
 /// the current `state` and is responsible for returning a [bool] which
 /// determines whether to rebuild [BlocBuilder] with the current `state`.
-typedef BlocEventStatusBuilderCondition<TStatus> = bool Function(
+typedef BlocCustomEventStatusBuilderCondition<TStatus> = bool Function(
     TStatus? previous, TStatus current);
 
-class BlocEventStatusBuilder<
-    TBloc extends BlocEventStatusMixin<TEvent, dynamic, TStatus>,
+class BlocCustomEventStatusBuilder<
+    TBloc extends BlocCustomEventStatusMixin<TEvent, TState, TStatus>,
     TEvent,
     TEventSubType extends TEvent,
+    TState,
     TStatus> extends StatefulWidget {
   /// {@macro bloc_builder_base}
-  const BlocEventStatusBuilder({
+  const BlocCustomEventStatusBuilder({
     required this.builder,
     super.key,
     this.bloc,
@@ -30,8 +29,8 @@ class BlocEventStatusBuilder<
     this.buildWhen,
   });
 
-  /// The [bloc] that the [BlocEventStatusBuilder] will interact with.
-  /// If omitted, [BlocEventStatusBuilder] will automatically perform a lookup using
+  /// The [bloc] that the [BlocCustomEventStatusBuilder] will interact with.
+  /// If omitted, [BlocCustomEventStatusBuilder] will automatically perform a lookup using
   /// [BlocProvider] and the current `BuildContext`.
   final TBloc? bloc;
 
@@ -39,27 +38,28 @@ class BlocEventStatusBuilder<
   final TEventSubType? event;
 
   /// {@macro bloc_builder_build_when}
-  final BlocEventStatusBuilderCondition<TStatus>? buildWhen;
+  final BlocCustomEventStatusBuilderCondition<TStatus>? buildWhen;
 
   /// The [builder] function which will be invoked on each widget build.
   /// The [builder] takes the `BuildContext` and current `state` and
   /// must return a widget.
   /// This is analogous to the [builder] function in [StreamBuilder].
-  final BlocEventStatusWidgetBuilder<TStatus> builder;
+  final BlocCustomEventStatusWidgetBuilder<TStatus> builder;
 
   @override
-  State<BlocEventStatusBuilder<TBloc, TEvent, TEventSubType, TStatus>>
-      createState() =>
-          _BlocEventStatusBuilderState<TBloc, TEvent, TEventSubType, TStatus>();
+  State<BlocCustomEventStatusBuilder<TBloc, TEvent, TEventSubType, TState, TStatus>>
+      createState() => _BloCustomcEventStatusBuilderState<TBloc, TEvent,
+          TEventSubType, TState, TStatus>();
 }
 
-class _BlocEventStatusBuilderState<
-        TBloc extends BlocEventStatusMixin<TEvent, dynamic, TStatus>,
+class _BloCustomcEventStatusBuilderState<
+        TBloc extends BlocCustomEventStatusMixin<TEvent, TState, TStatus>,
         TEvent,
         TEventSubType extends TEvent,
+        TState,
         TStatus>
     extends State<
-        BlocEventStatusBuilder<TBloc, TEvent, TEventSubType, TStatus>> {
+        BlocCustomEventStatusBuilder<TBloc, TEvent, TEventSubType, TState, TStatus>> {
   late TBloc _bloc;
   late TStatus? _status;
 
@@ -72,7 +72,7 @@ class _BlocEventStatusBuilderState<
 
   @override
   void didUpdateWidget(
-      BlocEventStatusBuilder<TBloc, TEvent, TEventSubType, TStatus> oldWidget) {
+      BlocCustomEventStatusBuilder<TBloc, TEvent, TEventSubType, TState, TStatus> oldWidget) {
     super.didUpdateWidget(oldWidget);
     final oldBloc = oldWidget.bloc ?? context.read<TBloc>();
     final currentBloc = widget.bloc ?? oldBloc;
@@ -99,7 +99,7 @@ class _BlocEventStatusBuilderState<
       // See https://github.com/felangel/bloc/issues/2127.
       context.select<TBloc, bool>((bloc) => identical(_bloc, bloc));
     }
-    return BlocEventStatusListener<TBloc, TEvent, TEventSubType, TStatus>(
+    return BlocCustomEventStatusListener<TBloc, TEvent, TEventSubType, TStatus>(
       bloc: _bloc,
       listenWhen: widget.buildWhen,
       listener: (context, state) => setState(() => _status = state),

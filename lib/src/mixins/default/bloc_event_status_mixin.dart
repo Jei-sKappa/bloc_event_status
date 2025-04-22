@@ -34,6 +34,52 @@ mixin BlocEventStatusMixin<TEvent, TState> on Bloc<TEvent, TState>
         allowMultipleInstances: allowMultipleInstances,
       );
 
+  @protected
+  void emitInitialStatus<TEventSubType extends TEvent>(
+    TEventSubType event, {
+    bool allowMultipleInstances = false,
+  }) =>
+      getContainer().emitEventStatus(
+        event,
+        InitialEventStatus(),
+        allowMultipleInstances: allowMultipleInstances,
+      );
+
+  @protected
+  void emitLoadingStatus<TEventSubType extends TEvent>(
+    TEventSubType event, {
+    bool allowMultipleInstances = false,
+  }) =>
+      getContainer().emitEventStatus(
+        event,
+        LoadingEventStatus(),
+        allowMultipleInstances: allowMultipleInstances,
+      );
+
+  @protected
+  void emitFailureStatus<TEventSubType extends TEvent>(
+    TEventSubType event, {
+    Object? error,
+    bool allowMultipleInstances = false,
+  }) =>
+      getContainer().emitEventStatus(
+        event,
+        FailureEventStatus(error),
+        allowMultipleInstances: allowMultipleInstances,
+      );
+
+  @protected
+  void emitSuccessStatus<TEventSubType extends TEvent>(
+    TEventSubType event, {
+    Object? data,
+    bool allowMultipleInstances = false,
+  }) =>
+      getContainer().emitEventStatus(
+        event,
+        SuccessEventStatus(data),
+        allowMultipleInstances: allowMultipleInstances,
+      );
+
   @override
   @mustCallSuper
   // `super.close()` is called in the `BlocEventStatusContainer.close()`

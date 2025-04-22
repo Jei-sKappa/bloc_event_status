@@ -35,17 +35,6 @@ mixin BlocEventStatusMixin<TEvent, TState> on Bloc<TEvent, TState>
       );
 
   @protected
-  void emitInitialStatus<TEventSubType extends TEvent>(
-    TEventSubType event, {
-    bool allowMultipleInstances = false,
-  }) =>
-      getContainer().emitEventStatus(
-        event,
-        InitialEventStatus(),
-        allowMultipleInstances: allowMultipleInstances,
-      );
-
-  @protected
   void emitLoadingStatus<TEventSubType extends TEvent>(
     TEventSubType event, {
     bool allowMultipleInstances = false,

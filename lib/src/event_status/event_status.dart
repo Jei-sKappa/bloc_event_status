@@ -7,16 +7,6 @@ sealed class EventStatus with EquatableMixin {
   List<Object?> get props => [];
 }
 
-class InitialEventStatus extends EventStatus {
-  const InitialEventStatus();
-
-  @override
-  String toString() => 'InitialEventStatus()';
-
-  @override
-  List<Object?> get props => [];
-}
-
 class LoadingEventStatus extends EventStatus {
   const LoadingEventStatus();
 

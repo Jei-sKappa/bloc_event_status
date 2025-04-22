@@ -107,7 +107,8 @@ class _BloCustomcEventStatusListenerBaseState<
 
   @override
   void didUpdateWidget(
-    BlocCustomEventStatusListener<TBloc, TEvent, TEventSubType, TStatus> oldWidget,
+    BlocCustomEventStatusListener<TBloc, TEvent, TEventSubType, TStatus>
+        oldWidget,
   ) {
     super.didUpdateWidget(oldWidget);
 
@@ -155,8 +156,7 @@ class _BloCustomcEventStatusListenerBaseState<
   }
 
   void _subscribe() {
-    _streamSubscription =
-        _bloc.streamStatusOf(widget.event).listen(
+    _streamSubscription = _bloc.streamStatusOf(widget.event).listen(
       (status) {
         if (!mounted) return;
 

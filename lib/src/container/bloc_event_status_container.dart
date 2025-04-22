@@ -71,6 +71,7 @@ class BlocEventStatusContainer<TEvent, TState, TStatus> {
         streamController = _multiInstanceEventsStatusMap
             .putIfAbsent(event, _ifAbsent)
             .streamController;
+
         _multiInstanceEventsStatusMap[event] = (
           status: status,
           streamController: streamController,
@@ -79,6 +80,7 @@ class BlocEventStatusContainer<TEvent, TState, TStatus> {
         streamController = _singleInstanceEventsStatusMap
             .putIfAbsent(event.runtimeType, _ifAbsent)
             .streamController;
+
         _singleInstanceEventsStatusMap[event.runtimeType] = (
           status: status,
           streamController: streamController,

@@ -6,7 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 mixin BlocEventStatusMixin<TEvent, TState> on Bloc<TEvent, TState>
     implements BlocCustomEventStatusMixin<TEvent, TState, EventStatus> {
-  late final BlocEventStatusContainer<TEvent, TState, EventStatus>? _container;
+  BlocEventStatusContainer<TEvent, TState, EventStatus>? _container;
 
   @override
   BlocEventStatusContainer<TEvent, TState, EventStatus> getContainer() =>

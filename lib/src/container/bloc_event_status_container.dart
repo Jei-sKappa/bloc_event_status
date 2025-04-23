@@ -1,56 +1,105 @@
 import 'dart:async';
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:meta/meta.dart';
 
-typedef _EventStatusRecord<TStatus> = ({
+typedef _EventStatusStreamControllerRecord<TStatus> = ({
   TStatus? status,
   StreamController<TStatus> streamController,
 });
 
+typedef EventTypeStatusPair<TStatus> = ({Type eventType, TStatus status});
+
+typedef EventStatusPair<TEvent, TStatus> = ({TEvent event, TStatus status});
+
 @visibleForTesting
 class BlocEventStatusContainer<TEvent, TState, TStatus> {
-  BlocEventStatusContainer(this._bloc);
+  BlocEventStatusContainer(this._bloc) {
+    _singleInstanceStreamController =
+        StreamController<EventTypeStatusPair>.broadcast();
+
+    _multiInstanceStreamController =
+        StreamController<EventStatusPair>.broadcast();
+  }
 
   final Bloc<TEvent, TState> _bloc;
 
   // Retrieved only by type
-  final Map<Type, _EventStatusRecord<TStatus>> _singleInstanceEventsStatusMap =
-      {};
+  final Map<Type, _EventStatusStreamControllerRecord<TStatus>>
+      _singleInstanceEventsStatusMap = {};
   // Retrieved by type and event
-  final Map<TEvent, _EventStatusRecord<TStatus>> _multiInstanceEventsStatusMap =
-      {};
+  final Map<TEvent, _EventStatusStreamControllerRecord<TStatus>>
+      _multiInstanceEventsStatusMap = {};
 
-  _EventStatusRecord<TStatus> _ifAbsent() =>
+  StreamController<EventTypeStatusPair>? _singleInstanceStreamController;
+
+  StreamController<EventStatusPair>? _multiInstanceStreamController;
+
+  _EventStatusStreamControllerRecord<TStatus> _ifAbsent() =>
       (status: null, streamController: StreamController<TStatus>.broadcast());
 
   TStatus? statusOf<TEventSubType extends TEvent>([TEventSubType? event]) {
-    assert(TEventSubType != dynamic, 'The type must be specified');
-    assert(TEventSubType != TEvent,
-        'The specified type must be a subtype of TEvent');
     if (event != null) {
-      return _multiInstanceEventsStatusMap[event]?.status;
+      return statusFromEvent(event);
     } else {
-      return _singleInstanceEventsStatusMap[TEventSubType]?.status;
+      return statusFromType(TEventSubType);
     }
+  }
+
+  @internal
+  TStatus? statusFromType(Type eventType) {
+    assert(eventType != Null, 'The type cannot be null');
+    assert(eventType != dynamic, 'The type must be specified');
+    assert(eventType != TEvent, 'The specified type cannot be $TEvent itself');
+    // TODO: Check if the type is a subtype of TEvent
+    return _singleInstanceEventsStatusMap
+        .putIfAbsent(eventType, _ifAbsent)
+        .status;
+  }
+
+  @internal
+  TStatus? statusFromEvent<TEventSubType extends TEvent>(TEventSubType event) {
+    assert(TEventSubType != Null, 'The type cannot be null');
+    assert(TEventSubType != dynamic, 'The type must be specified');
+    assert(
+        TEventSubType != TEvent, 'The specified type cannot be $TEvent itself');
+
+    return _multiInstanceEventsStatusMap.putIfAbsent(event, _ifAbsent).status;
   }
 
   Stream<TStatus> streamStatusOf<TEventSubType extends TEvent>(
       [TEventSubType? event]) {
-    assert(TEventSubType != dynamic, 'The type must be specified');
-    assert(TEventSubType != TEvent,
-        'The specified type must be a subtype of TEvent');
     if (event != null) {
-      return _multiInstanceEventsStatusMap
-          .putIfAbsent(event, _ifAbsent)
-          .streamController
-          .stream;
+      return streamStatusFromEvent(event);
     } else {
-      return _singleInstanceEventsStatusMap
-          .putIfAbsent(TEventSubType, _ifAbsent)
-          .streamController
-          .stream;
+      return streamStatusFromType(TEventSubType);
     }
+  }
+
+  @internal
+  Stream<TStatus> streamStatusFromType(Type eventType) {
+    assert(eventType != Null, 'The type cannot be null');
+    assert(eventType != dynamic, 'The type must be specified');
+    assert(eventType != TEvent, 'The specified type cannot be $TEvent itself');
+    // TODO: Check if the type is a subtype of TEvent
+    return _singleInstanceEventsStatusMap
+        .putIfAbsent(eventType, _ifAbsent)
+        .streamController
+        .stream;
+  }
+
+  @internal
+  Stream<TStatus> streamStatusFromEvent<TEventSubType extends TEvent>(
+      TEventSubType event) {
+    assert(TEventSubType != Null, 'The type cannot be null');
+    assert(TEventSubType != dynamic, 'The type must be specified');
+    assert(
+        TEventSubType != TEvent, 'The specified type cannot be $TEvent itself');
+
+    return _multiInstanceEventsStatusMap
+        .putIfAbsent(event, _ifAbsent)
+        .streamController
+        .stream;
   }
 
   void emitEventStatus<TEventSubType extends TEvent>(
@@ -65,30 +114,50 @@ class BlocEventStatusContainer<TEvent, TState, TStatus> {
 
       if (status == statusOf(event)) return;
 
-      StreamController<TStatus> streamController;
-
       if (allowMultipleInstances) {
-        streamController = _multiInstanceEventsStatusMap
-            .putIfAbsent(event, _ifAbsent)
-            .streamController;
+        final record =
+            _multiInstanceEventsStatusMap.putIfAbsent(event, _ifAbsent);
 
+        final streamController = record.streamController;
+
+        // Update the status
         _multiInstanceEventsStatusMap[event] = (
           status: status,
           streamController: streamController,
         );
-      } else {
-        streamController = _singleInstanceEventsStatusMap
-            .putIfAbsent(event.runtimeType, _ifAbsent)
-            .streamController;
 
+        // Add the status to the stream
+        if (!streamController.isClosed) {
+          streamController.add(status);
+        }
+
+        // Add the event with the status to the multi instance stream
+        if (!_multiInstanceStreamController!.isClosed) {
+          _multiInstanceStreamController!.add((event: event, status: status));
+        }
+      } else {
+        final record = _singleInstanceEventsStatusMap.putIfAbsent(
+            event.runtimeType, _ifAbsent);
+
+        final streamController = record.streamController;
+
+        // Update the status
         _singleInstanceEventsStatusMap[event.runtimeType] = (
           status: status,
           streamController: streamController,
         );
-      }
 
-      if (!streamController.isClosed) {
-        streamController.add(status);
+        // Add the status to the stream
+        if (!streamController.isClosed) {
+          streamController.add(status);
+        }
+
+        // Add the event with the status to the single instance stream
+        if (!_singleInstanceStreamController!.isClosed) {
+          _singleInstanceStreamController!.add(
+            (eventType: event.runtimeType, status: status),
+          );
+        }
       }
     } catch (error, stackTrace) {
       // This class is wrapping a Bloc

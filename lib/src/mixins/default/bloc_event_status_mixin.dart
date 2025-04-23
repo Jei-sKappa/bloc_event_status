@@ -1,8 +1,8 @@
 import 'dart:async';
 
 import 'package:bloc_event_status/bloc_event_status.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:meta/meta.dart';
 
 mixin BlocEventStatusMixin<TEvent, TState> on Bloc<TEvent, TState>
     implements BlocCustomEventStatusMixin<TEvent, TState, EventStatus> {
@@ -17,9 +17,31 @@ mixin BlocEventStatusMixin<TEvent, TState> on Bloc<TEvent, TState>
       getContainer().statusOf(event);
 
   @override
+  @internal
+  EventStatus? statusFromType(Type eventType) =>
+      getContainer().statusFromType(eventType);
+
+  @override
+  @internal
+  EventStatus? statusFromEvent<TEventSubType extends TEvent>(
+          TEventSubType event) =>
+      getContainer().statusFromEvent(event);
+
+  @override
   Stream<EventStatus> streamStatusOf<TEventSubType extends TEvent>(
           [TEventSubType? event]) =>
       getContainer().streamStatusOf(event);
+
+  @override
+  @internal
+  Stream<EventStatus> streamStatusFromType(Type eventType) =>
+      getContainer().streamStatusFromType(eventType);
+
+  @override
+  @internal
+  Stream<EventStatus> streamStatusFromEvent<TEventSubType extends TEvent>(
+          TEventSubType event) =>
+      getContainer().streamStatusFromEvent(event);
 
   @override
   @protected

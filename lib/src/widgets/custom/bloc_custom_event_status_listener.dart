@@ -91,16 +91,14 @@ class _BloCustomcEventStatusListenerBaseState<
         TStatus>
     extends SingleChildState<
         BlocCustomEventStatusListener<TBloc, TEvent, TEventSubType, TStatus>> {
-  StreamSubscription<TStatus>? _streamSubscription;
+  StreamSubscription<PreviousCurrentStatusPair<TStatus>>? _streamSubscription;
   late TBloc _bloc;
-  late TStatus? _previousStatus;
 
   @override
   void initState() {
     super.initState();
 
     _bloc = widget.bloc ?? context.read<TBloc>();
-    _previousStatus = _bloc.statusOf(widget.event);
 
     _subscribe();
   }
@@ -119,7 +117,6 @@ class _BloCustomcEventStatusListenerBaseState<
       if (_streamSubscription != null) {
         _unsubscribe();
         _bloc = currentBloc;
-        _previousStatus = _bloc.statusOf(widget.event);
       }
 
       _subscribe();
@@ -136,7 +133,6 @@ class _BloCustomcEventStatusListenerBaseState<
       if (_streamSubscription != null) {
         _unsubscribe();
         _bloc = bloc;
-        _previousStatus = _bloc.statusOf(widget.event);
       }
 
       _subscribe();
@@ -156,16 +152,15 @@ class _BloCustomcEventStatusListenerBaseState<
   }
 
   void _subscribe() {
-    _streamSubscription = _bloc.streamStatusOf(widget.event).listen(
-      (status) {
+    _streamSubscription = _bloc.streamStatusWithPreviousOf(widget.event).listen(
+      (statusPair) {
         if (!mounted) return;
 
-        // widget.listener(context, status);
-        if (widget.listenWhen?.call(_previousStatus, status) ?? true) {
-          widget.listener(context, status);
+        final shouldTrigger = widget.listenWhen
+            ?.call(statusPair.previousStatus, statusPair.status) ?? true;
+        if (shouldTrigger) {
+          widget.listener(context, statusPair.status);
         }
-
-        _previousStatus = status;
       },
     );
   }

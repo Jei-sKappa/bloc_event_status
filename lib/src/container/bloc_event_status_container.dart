@@ -3,9 +3,15 @@ import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:meta/meta.dart';
 
+typedef PreviousCurrentStatusPair<TStatus> = ({
+  TStatus? previousStatus,
+  TStatus status,
+});
+
 typedef _EventStatusStreamControllerRecord<TStatus> = ({
+  TStatus? previousStatus,
   TStatus? status,
-  StreamController<TStatus> streamController,
+  StreamController<PreviousCurrentStatusPair<TStatus>> streamController,
 });
 
 typedef EventTypeStatusPair<TStatus> = ({Type eventType, TStatus status});
@@ -35,8 +41,72 @@ class BlocEventStatusContainer<TEvent, TState, TStatus> {
 
   StreamController<EventStatusPair>? _multiInstanceStreamController;
 
-  _EventStatusStreamControllerRecord<TStatus> _ifAbsent() =>
-      (status: null, streamController: StreamController<TStatus>.broadcast());
+  _EventStatusStreamControllerRecord<TStatus> _ifAbsent() => (
+        previousStatus: null,
+        status: null,
+        streamController:
+            StreamController<PreviousCurrentStatusPair<TStatus>>.broadcast()
+      );
+
+  void _updateSingleInstanceStatus(Type eventType, TStatus status) {
+    final record =
+        _singleInstanceEventsStatusMap.putIfAbsent(eventType, _ifAbsent);
+
+    _singleInstanceEventsStatusMap[eventType] = (
+      // Set the status to previous status
+      previousStatus: record.status,
+      // Update the status
+      status: status,
+      // Keep the stream controller as is
+      streamController: record.streamController,
+    );
+  }
+
+  void _updateMultiInstanceStatus(TEvent event, TStatus status) {
+    final record = _multiInstanceEventsStatusMap.putIfAbsent(event, _ifAbsent);
+
+    _multiInstanceEventsStatusMap[event] = (
+      // Set the status to previous status
+      previousStatus: record.status,
+      // Update the status
+      status: status,
+      // Keep the stream controller as is
+      streamController: record.streamController,
+    );
+  }
+
+  TStatus? previousStatusOf<TEventSubType extends TEvent>(
+      [TEventSubType? event]) {
+    if (event != null) {
+      return previousStatusFromEvent(event);
+    } else {
+      return previousStatusFromType(TEventSubType);
+    }
+  }
+
+  @internal
+  TStatus? previousStatusFromType(Type eventType) {
+    assert(eventType != Null, 'The type cannot be null');
+    assert(eventType != dynamic, 'The type must be specified');
+    assert(eventType != TEvent, 'The specified type cannot be $TEvent itself');
+    // TODO: Check if the type is a subtype of TEvent
+    return _singleInstanceEventsStatusMap
+        .putIfAbsent(eventType, _ifAbsent)
+        .previousStatus;
+  }
+
+  @internal
+  TStatus? previousStatusFromEvent<TEventSubType extends TEvent>(
+      TEventSubType event) {
+    assert(TEventSubType != Null, 'The type cannot be null');
+    assert(TEventSubType != dynamic, 'The type must be specified');
+    assert(
+        TEventSubType != TEvent, 'The specified type cannot be $TEvent itself');
+
+    return _multiInstanceEventsStatusMap
+        .putIfAbsent(event, _ifAbsent)
+        .previousStatus;
+  }
 
   TStatus? statusOf<TEventSubType extends TEvent>([TEventSubType? event]) {
     if (event != null) {
@@ -85,12 +155,52 @@ class BlocEventStatusContainer<TEvent, TState, TStatus> {
     return _singleInstanceEventsStatusMap
         .putIfAbsent(eventType, _ifAbsent)
         .streamController
-        .stream;
+        .stream
+        .map((pair) => pair.status);
   }
 
   @internal
   Stream<TStatus> streamStatusFromEvent<TEventSubType extends TEvent>(
       TEventSubType event) {
+    assert(TEventSubType != Null, 'The type cannot be null');
+    assert(TEventSubType != dynamic, 'The type must be specified');
+    assert(
+        TEventSubType != TEvent, 'The specified type cannot be $TEvent itself');
+
+    return _multiInstanceEventsStatusMap
+        .putIfAbsent(event, _ifAbsent)
+        .streamController
+        .stream
+        .map((pair) => pair.status);
+  }
+
+  Stream<PreviousCurrentStatusPair<TStatus>>
+      streamStatusWithPreviousOf<TEventSubType extends TEvent>(
+          [TEventSubType? event]) {
+    if (event != null) {
+      return streamStatusWithPreviousFromEvent(event);
+    } else {
+      return streamStatusWithPreviousFromType(TEventSubType);
+    }
+  }
+
+  @internal
+  Stream<PreviousCurrentStatusPair<TStatus>> streamStatusWithPreviousFromType(
+      Type eventType) {
+    assert(eventType != Null, 'The type cannot be null');
+    assert(eventType != dynamic, 'The type must be specified');
+    assert(eventType != TEvent, 'The specified type cannot be $TEvent itself');
+    // TODO: Check if the type is a subtype of TEvent
+    return _singleInstanceEventsStatusMap
+        .putIfAbsent(eventType, _ifAbsent)
+        .streamController
+        .stream;
+  }
+
+  @internal
+  Stream<PreviousCurrentStatusPair<TStatus>>
+      streamStatusWithPreviousFromEvent<TEventSubType extends TEvent>(
+          TEventSubType event) {
     assert(TEventSubType != Null, 'The type cannot be null');
     assert(TEventSubType != dynamic, 'The type must be specified');
     assert(
@@ -115,20 +225,18 @@ class BlocEventStatusContainer<TEvent, TState, TStatus> {
       if (status == statusOf(event)) return;
 
       if (allowMultipleInstances) {
-        final record =
-            _multiInstanceEventsStatusMap.putIfAbsent(event, _ifAbsent);
-
-        final streamController = record.streamController;
-
         // Update the status
-        _multiInstanceEventsStatusMap[event] = (
-          status: status,
-          streamController: streamController,
-        );
+        _updateMultiInstanceStatus(event, status);
 
         // Add the status to the stream
+        final record =
+            _multiInstanceEventsStatusMap.putIfAbsent(event, _ifAbsent);
+        final streamController = record.streamController;
         if (!streamController.isClosed) {
-          streamController.add(status);
+          streamController.add((
+            previousStatus: record.previousStatus,
+            status: status,
+          ));
         }
 
         // Add the event with the status to the multi instance stream
@@ -136,20 +244,18 @@ class BlocEventStatusContainer<TEvent, TState, TStatus> {
           _multiInstanceStreamController!.add((event: event, status: status));
         }
       } else {
-        final record = _singleInstanceEventsStatusMap.putIfAbsent(
-            event.runtimeType, _ifAbsent);
-
-        final streamController = record.streamController;
-
         // Update the status
-        _singleInstanceEventsStatusMap[event.runtimeType] = (
-          status: status,
-          streamController: streamController,
-        );
+        _updateSingleInstanceStatus(event.runtimeType, status);
 
         // Add the status to the stream
+        final record = _singleInstanceEventsStatusMap.putIfAbsent(
+            event.runtimeType, _ifAbsent);
+        final streamController = record.streamController;
         if (!streamController.isClosed) {
-          streamController.add(status);
+          streamController.add((
+            previousStatus: record.previousStatus,
+            status: status,
+          ));
         }
 
         // Add the event with the status to the single instance stream

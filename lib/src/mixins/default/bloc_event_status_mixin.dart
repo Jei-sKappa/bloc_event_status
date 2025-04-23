@@ -13,6 +13,22 @@ mixin BlocEventStatusMixin<TEvent, TState> on Bloc<TEvent, TState>
       _container ??= BlocEventStatusContainer(this);
 
   @override
+  EventStatus? previousStatusOf<TEventSubType extends TEvent>(
+          [TEventSubType? event]) =>
+      getContainer().previousStatusOf(event);
+
+  @override
+  @internal
+  EventStatus? previousStatusFromType(Type eventType) =>
+      getContainer().previousStatusFromType(eventType);
+
+  @override
+  @internal
+  EventStatus? previousStatusFromEvent<TEventSubType extends TEvent>(
+          TEventSubType event) =>
+      getContainer().previousStatusFromEvent(event);
+
+  @override
   EventStatus? statusOf<TEventSubType extends TEvent>([TEventSubType? event]) =>
       getContainer().statusOf(event);
 
@@ -42,6 +58,25 @@ mixin BlocEventStatusMixin<TEvent, TState> on Bloc<TEvent, TState>
   Stream<EventStatus> streamStatusFromEvent<TEventSubType extends TEvent>(
           TEventSubType event) =>
       getContainer().streamStatusFromEvent(event);
+
+  @override
+  Stream<PreviousCurrentStatusPair<EventStatus>>
+      streamStatusWithPreviousOf<TEventSubType extends TEvent>(
+              [TEventSubType? event]) =>
+          getContainer().streamStatusWithPreviousOf(event);
+
+  @override
+  @internal
+  Stream<PreviousCurrentStatusPair<EventStatus>>
+      streamStatusWithPreviousFromType(Type eventType) =>
+          getContainer().streamStatusWithPreviousFromType(eventType);
+
+  @override
+  @internal
+  Stream<PreviousCurrentStatusPair<EventStatus>>
+      streamStatusWithPreviousFromEvent<TEventSubType extends TEvent>(
+              TEventSubType event) =>
+          getContainer().streamStatusWithPreviousFromEvent(event);
 
   @override
   @protected

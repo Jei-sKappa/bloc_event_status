@@ -2,10 +2,12 @@ import 'package:bloc_event_status/bloc_event_status.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-typedef BlocWidgetBuilderWithCustomEventStatus<TState, TStatus> = Widget Function(
+typedef BlocWidgetBuilderWithCustomEventStatus<TEvent, TStatus, TState> = Widget
+    Function(
   BuildContext context,
-  TState state,
+  TEvent? event,
   TStatus? status,
+  TState state,
 );
 
 class BlocBuilderWithCustomEventStatus<
@@ -30,22 +32,24 @@ class BlocBuilderWithCustomEventStatus<
 
   final BlocBuilderCondition<TState>? buildWhenState;
 
-  final BlocCustomEventStatusBuilderCondition<TStatus>? buildWhenStatus;
+  final BlocCustomEventStatusBuilderCondition<TEventSubType, TStatus>? buildWhenStatus;
 
-  final BlocWidgetBuilderWithCustomEventStatus<TState, TStatus> builder;
+  /// The event can be null if no event is triggered yet.
+  final BlocWidgetBuilderWithCustomEventStatus<TEventSubType, TStatus, TState> builder;
 
   @override
   Widget build(BuildContext context) {
-    return BlocCustomEventStatusBuilder<TBloc, TEvent, TEventSubType, TState, TStatus>(
+    return BlocCustomEventStatusBuilder<TBloc, TEvent, TEventSubType, TState,
+        TStatus>(
       bloc: bloc,
       event: event,
       buildWhen: buildWhenStatus,
-      builder: (context, status) {
+      builder: (context, event, status) {
         return BlocBuilder<TBloc, TState>(
           bloc: bloc,
           buildWhen: buildWhenState,
           builder: (context, state) {
-            return builder(context, state, status);
+            return builder(context, event, status, state);
           },
         );
       },

@@ -18,7 +18,8 @@ mixin BlocCustomEventStatusMixin<TEvent, TState, TStatus>
   TStatus? statusOf<TEventSubType extends TEvent>([TEventSubType? event]) =>
       getContainer().statusOf(event);
 
-  Stream<PreviousCurrentStatusPair<TStatus>>
+
+  Stream<EventStatusUpdate<TEventSubType, TStatus>>
       streamStatusOf<TEventSubType extends TEvent>([TEventSubType? event]) =>
           getContainer().streamStatusOf(event);
 

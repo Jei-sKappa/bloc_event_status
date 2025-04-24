@@ -16,9 +16,9 @@ class BlocEventStatusListener<
   /// A function that defines the behavior when a new event of type [P] is
   /// emitted by the Bloc. It takes the current [BuildContext] and the
   /// event itself as parameters and is responsible for handling the event.
-  final BlocCustomEventStatusWidgetListener<EventStatus> listener;
+  final BlocCustomEventStatusWidgetListener<TEventSubType, EventStatus> listener;
 
-  final BlocCustomEventStatusListenerCondition<EventStatus>? listenWhen;
+  final BlocCustomEventStatusListenerCondition<TEventSubType, EventStatus>? listenWhen;
 
   const BlocEventStatusListener({
     super.key,

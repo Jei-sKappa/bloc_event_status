@@ -8,8 +8,9 @@ import 'package:nested/nested.dart';
 /// Signature for the `listener` function which takes the `BuildContext` along
 /// with the `event` and is responsible for executing in response to
 /// new events.
-typedef BlocCustomEventStatusWidgetListener<TStatus> = void Function(
+typedef BlocCustomEventStatusWidgetListener<TEventSubType, TStatus> = void Function(
   BuildContext context,
+  TEventSubType event,
   TStatus status,
 );
 
@@ -17,7 +18,8 @@ typedef BlocCustomEventStatusWidgetListener<TStatus> = void Function(
 /// and the current `state` and is responsible for returning a [bool] which
 /// determines whether or not to call [BlocWidgetListener] of [BlocListener]
 /// with the current `state`.
-typedef BlocCustomEventStatusListenerCondition<TStatus> = bool Function(
+typedef BlocCustomEventStatusListenerCondition<TEventSubType, TStatus> = bool Function(
+  TEventSubType event,
   TStatus? previous,
   TStatus current,
 );
@@ -73,9 +75,9 @@ class BlocCustomEventStatusListener<
   /// A function that defines the behavior when a new event of type [P] is
   /// emitted by the Bloc. It takes the current [BuildContext] and the
   /// event itself as parameters and is responsible for handling the event.
-  final BlocCustomEventStatusWidgetListener<TStatus> listener;
+  final BlocCustomEventStatusWidgetListener<TEventSubType, TStatus> listener;
 
-  final BlocCustomEventStatusListenerCondition<TStatus>? listenWhen;
+  final BlocCustomEventStatusListenerCondition<TEventSubType, TStatus>? listenWhen;
 
   @override
   SingleChildState<
@@ -91,7 +93,7 @@ class _BloCustomcEventStatusListenerBaseState<
         TStatus>
     extends SingleChildState<
         BlocCustomEventStatusListener<TBloc, TEvent, TEventSubType, TStatus>> {
-  StreamSubscription<PreviousCurrentStatusPair<TStatus>>? _streamSubscription;
+  StreamSubscription<EventStatusUpdate<TEvent, TStatus>>? _streamSubscription;
   late TBloc _bloc;
 
   @override
@@ -153,14 +155,14 @@ class _BloCustomcEventStatusListenerBaseState<
 
   void _subscribe() {
     _streamSubscription = _bloc.streamStatusOf(widget.event).listen(
-      (statusPair) {
+      (update) {
         if (!mounted) return;
 
         final shouldTrigger = widget.listenWhen
-                ?.call(statusPair.previousStatus, statusPair.status) ??
+                ?.call(update.event, update.previousStatus, update.status) ??
             true;
         if (shouldTrigger) {
-          widget.listener(context, statusPair.status);
+          widget.listener(context, update.event, update.status);
         }
       },
     );

@@ -12,13 +12,13 @@ class BlocEventStatusBuilder<TBloc extends BlocEventStatusMixin<TEvent, TState>,
   final TEventSubType? event;
 
   /// {@macro bloc_builder_build_when}
-  final BlocCustomEventStatusBuilderCondition<EventStatus>? buildWhen;
+  final BlocCustomEventStatusBuilderCondition<TEventSubType, EventStatus>? buildWhen;
 
   /// The [builder] function which will be invoked on each widget build.
   /// The [builder] takes the `BuildContext` and current `state` and
   /// must return a widget.
   /// This is analogous to the [builder] function in [StreamBuilder].
-  final BlocCustomEventStatusWidgetBuilder<EventStatus> builder;
+  final BlocCustomEventStatusWidgetBuilder<TEventSubType, EventStatus> builder;
 
   const BlocEventStatusBuilder({
     super.key,

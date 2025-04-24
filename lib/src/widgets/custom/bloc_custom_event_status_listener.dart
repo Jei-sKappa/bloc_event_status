@@ -152,12 +152,13 @@ class _BloCustomcEventStatusListenerBaseState<
   }
 
   void _subscribe() {
-    _streamSubscription = _bloc.streamStatusWithPreviousOf(widget.event).listen(
+    _streamSubscription = _bloc.streamStatusOf(widget.event).listen(
       (statusPair) {
         if (!mounted) return;
 
         final shouldTrigger = widget.listenWhen
-            ?.call(statusPair.previousStatus, statusPair.status) ?? true;
+                ?.call(statusPair.previousStatus, statusPair.status) ??
+            true;
         if (shouldTrigger) {
           widget.listener(context, statusPair.status);
         }

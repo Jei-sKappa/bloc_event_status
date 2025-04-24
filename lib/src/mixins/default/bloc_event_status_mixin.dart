@@ -22,15 +22,9 @@ mixin BlocEventStatusMixin<TEvent, TState> on Bloc<TEvent, TState>
       getContainer().statusOf(event);
 
   @override
-  Stream<EventStatus> streamStatusOf<TEventSubType extends TEvent>(
-          [TEventSubType? event]) =>
-      getContainer().streamStatusOf(event);
-
-  @override
   Stream<PreviousCurrentStatusPair<EventStatus>>
-      streamStatusWithPreviousOf<TEventSubType extends TEvent>(
-              [TEventSubType? event]) =>
-          getContainer().streamStatusWithPreviousOf(event);
+      streamStatusOf<TEventSubType extends TEvent>([TEventSubType? event]) =>
+          getContainer().streamStatusOf(event);
 
   @override
   @protected

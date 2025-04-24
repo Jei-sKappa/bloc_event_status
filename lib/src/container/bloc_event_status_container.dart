@@ -84,7 +84,7 @@ class BlocEventStatusContainer<TEvent, TState, TStatus> {
     }
   }
 
-  @internal
+  @visibleForTesting
   TStatus? previousStatusFromType(Type eventType) {
     assert(eventType != Null, 'The type cannot be null');
     assert(eventType != dynamic, 'The type must be specified');
@@ -95,7 +95,7 @@ class BlocEventStatusContainer<TEvent, TState, TStatus> {
         .previousStatus;
   }
 
-  @internal
+  @visibleForTesting
   TStatus? previousStatusFromEvent<TEventSubType extends TEvent>(
       TEventSubType event) {
     assert(TEventSubType != Null, 'The type cannot be null');
@@ -116,7 +116,7 @@ class BlocEventStatusContainer<TEvent, TState, TStatus> {
     }
   }
 
-  @internal
+  @visibleForTesting
   TStatus? statusFromType(Type eventType) {
     assert(eventType != Null, 'The type cannot be null');
     assert(eventType != dynamic, 'The type must be specified');
@@ -127,7 +127,7 @@ class BlocEventStatusContainer<TEvent, TState, TStatus> {
         .status;
   }
 
-  @internal
+  @visibleForTesting
   TStatus? statusFromEvent<TEventSubType extends TEvent>(TEventSubType event) {
     assert(TEventSubType != Null, 'The type cannot be null');
     assert(TEventSubType != dynamic, 'The type must be specified');
@@ -146,7 +146,7 @@ class BlocEventStatusContainer<TEvent, TState, TStatus> {
     }
   }
 
-  @internal
+  @visibleForTesting
   Stream<TStatus> streamStatusFromType(Type eventType) {
     assert(eventType != Null, 'The type cannot be null');
     assert(eventType != dynamic, 'The type must be specified');
@@ -159,7 +159,7 @@ class BlocEventStatusContainer<TEvent, TState, TStatus> {
         .map((pair) => pair.status);
   }
 
-  @internal
+  @visibleForTesting
   Stream<TStatus> streamStatusFromEvent<TEventSubType extends TEvent>(
       TEventSubType event) {
     assert(TEventSubType != Null, 'The type cannot be null');
@@ -184,7 +184,7 @@ class BlocEventStatusContainer<TEvent, TState, TStatus> {
     }
   }
 
-  @internal
+  @visibleForTesting
   Stream<PreviousCurrentStatusPair<TStatus>> streamStatusWithPreviousFromType(
       Type eventType) {
     assert(eventType != Null, 'The type cannot be null');
@@ -197,7 +197,7 @@ class BlocEventStatusContainer<TEvent, TState, TStatus> {
         .stream;
   }
 
-  @internal
+  @visibleForTesting
   Stream<PreviousCurrentStatusPair<TStatus>>
       streamStatusWithPreviousFromEvent<TEventSubType extends TEvent>(
           TEventSubType event) {

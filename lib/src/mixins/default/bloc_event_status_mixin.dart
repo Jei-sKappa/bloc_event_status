@@ -18,30 +18,8 @@ mixin BlocEventStatusMixin<TEvent, TState> on Bloc<TEvent, TState>
       getContainer().previousStatusOf(event);
 
   @override
-  @internal
-  EventStatus? previousStatusFromType(Type eventType) =>
-      getContainer().previousStatusFromType(eventType);
-
-  @override
-  @internal
-  EventStatus? previousStatusFromEvent<TEventSubType extends TEvent>(
-          TEventSubType event) =>
-      getContainer().previousStatusFromEvent(event);
-
-  @override
   EventStatus? statusOf<TEventSubType extends TEvent>([TEventSubType? event]) =>
       getContainer().statusOf(event);
-
-  @override
-  @internal
-  EventStatus? statusFromType(Type eventType) =>
-      getContainer().statusFromType(eventType);
-
-  @override
-  @internal
-  EventStatus? statusFromEvent<TEventSubType extends TEvent>(
-          TEventSubType event) =>
-      getContainer().statusFromEvent(event);
 
   @override
   Stream<EventStatus> streamStatusOf<TEventSubType extends TEvent>(
@@ -49,34 +27,10 @@ mixin BlocEventStatusMixin<TEvent, TState> on Bloc<TEvent, TState>
       getContainer().streamStatusOf(event);
 
   @override
-  @internal
-  Stream<EventStatus> streamStatusFromType(Type eventType) =>
-      getContainer().streamStatusFromType(eventType);
-
-  @override
-  @internal
-  Stream<EventStatus> streamStatusFromEvent<TEventSubType extends TEvent>(
-          TEventSubType event) =>
-      getContainer().streamStatusFromEvent(event);
-
-  @override
   Stream<PreviousCurrentStatusPair<EventStatus>>
       streamStatusWithPreviousOf<TEventSubType extends TEvent>(
               [TEventSubType? event]) =>
           getContainer().streamStatusWithPreviousOf(event);
-
-  @override
-  @internal
-  Stream<PreviousCurrentStatusPair<EventStatus>>
-      streamStatusWithPreviousFromType(Type eventType) =>
-          getContainer().streamStatusWithPreviousFromType(eventType);
-
-  @override
-  @internal
-  Stream<PreviousCurrentStatusPair<EventStatus>>
-      streamStatusWithPreviousFromEvent<TEventSubType extends TEvent>(
-              TEventSubType event) =>
-          getContainer().streamStatusWithPreviousFromEvent(event);
 
   @override
   @protected

@@ -12,56 +12,20 @@ mixin BlocCustomEventStatusMixin<TEvent, TState, TStatus>
       _container ??= BlocEventStatusContainer(this);
 
   TStatus? previousStatusOf<TEventSubType extends TEvent>(
-      [TEventSubType? event]) => getContainer().previousStatusOf(event);
-
-  @internal
-  TStatus? previousStatusFromType(Type eventType) =>
-      getContainer().previousStatusFromType(eventType);
-
-  @internal
-  TStatus? previousStatusFromEvent<TEventSubType extends TEvent>(
-          TEventSubType event) =>
-      getContainer().previousStatusFromEvent(event);
+          [TEventSubType? event]) =>
+      getContainer().previousStatusOf(event);
 
   TStatus? statusOf<TEventSubType extends TEvent>([TEventSubType? event]) =>
       getContainer().statusOf(event);
-
-  @internal
-  TStatus? statusFromType(Type eventType) =>
-      getContainer().statusFromType(eventType);
-
-  @internal
-  TStatus? statusFromEvent<TEventSubType extends TEvent>(TEventSubType event) =>
-      getContainer().statusFromEvent(event);
 
   Stream<TStatus> streamStatusOf<TEventSubType extends TEvent>(
           [TEventSubType? event]) =>
       getContainer().streamStatusOf(event);
 
-  @internal
-  Stream<TStatus> streamStatusFromType(Type eventType) =>
-      getContainer().streamStatusFromType(eventType);
-
-  @internal
-  Stream<TStatus> streamStatusFromEvent<TEventSubType extends TEvent>(
-          TEventSubType event) =>
-      getContainer().streamStatusFromEvent(event);
-
   Stream<PreviousCurrentStatusPair<TStatus>>
       streamStatusWithPreviousOf<TEventSubType extends TEvent>(
               [TEventSubType? event]) =>
           getContainer().streamStatusWithPreviousOf(event);
-
-  @internal
-  Stream<PreviousCurrentStatusPair<TStatus>> streamStatusWithPreviousFromType(
-          Type eventType) =>
-      getContainer().streamStatusWithPreviousFromType(eventType);
-
-  @internal
-  Stream<PreviousCurrentStatusPair<TStatus>>
-      streamStatusWithPreviousFromEvent<TEventSubType extends TEvent>(
-              TEventSubType event) =>
-          getContainer().streamStatusWithPreviousFromEvent(event);
 
   @protected
   void emitEventStatus<TEventSubType extends TEvent>(

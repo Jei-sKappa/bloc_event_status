@@ -8,40 +8,47 @@ typedef PreviousCurrentStatusPair<TStatus> = ({
   TStatus status,
 });
 
-typedef _EventStatusStreamControllerRecord<TStatus> = ({
+typedef _MapData<TStatus> = ({
   TStatus? previousStatus,
   TStatus? status,
   StreamController<PreviousCurrentStatusPair<TStatus>> streamController,
 });
 
-typedef EventTypeStatusPair<TStatus> = ({Type eventType, TStatus status});
+typedef EventTypeStatusPair<TStatus> = ({
+  Type eventType,
+  PreviousCurrentStatusPair<TStatus> statusPair,
+});
 
-typedef EventStatusPair<TEvent, TStatus> = ({TEvent event, TStatus status});
+typedef EventStatusPair<TEvent, TStatus> = ({
+  TEvent event,
+  PreviousCurrentStatusPair<TStatus> statusPair,
+});
+
 
 @visibleForTesting
 class BlocEventStatusContainer<TEvent, TState, TStatus> {
   BlocEventStatusContainer(this._bloc) {
     _singleInstanceStreamController =
-        StreamController<EventTypeStatusPair>.broadcast();
+        StreamController<EventTypeStatusPair<TStatus>>.broadcast();
 
     _multiInstanceStreamController =
-        StreamController<EventStatusPair>.broadcast();
+        StreamController<EventStatusPair<TEvent, TStatus>>.broadcast();
   }
 
   final Bloc<TEvent, TState> _bloc;
 
   // Retrieved only by type
-  final Map<Type, _EventStatusStreamControllerRecord<TStatus>>
-      _singleInstanceEventsStatusMap = {};
+  final Map<Type, _MapData<TStatus>> _singleInstanceEventsStatusMap = {};
   // Retrieved by type and event
-  final Map<TEvent, _EventStatusStreamControllerRecord<TStatus>>
-      _multiInstanceEventsStatusMap = {};
+  final Map<TEvent, _MapData<TStatus>> _multiInstanceEventsStatusMap = {};
 
-  StreamController<EventTypeStatusPair>? _singleInstanceStreamController;
+  StreamController<EventTypeStatusPair<TStatus>>?
+      _singleInstanceStreamController;
 
-  StreamController<EventStatusPair>? _multiInstanceStreamController;
+  StreamController<EventStatusPair<TEvent, TStatus>>?
+      _multiInstanceStreamController;
 
-  _EventStatusStreamControllerRecord<TStatus> _ifAbsent() => (
+  _MapData<TStatus> _ifAbsent() => (
         previousStatus: null,
         status: null,
         streamController:
@@ -241,7 +248,13 @@ class BlocEventStatusContainer<TEvent, TState, TStatus> {
 
         // Add the event with the status to the multi instance stream
         if (!_multiInstanceStreamController!.isClosed) {
-          _multiInstanceStreamController!.add((event: event, status: status));
+          _multiInstanceStreamController!.add((
+            event: event,
+            statusPair: (
+              previousStatus: record.previousStatus,
+              status: status,
+            ),
+          ));
         }
       } else {
         // Update the status
@@ -260,9 +273,13 @@ class BlocEventStatusContainer<TEvent, TState, TStatus> {
 
         // Add the event with the status to the single instance stream
         if (!_singleInstanceStreamController!.isClosed) {
-          _singleInstanceStreamController!.add(
-            (eventType: event.runtimeType, status: status),
-          );
+          _singleInstanceStreamController!.add((
+            eventType: event.runtimeType,
+            statusPair: (
+              previousStatus: record.previousStatus,
+              status: status,
+            ),
+          ));
         }
       }
     } catch (error, stackTrace) {

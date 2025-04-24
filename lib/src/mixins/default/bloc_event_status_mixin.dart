@@ -83,12 +83,29 @@ mixin BlocEventStatusMixin<TEvent, TState> on Bloc<TEvent, TState>
     bool emitFailure = true,
   }) =>
           (event, emit) async {
-            if (emitLoading) emitLoadingStatus(event);
+            if (emitLoading) {
+              emitLoadingStatus(
+                event,
+                allowMultipleInstances: allowMultipleInstances,
+              );
+            }
             try {
               await eventHandler(event, emit);
-              if (emitSuccess) emitSuccessStatus(event);
+              if (emitSuccess) {
+                emitSuccessStatus(
+                  event,
+                  allowMultipleInstances: allowMultipleInstances,
+                );
+              }
             } catch (e) {
-              if (emitFailure) emitFailureStatus(event, error: e);
+              if (emitFailure) {
+                emitFailureStatus(
+                  event,
+                  error: e,
+                  allowMultipleInstances: allowMultipleInstances,
+                );
+              }
+              addError(e, StackTrace.current);
             }
           };
 

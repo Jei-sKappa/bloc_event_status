@@ -41,11 +41,11 @@ class BlocCustomEventStatusBuilder<
   @override
   State<
       BlocCustomEventStatusBuilder<TBloc, TEvent, TEventSubType, TState,
-          TStatus>> createState() => _BloCustomcEventStatusBuilderState<TBloc,
+          TStatus>> createState() => _BloCustomEventStatusBuilderState<TBloc,
       TEvent, TEventSubType, TState, TStatus>();
 }
 
-class _BloCustomcEventStatusBuilderState<
+class _BloCustomEventStatusBuilderState<
         TBloc extends BlocCustomEventStatusMixin<TEvent, TState, TStatus>,
         TEvent,
         TEventSubType extends TEvent,

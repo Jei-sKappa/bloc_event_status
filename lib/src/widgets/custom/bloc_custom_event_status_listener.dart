@@ -81,11 +81,11 @@ class BlocCustomEventStatusListener<
   @override
   SingleChildState<
           BlocCustomEventStatusListener<TBloc, TEvent, TEventSubType, TStatus>>
-      createState() => _BloCustomcEventStatusListenerBaseState<TBloc, TEvent,
+      createState() => _BloCustomEventStatusListenerBaseState<TBloc, TEvent,
           TEventSubType, TStatus>();
 }
 
-class _BloCustomcEventStatusListenerBaseState<
+class _BloCustomEventStatusListenerBaseState<
         TBloc extends BlocCustomEventStatusMixin<TEvent, dynamic, TStatus>,
         TEvent,
         TEventSubType extends TEvent,

@@ -79,7 +79,7 @@ class _BloCustomcEventStatusBuilderState<
       _bloc = currentBloc;
       _event = null;
       // TODO: This should be filterd by the event filter otherwise it will return the status of the last event that was triggered and maybe not the one that was requested by the user
-      _status = _bloc.statusOf();
+      _status = _bloc.statusOf<TEventSubType>();
     }
   }
 
@@ -91,7 +91,7 @@ class _BloCustomcEventStatusBuilderState<
       _bloc = bloc;
       _event = null;
       // TODO: This should be filterd by the event filter otherwise it will return the status of the last event that was triggered and maybe not the one that was requested by the user
-      _status = _bloc.statusOf();
+      _status = _bloc.statusOf<TEventSubType>();
     }
   }
 

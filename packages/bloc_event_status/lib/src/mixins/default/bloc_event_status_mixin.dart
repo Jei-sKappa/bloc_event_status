@@ -6,27 +6,32 @@ import 'package:meta/meta.dart';
 
 mixin BlocEventStatusMixin<TEvent, TState> on Bloc<TEvent, TState>
     implements BlocCustomEventStatusMixin<TEvent, TState, EventStatus> {
+  // ignore_reason: [BlocEventStatusContainer] is used to manage the event
+  // status across Classes and Mixins
+  // ignore: invalid_use_of_visible_for_testing_member
   BlocEventStatusContainer<TEvent, TState, EventStatus>? _container;
 
-  @override
-  BlocEventStatusContainer<TEvent, TState, EventStatus> getContainer() =>
+  // ignore_reason: The [BlocEventStatusContainer] is used to manage the event
+  // status across Classes and Mixins
+  // ignore: invalid_use_of_visible_for_testing_member
+  BlocEventStatusContainer<TEvent, TState, EventStatus> _getContainer() =>
       _container ??= BlocEventStatusContainer(this);
 
   @override
-  EventStatus? statusOfAllEvents() => getContainer().statusOfAllEvents();
+  EventStatus? statusOfAllEvents() => _getContainer().statusOfAllEvents();
 
   @override
   Stream<EventStatusUpdate<TEvent, EventStatus>> streamAllEventStatus() =>
-      getContainer().streamStatusOfAllEvents();
+      _getContainer().streamStatusOfAllEvents();
 
   @override
   EventStatus? statusOf<TEventSubType extends TEvent>() =>
-      getContainer().statusOf<TEventSubType>();
+      _getContainer().statusOf<TEventSubType>();
 
   @override
   Stream<EventStatusUpdate<TEventSubType, EventStatus>>
       streamStatusOf<TEventSubType extends TEvent>() =>
-          getContainer().streamStatusOf<TEventSubType>();
+          _getContainer().streamStatusOf<TEventSubType>();
 
   @override
   @protected
@@ -34,7 +39,7 @@ mixin BlocEventStatusMixin<TEvent, TState> on Bloc<TEvent, TState>
     TEventSubType event,
     EventStatus status,
   ) =>
-      getContainer().emitEventStatus(
+      _getContainer().emitEventStatus(
         event,
         status,
       );
@@ -44,7 +49,7 @@ mixin BlocEventStatusMixin<TEvent, TState> on Bloc<TEvent, TState>
     TEventSubType event, {
     bool allowMultipleInstances = false,
   }) =>
-      getContainer().emitEventStatus(event, LoadingEventStatus());
+      _getContainer().emitEventStatus(event, LoadingEventStatus());
 
   @protected
   void emitFailureStatus<TEventSubType extends TEvent>(
@@ -52,7 +57,7 @@ mixin BlocEventStatusMixin<TEvent, TState> on Bloc<TEvent, TState>
     Object? error,
     bool allowMultipleInstances = false,
   }) =>
-      getContainer().emitEventStatus(event, FailureEventStatus(error));
+      _getContainer().emitEventStatus(event, FailureEventStatus(error));
 
   @protected
   void emitSuccessStatus<TEventSubType extends TEvent>(
@@ -60,7 +65,7 @@ mixin BlocEventStatusMixin<TEvent, TState> on Bloc<TEvent, TState>
     Object? data,
     bool allowMultipleInstances = false,
   }) =>
-      getContainer().emitEventStatus(event, SuccessEventStatus(data));
+      _getContainer().emitEventStatus(event, SuccessEventStatus(data));
 
   EventHandler<TEventSubType, TState>
       handleEventStatus<TEventSubType extends TEvent>(
@@ -91,5 +96,5 @@ mixin BlocEventStatusMixin<TEvent, TState> on Bloc<TEvent, TState>
   // `super.close()` is called in the `BlocEventStatusContainer.close()`
   // method
   // ignore: must_call_super
-  Future<void> close() async => getContainer().close();
+  Future<void> close() async => _getContainer().close();
 }

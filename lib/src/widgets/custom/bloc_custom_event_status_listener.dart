@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:bloc_event_status/bloc_event_status.dart';
+import 'package:bloc_event_status/helpers.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:nested/nested.dart';
@@ -96,7 +97,8 @@ class _BloCustomcEventStatusListenerBaseState<
         TStatus>
     extends SingleChildState<
         BlocCustomEventStatusListener<TBloc, TEvent, TEventSubType, TStatus>> {
-  StreamSubscription<EventStatusUpdate<TEvent, TStatus>>? _streamSubscription;
+  StreamSubscription<PreviousValuePair<EventStatusUpdate<TEvent, TStatus>>>?
+      _streamSubscription;
   late TBloc _bloc;
 
   @override
@@ -157,15 +159,24 @@ class _BloCustomcEventStatusListenerBaseState<
   }
 
   void _subscribe() {
-    _streamSubscription = _bloc.streamStatusOf(widget.event).listen(
-      (update) {
+    _streamSubscription =
+        _bloc.streamStatusOf(widget.event).transform(WithPrevious()).listen(
+      (data) {
         if (!mounted) return;
 
-        final shouldTrigger = widget.listenWhen
-                ?.call(update.event, update.previousStatus, update.status) ??
+        final update = data.current;
+        final event = update.event;
+        final currentStatus = update.status;
+        final previousStatus = data.previous?.status;
+
+        final shouldTrigger = widget.listenWhen?.call(
+              event,
+              previousStatus,
+              currentStatus,
+            ) ??
             true;
         if (shouldTrigger) {
-          widget.listener(context, update.event, update.status);
+          widget.listener(context, event, currentStatus);
         }
       },
     );

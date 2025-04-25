@@ -13,11 +13,6 @@ mixin BlocEventStatusMixin<TEvent, TState> on Bloc<TEvent, TState>
       _container ??= BlocEventStatusContainer(this);
 
   @override
-  EventStatus? previousStatusOf<TEventSubType extends TEvent>(
-          [TEventSubType? event]) =>
-      getContainer().previousStatusOf(event);
-
-  @override
   EventStatus? statusOf<TEventSubType extends TEvent>([TEventSubType? event]) =>
       getContainer().statusOf(event);
 

@@ -4,14 +4,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:meta/meta.dart';
 
 typedef _MapData<TEvent, TStatus> = ({
-  TStatus? previousStatus,
   TStatus? status,
   StreamController<EventStatusUpdate<TEvent, TStatus>> streamController,
 });
 
 typedef EventStatusUpdate<TEvent, TStatus> = ({
   TEvent event,
-  TStatus? previousStatus,
   TStatus status,
 });
 
@@ -62,7 +60,6 @@ class BlocEventStatusContainer<TEvent, TState, TStatus> {
 
   _MapData<TEventSubType, TStatus> _ifAbsent<TEventSubType extends TEvent>() =>
       (
-        previousStatus: null,
         status: null,
         streamController: StreamController<
             EventStatusUpdate<TEventSubType, TStatus>>.broadcast()
@@ -73,8 +70,6 @@ class BlocEventStatusContainer<TEvent, TState, TStatus> {
     final record = _getEventTypeStatusMapValue<TEventSubType>(eventType);
 
     _eventTypeStatusMap[eventType] = (
-      // Set the status to previous status
-      previousStatus: record.status,
       // Update the status
       status: status,
       // Keep the stream controller as is
@@ -87,34 +82,11 @@ class BlocEventStatusContainer<TEvent, TState, TStatus> {
     final record = _getEventInstanceStatusMapValue<TEventSubType>(event);
 
     _eventInstanceStatusMap[event] = (
-      // Set the status to previous status
-      previousStatus: record.status,
       // Update the status
       status: status,
       // Keep the stream controller as is
       streamController: record.streamController,
     );
-  }
-
-  TStatus? previousStatusOf<TEventSubType extends TEvent>(
-      [TEventSubType? event]) {
-    if (event != null) {
-      return previousStatusFromEvent<TEventSubType>(event);
-    } else {
-      return previousStatusFromType<TEventSubType>(TEventSubType);
-    }
-  }
-
-  @visibleForTesting
-  TStatus? previousStatusFromType<TEventSubType extends TEvent>(
-      Type eventType) {
-    return _getEventTypeStatusMapValue<TEventSubType>(eventType).previousStatus;
-  }
-
-  @visibleForTesting
-  TStatus? previousStatusFromEvent<TEventSubType extends TEvent>(
-      TEventSubType event) {
-    return _getEventInstanceStatusMapValue<TEventSubType>(event).previousStatus;
   }
 
   TStatus? statusOf<TEventSubType extends TEvent>([TEventSubType? event]) {
@@ -177,12 +149,12 @@ class BlocEventStatusContainer<TEvent, TState, TStatus> {
         _updateMultiInstanceStatus<TEventSubType>(event, status);
 
         // Add the status to the stream
-        final record = _getEventInstanceStatusMapValue<TEventSubType>(event);
-        final streamController = record.streamController;
+        final streamController =
+            _getEventInstanceStatusMapValue<TEventSubType>(event)
+                .streamController;
         if (!streamController.isClosed) {
           streamController.add((
             event: event,
-            previousStatus: record.previousStatus,
             status: status,
           ));
         }
@@ -191,7 +163,6 @@ class BlocEventStatusContainer<TEvent, TState, TStatus> {
         if (!_eventInstanceStreamController!.isClosed) {
           _eventInstanceStreamController!.add((
             event: event,
-            previousStatus: record.previousStatus,
             status: status,
           ));
         }
@@ -200,13 +171,12 @@ class BlocEventStatusContainer<TEvent, TState, TStatus> {
         _updateSingleInstanceStatus<TEventSubType>(event.runtimeType, status);
 
         // Add the status to the stream
-        final record =
-            _getEventTypeStatusMapValue<TEventSubType>(event.runtimeType);
-        final streamController = record.streamController;
+        final streamController =
+            _getEventTypeStatusMapValue<TEventSubType>(event.runtimeType)
+                .streamController;
         if (!streamController.isClosed) {
           streamController.add((
             event: event,
-            previousStatus: record.previousStatus,
             status: status,
           ));
         }
@@ -215,7 +185,6 @@ class BlocEventStatusContainer<TEvent, TState, TStatus> {
         if (!_eventTypeStatusStreamController!.isClosed) {
           _eventTypeStatusStreamController!.add((
             event: event,
-            previousStatus: record.previousStatus,
             status: status,
           ));
         }

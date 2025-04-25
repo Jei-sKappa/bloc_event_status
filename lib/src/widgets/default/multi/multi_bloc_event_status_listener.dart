@@ -1,0 +1,39 @@
+import 'package:bloc_event_status/bloc_event_status.dart';
+import 'package:flutter/widgets.dart';
+import 'package:nested/nested.dart';
+
+class MultiBlocEventStatusListener<
+    TBloc extends BlocEventStatusMixin<TEvent, dynamic>,
+    TEvent> extends SingleChildStatelessWidget {
+  /// The Bloc from which to listen to events of type [P]. If not provided,
+  /// the nearest ancestor Bloc of type [TBloc] in the widget tree will be used.
+  final TBloc? bloc;
+
+  /// A function that defines the behavior when a new event of type [P] is
+  /// emitted by the Bloc. It takes the current [BuildContext] and the
+  /// event itself as parameters and is responsible for handling the event.
+  final BlocCustomEventStatusWidgetListener<TEvent, EventStatus> listener;
+
+  final BlocCustomEventFilter<TEvent>? filter;
+
+  final BlocCustomEventStatusListenerCondition<TEvent, EventStatus>? listenWhen;
+
+  const MultiBlocEventStatusListener({
+    super.key,
+    required this.listener,
+    this.bloc,
+    this.filter,
+    this.listenWhen,
+    super.child,
+  });
+
+  @override
+  Widget buildWithChild(BuildContext context, Widget? child) =>
+      MultiBlocCustomEventStatusListener<TBloc, TEvent, EventStatus>(
+        bloc: bloc,
+        listener: listener,
+        filter: filter,
+        listenWhen: listenWhen,
+        child: child,
+      );
+}

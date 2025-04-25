@@ -15,21 +15,21 @@ typedef EventStatusUpdate<TEvent, TStatus> = ({
 
 @visibleForTesting
 class BlocEventStatusContainer<TEvent, TState, TStatus> {
-  BlocEventStatusContainer(this._bloc) {
-    _eventStatusStreamController =
-        StreamController<EventStatusUpdate<TEvent, TStatus>>.broadcast();
-  }
+  BlocEventStatusContainer(this._bloc);
 
   final Bloc<TEvent, TState> _bloc;
 
   // Retrieved only by type
   final Map<Type, _MapData<TEvent, TStatus>> _eventStatusMap = {};
 
-  StreamController<EventStatusUpdate<TEvent, TStatus>>?
-      _eventStatusStreamController;
+  TStatus? _lastStatusOfAllEvents;
+
+  final _allEventStatusStreamController =
+      StreamController<EventStatusUpdate<TEvent, TStatus>>.broadcast();
 
   _MapData<TEventSubType, TStatus>
       _getEventStatusMapValue<TEventSubType extends TEvent>() {
+    // TODO: throw ArgumentError instead
     assert(TEventSubType != TEvent, 'The type parameter cannot be TEvent');
 
     return _eventStatusMap.putIfAbsent(TEventSubType, _ifAbsent<TEventSubType>)
@@ -53,6 +53,13 @@ class BlocEventStatusContainer<TEvent, TState, TStatus> {
       streamController: record.streamController,
     );
   }
+
+  TStatus? statusOfAllEvents() {
+    return _lastStatusOfAllEvents;
+  }
+
+  Stream<EventStatusUpdate<TEvent, TStatus>> streamStatusOfAllEvents() =>
+      _allEventStatusStreamController.stream;
 
   TStatus? statusOf<TEventSubType extends TEvent>() {
     return _getEventStatusMapValue<TEventSubType>().status;
@@ -78,6 +85,9 @@ class BlocEventStatusContainer<TEvent, TState, TStatus> {
       // Update the status
       _updateStatusInMap<TEventSubType>(status);
 
+      // Update the last status
+      _lastStatusOfAllEvents = status;
+
       // Add the status to the stream
       final streamController =
           _getEventStatusMapValue<TEventSubType>().streamController;
@@ -89,8 +99,8 @@ class BlocEventStatusContainer<TEvent, TState, TStatus> {
       }
 
       // Add the event with the status to the event-specific streamcontroller
-      if (!_eventStatusStreamController!.isClosed) {
-        _eventStatusStreamController!.add((
+      if (!_allEventStatusStreamController.isClosed) {
+        _allEventStatusStreamController.add((
           event: event,
           status: status,
         ));
@@ -105,7 +115,7 @@ class BlocEventStatusContainer<TEvent, TState, TStatus> {
 
   @mustCallSuper
   Future<void> close() async {
-    _eventStatusStreamController?.close();
+    _allEventStatusStreamController.close();
     // Single events
     for (final record in _eventStatusMap.values) {
       await record.streamController.close();

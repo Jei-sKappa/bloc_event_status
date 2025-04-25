@@ -13,6 +13,13 @@ mixin BlocEventStatusMixin<TEvent, TState> on Bloc<TEvent, TState>
       _container ??= BlocEventStatusContainer(this);
 
   @override
+  EventStatus? statusOfAllEvents() => getContainer().statusOfAllEvents();
+
+  @override
+  Stream<EventStatusUpdate<TEvent, EventStatus>> streamAllEventStatus() =>
+      getContainer().streamStatusOfAllEvents();
+
+  @override
   EventStatus? statusOf<TEventSubType extends TEvent>() =>
       getContainer().statusOf<TEventSubType>();
 

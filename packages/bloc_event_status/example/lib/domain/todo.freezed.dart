@@ -76,7 +76,7 @@ class _$TodoCopyWithImpl<$Res> implements $TodoCopyWith<$Res> {
   }) {
     return _then(Todo(
       id: freezed == id
-          ? _self.id!
+          ? _self.id
           : id // ignore: cast_nullable_to_non_nullable
               as TodoId?,
       title: null == title

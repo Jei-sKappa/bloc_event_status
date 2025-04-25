@@ -29,8 +29,12 @@ class BlocEventStatusContainer<TEvent, TState, TStatus> {
 
   _MapData<TEventSubType, TStatus>
       _getEventStatusMapValue<TEventSubType extends TEvent>() {
-    // TODO: throw ArgumentError instead
-    assert(TEventSubType != TEvent, 'The type parameter cannot be TEvent');
+    if (TEventSubType == TEvent) {
+      throw ArgumentError(
+        'The type parameter cannot be TEvent',
+        'TEventSubType',
+      );
+    }
 
     return _eventStatusMap.putIfAbsent(TEventSubType, _ifAbsent<TEventSubType>)
         as _MapData<TEventSubType, TStatus>;

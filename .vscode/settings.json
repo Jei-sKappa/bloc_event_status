@@ -1,0 +1,4 @@
+{
+  "conventionalCommits.gitmoji": false,
+  "conventionalCommits.scopes": ["example"]
+}

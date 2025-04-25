@@ -8,7 +8,8 @@ import 'package:nested/nested.dart';
 /// Signature for the `listener` function which takes the `BuildContext` along
 /// with the `event` and is responsible for executing in response to
 /// new events.
-typedef BlocCustomEventStatusWidgetListener<TEventSubType, TStatus> = void Function(
+typedef BlocCustomEventStatusWidgetListener<TEventSubType, TStatus> = void
+    Function(
   BuildContext context,
   TEventSubType event,
   TStatus status,
@@ -18,7 +19,8 @@ typedef BlocCustomEventStatusWidgetListener<TEventSubType, TStatus> = void Funct
 /// and the current `state` and is responsible for returning a [bool] which
 /// determines whether or not to call [BlocWidgetListener] of [BlocListener]
 /// with the current `state`.
-typedef BlocCustomEventStatusListenerCondition<TEventSubType, TStatus> = bool Function(
+typedef BlocCustomEventStatusListenerCondition<TEventSubType, TStatus> = bool
+    Function(
   TEventSubType event,
   TStatus? previous,
   TStatus current,
@@ -77,7 +79,8 @@ class BlocCustomEventStatusListener<
   /// event itself as parameters and is responsible for handling the event.
   final BlocCustomEventStatusWidgetListener<TEventSubType, TStatus> listener;
 
-  final BlocCustomEventStatusListenerCondition<TEventSubType, TStatus>? listenWhen;
+  final BlocCustomEventStatusListenerCondition<TEventSubType, TStatus>?
+      listenWhen;
 
   @override
   SingleChildState<

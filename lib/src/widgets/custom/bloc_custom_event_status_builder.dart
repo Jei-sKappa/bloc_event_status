@@ -34,7 +34,8 @@ class BlocCustomEventStatusBuilder<
   /// TODO: Add a description
   final TEventSubType? event;
 
-  final BlocCustomEventStatusBuilderCondition<TEventSubType, TStatus>? buildWhen;
+  final BlocCustomEventStatusBuilderCondition<TEventSubType, TStatus>?
+      buildWhen;
 
   /// The event can be null ony during the first build
   final BlocCustomEventStatusWidgetBuilder<TEventSubType, TStatus> builder;

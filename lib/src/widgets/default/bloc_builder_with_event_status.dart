@@ -14,9 +14,11 @@ class BlocBuilderWithEventStatus<
 
   final BlocBuilderCondition<TState>? buildWhenState;
 
-  final BlocCustomEventStatusBuilderCondition<TEventSubType, EventStatus>? buildWhenStatus;
+  final BlocCustomEventStatusBuilderCondition<TEventSubType, EventStatus>?
+      buildWhenStatus;
 
-  final BlocWidgetBuilderWithCustomEventStatus<TEventSubType, EventStatus, TState> builder;
+  final BlocWidgetBuilderWithCustomEventStatus<TEventSubType, EventStatus,
+      TState> builder;
 
   const BlocBuilderWithEventStatus({
     super.key,

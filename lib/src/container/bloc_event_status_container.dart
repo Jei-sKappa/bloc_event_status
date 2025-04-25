@@ -60,7 +60,8 @@ class BlocEventStatusContainer<TEvent, TState, TStatus> {
         as _MapData<TEventSubType, TStatus>;
   }
 
-  _MapData<TEventSubType, TStatus> _ifAbsent<TEventSubType extends TEvent>() => (
+  _MapData<TEventSubType, TStatus> _ifAbsent<TEventSubType extends TEvent>() =>
+      (
         previousStatus: null,
         status: null,
         streamController: StreamController<

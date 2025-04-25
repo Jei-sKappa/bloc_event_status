@@ -32,10 +32,12 @@ class BlocBuilderWithCustomEventStatus<
 
   final BlocBuilderCondition<TState>? buildWhenState;
 
-  final BlocCustomEventStatusBuilderCondition<TEventSubType, TStatus>? buildWhenStatus;
+  final BlocCustomEventStatusBuilderCondition<TEventSubType, TStatus>?
+      buildWhenStatus;
 
   /// The event can be null if no event is triggered yet.
-  final BlocWidgetBuilderWithCustomEventStatus<TEventSubType, TStatus, TState> builder;
+  final BlocWidgetBuilderWithCustomEventStatus<TEventSubType, TStatus, TState>
+      builder;
 
   @override
   Widget build(BuildContext context) {

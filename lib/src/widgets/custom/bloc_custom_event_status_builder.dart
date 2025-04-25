@@ -24,15 +24,11 @@ class BlocCustomEventStatusBuilder<
     required this.builder,
     super.key,
     this.bloc,
-    this.event,
     this.filter,
     this.buildWhen,
   });
 
   final TBloc? bloc;
-
-  /// TODO: Add a description
-  final TEventSubType? event;
 
   final BlocCustomEventFilter<TEventSubType>? filter;
 
@@ -66,8 +62,9 @@ class _BloCustomcEventStatusBuilderState<
   void initState() {
     super.initState();
     _bloc = widget.bloc ?? context.read<TBloc>();
-    _event = widget.event;
-    _status = _bloc.statusOf<TEventSubType>(widget.event);
+    _event = null;
+    // TODO: This should be filterd by the event filter otherwise it will return the status of the last event that was triggered and maybe not the one that was requested by the user
+    _status = _bloc.statusOf<TEventSubType>();
   }
 
   @override
@@ -80,8 +77,9 @@ class _BloCustomcEventStatusBuilderState<
     final currentBloc = widget.bloc ?? oldBloc;
     if (oldBloc != currentBloc) {
       _bloc = currentBloc;
-      _event = widget.event;
-      _status = _bloc.statusOf(widget.event);
+      _event = null;
+      // TODO: This should be filterd by the event filter otherwise it will return the status of the last event that was triggered and maybe not the one that was requested by the user
+      _status = _bloc.statusOf();
     }
   }
 
@@ -91,8 +89,9 @@ class _BloCustomcEventStatusBuilderState<
     final bloc = widget.bloc ?? context.read<TBloc>();
     if (_bloc != bloc) {
       _bloc = bloc;
-      _event = widget.event;
-      _status = _bloc.statusOf(widget.event);
+      _event = null;
+      // TODO: This should be filterd by the event filter otherwise it will return the status of the last event that was triggered and maybe not the one that was requested by the user
+      _status = _bloc.statusOf();
     }
   }
 

@@ -11,23 +11,21 @@ mixin BlocCustomEventStatusMixin<TEvent, TState, TStatus>
   BlocEventStatusContainer<TEvent, TState, TStatus> getContainer() =>
       _container ??= BlocEventStatusContainer(this);
 
-  TStatus? statusOf<TEventSubType extends TEvent>([TEventSubType? event]) =>
-      getContainer().statusOf(event);
+  TStatus? statusOf<TEventSubType extends TEvent>() =>
+      getContainer().statusOf<TEventSubType>();
 
   Stream<EventStatusUpdate<TEventSubType, TStatus>>
-      streamStatusOf<TEventSubType extends TEvent>([TEventSubType? event]) =>
-          getContainer().streamStatusOf(event);
+      streamStatusOf<TEventSubType extends TEvent>() =>
+          getContainer().streamStatusOf<TEventSubType>();
 
   @protected
   void emitEventStatus<TEventSubType extends TEvent>(
     TEventSubType event,
-    TStatus status, {
-    bool allowMultipleInstances = false,
-  }) =>
+    TStatus status,
+  ) =>
       getContainer().emitEventStatus(
         event,
         status,
-        allowMultipleInstances: allowMultipleInstances,
       );
 
   @override

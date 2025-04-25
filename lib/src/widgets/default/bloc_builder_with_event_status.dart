@@ -9,9 +9,6 @@ class BlocBuilderWithEventStatus<
     TState> extends StatelessWidget {
   final TBloc? bloc;
 
-  /// TODO: Add a description
-  final TEventSubType? event;
-
   final BlocCustomEventFilter<TEventSubType>? eventFilter;
 
   final BlocBuilderCondition<TState>? buildWhenState;
@@ -26,7 +23,6 @@ class BlocBuilderWithEventStatus<
     super.key,
     required this.builder,
     this.bloc,
-    this.event,
     this.eventFilter,
     this.buildWhenState,
     this.buildWhenStatus,
@@ -36,7 +32,6 @@ class BlocBuilderWithEventStatus<
   Widget build(BuildContext context) => BlocBuilderWithCustomEventStatus<TBloc,
           TEvent, TEventSubType, TState, EventStatus>(
         bloc: bloc,
-        event: event,
         eventFilter: eventFilter,
         buildWhenState: buildWhenState,
         buildWhenStatus: buildWhenStatus,

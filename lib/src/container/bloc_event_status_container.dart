@@ -16,45 +16,23 @@ typedef EventStatusUpdate<TEvent, TStatus> = ({
 @visibleForTesting
 class BlocEventStatusContainer<TEvent, TState, TStatus> {
   BlocEventStatusContainer(this._bloc) {
-    _eventTypeStatusStreamController =
-        StreamController<EventStatusUpdate<TEvent, TStatus>>.broadcast();
-
-    _eventInstanceStreamController =
+    _eventStatusStreamController =
         StreamController<EventStatusUpdate<TEvent, TStatus>>.broadcast();
   }
 
   final Bloc<TEvent, TState> _bloc;
 
   // Retrieved only by type
-  final Map<Type, _MapData<TEvent, TStatus>> _eventTypeStatusMap = {};
-
-  // Retrieved by type and event
-  final Map<TEvent, _MapData<TEvent, TStatus>> _eventInstanceStatusMap = {};
+  final Map<Type, _MapData<TEvent, TStatus>> _eventStatusMap = {};
 
   StreamController<EventStatusUpdate<TEvent, TStatus>>?
-      _eventTypeStatusStreamController;
-
-  StreamController<EventStatusUpdate<TEvent, TStatus>>?
-      _eventInstanceStreamController;
+      _eventStatusStreamController;
 
   _MapData<TEventSubType, TStatus>
-      _getEventTypeStatusMapValue<TEventSubType extends TEvent>(
-          Type eventType) {
-    assert(eventType != Null, 'The type cannot be null');
-    assert(eventType != dynamic, 'The type cannot be dynamic');
-    assert(eventType != TEvent, 'The provided eventType cannot be TEvent');
+      _getEventStatusMapValue<TEventSubType extends TEvent>() {
     assert(TEventSubType != TEvent, 'The type parameter cannot be TEvent');
-    assert(eventType == TEventSubType,
-        'The type must be the same as the eventType ($eventType), currently: $TEventSubType');
 
-    return _eventTypeStatusMap.putIfAbsent(eventType, _ifAbsent<TEventSubType>)
-        as _MapData<TEventSubType, TStatus>;
-  }
-
-  _MapData<TEventSubType, TStatus>
-      _getEventInstanceStatusMapValue<TEventSubType extends TEvent>(
-          TEventSubType event) {
-    return _eventInstanceStatusMap.putIfAbsent(event, _ifAbsent<TEventSubType>)
+    return _eventStatusMap.putIfAbsent(TEventSubType, _ifAbsent<TEventSubType>)
         as _MapData<TEventSubType, TStatus>;
   }
 
@@ -65,11 +43,10 @@ class BlocEventStatusContainer<TEvent, TState, TStatus> {
             EventStatusUpdate<TEventSubType, TStatus>>.broadcast()
       );
 
-  void _updateSingleInstanceStatus<TEventSubType extends TEvent>(
-      Type eventType, TStatus status) {
-    final record = _getEventTypeStatusMapValue<TEventSubType>(eventType);
+  void _updateStatusInMap<TEventSubType extends TEvent>(TStatus status) {
+    final record = _getEventStatusMapValue<TEventSubType>();
 
-    _eventTypeStatusMap[eventType] = (
+    _eventStatusMap[TEventSubType] = (
       // Update the status
       status: status,
       // Keep the stream controller as is
@@ -77,117 +54,46 @@ class BlocEventStatusContainer<TEvent, TState, TStatus> {
     );
   }
 
-  void _updateMultiInstanceStatus<TEventSubType extends TEvent>(
-      TEventSubType event, TStatus status) {
-    final record = _getEventInstanceStatusMapValue<TEventSubType>(event);
-
-    _eventInstanceStatusMap[event] = (
-      // Update the status
-      status: status,
-      // Keep the stream controller as is
-      streamController: record.streamController,
-    );
-  }
-
-  TStatus? statusOf<TEventSubType extends TEvent>([TEventSubType? event]) {
-    if (event != null) {
-      return statusFromEvent<TEventSubType>(event);
-    } else {
-      return statusFromType<TEventSubType>(TEventSubType);
-    }
-  }
-
-  @visibleForTesting
-  TStatus? statusFromType<TEventSubType extends TEvent>(Type eventType) {
-    return _getEventTypeStatusMapValue<TEventSubType>(eventType).status;
-  }
-
-  @visibleForTesting
-  TStatus? statusFromEvent<TEventSubType extends TEvent>(TEventSubType event) {
-    return _getEventInstanceStatusMapValue<TEventSubType>(event).status;
+  TStatus? statusOf<TEventSubType extends TEvent>() {
+    return _getEventStatusMapValue<TEventSubType>().status;
   }
 
   Stream<EventStatusUpdate<TEventSubType, TStatus>>
-      streamStatusOf<TEventSubType extends TEvent>([TEventSubType? event]) {
-    if (event != null) {
-      return streamStatusFromEvent<TEventSubType>(event);
-    } else {
-      return streamStatusFromType<TEventSubType>(TEventSubType);
-    }
-  }
-
-  @visibleForTesting
-  Stream<EventStatusUpdate<TEventSubType, TStatus>>
-      streamStatusFromType<TEventSubType extends TEvent>(Type eventType) {
-    return _getEventTypeStatusMapValue<TEventSubType>(eventType)
-        .streamController
-        .stream;
-  }
-
-  @visibleForTesting
-  Stream<EventStatusUpdate<TEventSubType, TStatus>>
-      streamStatusFromEvent<TEventSubType extends TEvent>(TEventSubType event) {
-    return _getEventInstanceStatusMapValue<TEventSubType>(event)
-        .streamController
-        .stream;
+      streamStatusOf<TEventSubType extends TEvent>() {
+    return _getEventStatusMapValue<TEventSubType>().streamController.stream;
   }
 
   void emitEventStatus<TEventSubType extends TEvent>(
     TEventSubType event,
-    TStatus status, {
-    bool allowMultipleInstances = false,
-  }) {
+    TStatus status,
+  ) {
     try {
       if (_bloc.isClosed) {
         throw StateError('Cannot emit new states after calling close');
       }
 
-      if (status == statusOf(event)) return;
+      // This is wrong
+      //// if (status == statusOf<TEventSubType>()) return;
 
-      if (allowMultipleInstances) {
-        // Update the status
-        _updateMultiInstanceStatus<TEventSubType>(event, status);
+      // Update the status
+      _updateStatusInMap<TEventSubType>(status);
 
-        // Add the status to the stream
-        final streamController =
-            _getEventInstanceStatusMapValue<TEventSubType>(event)
-                .streamController;
-        if (!streamController.isClosed) {
-          streamController.add((
-            event: event,
-            status: status,
-          ));
-        }
+      // Add the status to the stream
+      final streamController =
+          _getEventStatusMapValue<TEventSubType>().streamController;
+      if (!streamController.isClosed) {
+        streamController.add((
+          event: event,
+          status: status,
+        ));
+      }
 
-        // Add the event with the status to the multi instance stream
-        if (!_eventInstanceStreamController!.isClosed) {
-          _eventInstanceStreamController!.add((
-            event: event,
-            status: status,
-          ));
-        }
-      } else {
-        // Update the status
-        _updateSingleInstanceStatus<TEventSubType>(event.runtimeType, status);
-
-        // Add the status to the stream
-        final streamController =
-            _getEventTypeStatusMapValue<TEventSubType>(event.runtimeType)
-                .streamController;
-        if (!streamController.isClosed) {
-          streamController.add((
-            event: event,
-            status: status,
-          ));
-        }
-
-        // Add the event with the status to the single instance stream
-        if (!_eventTypeStatusStreamController!.isClosed) {
-          _eventTypeStatusStreamController!.add((
-            event: event,
-            status: status,
-          ));
-        }
+      // Add the event with the status to the event-specific streamcontroller
+      if (!_eventStatusStreamController!.isClosed) {
+        _eventStatusStreamController!.add((
+          event: event,
+          status: status,
+        ));
       }
     } catch (error, stackTrace) {
       // This class is wrapping a Bloc
@@ -199,16 +105,12 @@ class BlocEventStatusContainer<TEvent, TState, TStatus> {
 
   @mustCallSuper
   Future<void> close() async {
-    // Single instance events
-    for (final record in _eventTypeStatusMap.values) {
+    _eventStatusStreamController?.close();
+    // Single events
+    for (final record in _eventStatusMap.values) {
       await record.streamController.close();
     }
-    _eventTypeStatusMap.clear();
-    // Multi instance events
-    for (final record in _eventInstanceStatusMap.values) {
-      await record.streamController.close();
-    }
-    _eventInstanceStatusMap.clear();
+    _eventStatusMap.clear();
     await _bloc.close();
   }
 }

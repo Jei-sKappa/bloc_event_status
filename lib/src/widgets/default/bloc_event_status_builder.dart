@@ -8,9 +8,6 @@ class BlocEventStatusBuilder<TBloc extends BlocEventStatusMixin<TEvent, TState>,
   /// [BlocProvider] and the current `BuildContext`.
   final TBloc? bloc;
 
-  /// TODO: Add a description
-  final TEventSubType? event;
-
   final BlocCustomEventFilter<TEventSubType>? filter;
 
   /// {@macro bloc_builder_build_when}
@@ -27,7 +24,6 @@ class BlocEventStatusBuilder<TBloc extends BlocEventStatusMixin<TEvent, TState>,
     super.key,
     required this.builder,
     this.bloc,
-    this.event,
     this.filter,
     this.buildWhen,
   });
@@ -36,7 +32,6 @@ class BlocEventStatusBuilder<TBloc extends BlocEventStatusMixin<TEvent, TState>,
   Widget build(BuildContext context) => BlocCustomEventStatusBuilder<TBloc,
           TEvent, TEventSubType, TState, EventStatus>(
         bloc: bloc,
-        event: event,
         builder: builder,
         filter: filter,
         buildWhen: buildWhen,

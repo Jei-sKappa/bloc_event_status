@@ -10,9 +10,6 @@ class BlocEventStatusListener<
   /// the nearest ancestor Bloc of type [TBloc] in the widget tree will be used.
   final TBloc? bloc;
 
-  /// TODO: Add a description
-  final TEventSubType? event;
-
   /// A function that defines the behavior when a new event of type [P] is
   /// emitted by the Bloc. It takes the current [BuildContext] and the
   /// event itself as parameters and is responsible for handling the event.
@@ -28,7 +25,6 @@ class BlocEventStatusListener<
     super.key,
     required this.listener,
     this.bloc,
-    this.event,
     this.filter,
     this.listenWhen,
     super.child,
@@ -38,7 +34,6 @@ class BlocEventStatusListener<
   Widget buildWithChild(BuildContext context, Widget? child) =>
       BlocCustomEventStatusListener<TBloc, TEvent, TEventSubType, EventStatus>(
         bloc: bloc,
-        event: event,
         listener: listener,
         filter: filter,
         listenWhen: listenWhen,

@@ -20,16 +20,12 @@ class BlocBuilderWithCustomEventStatus<
     required this.builder,
     super.key,
     this.bloc,
-    this.event,
     this.eventFilter,
     this.buildWhenState,
     this.buildWhenStatus,
   });
 
   final TBloc? bloc;
-
-  /// TODO: Add a description
-  final TEventSubType? event;
 
   final BlocCustomEventFilter<TEventSubType>? eventFilter;
 
@@ -47,7 +43,6 @@ class BlocBuilderWithCustomEventStatus<
     return BlocCustomEventStatusBuilder<TBloc, TEvent, TEventSubType, TState,
         TStatus>(
       bloc: bloc,
-      event: event,
       filter: eventFilter,
       buildWhen: buildWhenStatus,
       builder: (context, event, status) {

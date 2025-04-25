@@ -13,25 +13,23 @@ mixin BlocEventStatusMixin<TEvent, TState> on Bloc<TEvent, TState>
       _container ??= BlocEventStatusContainer(this);
 
   @override
-  EventStatus? statusOf<TEventSubType extends TEvent>([TEventSubType? event]) =>
-      getContainer().statusOf(event);
+  EventStatus? statusOf<TEventSubType extends TEvent>() =>
+      getContainer().statusOf<TEventSubType>();
 
   @override
   Stream<EventStatusUpdate<TEventSubType, EventStatus>>
-      streamStatusOf<TEventSubType extends TEvent>([TEventSubType? event]) =>
-          getContainer().streamStatusOf(event);
+      streamStatusOf<TEventSubType extends TEvent>() =>
+          getContainer().streamStatusOf<TEventSubType>();
 
   @override
   @protected
   void emitEventStatus<TEventSubType extends TEvent>(
     TEventSubType event,
-    EventStatus status, {
-    bool allowMultipleInstances = false,
-  }) =>
+    EventStatus status,
+  ) =>
       getContainer().emitEventStatus(
         event,
         status,
-        allowMultipleInstances: allowMultipleInstances,
       );
 
   @protected
@@ -39,11 +37,7 @@ mixin BlocEventStatusMixin<TEvent, TState> on Bloc<TEvent, TState>
     TEventSubType event, {
     bool allowMultipleInstances = false,
   }) =>
-      getContainer().emitEventStatus(
-        event,
-        LoadingEventStatus(),
-        allowMultipleInstances: allowMultipleInstances,
-      );
+      getContainer().emitEventStatus(event, LoadingEventStatus());
 
   @protected
   void emitFailureStatus<TEventSubType extends TEvent>(
@@ -51,11 +45,7 @@ mixin BlocEventStatusMixin<TEvent, TState> on Bloc<TEvent, TState>
     Object? error,
     bool allowMultipleInstances = false,
   }) =>
-      getContainer().emitEventStatus(
-        event,
-        FailureEventStatus(error),
-        allowMultipleInstances: allowMultipleInstances,
-      );
+      getContainer().emitEventStatus(event, FailureEventStatus(error));
 
   @protected
   void emitSuccessStatus<TEventSubType extends TEvent>(
@@ -63,42 +53,27 @@ mixin BlocEventStatusMixin<TEvent, TState> on Bloc<TEvent, TState>
     Object? data,
     bool allowMultipleInstances = false,
   }) =>
-      getContainer().emitEventStatus(
-        event,
-        SuccessEventStatus(data),
-        allowMultipleInstances: allowMultipleInstances,
-      );
+      getContainer().emitEventStatus(event, SuccessEventStatus(data));
 
   EventHandler<TEventSubType, TState>
       handleEventStatus<TEventSubType extends TEvent>(
     EventHandler<TEventSubType, TState> eventHandler, {
-    bool allowMultipleInstances = false,
     bool emitLoading = true,
     bool emitSuccess = true,
     bool emitFailure = true,
   }) =>
           (event, emit) async {
             if (emitLoading) {
-              emitLoadingStatus(
-                event,
-                allowMultipleInstances: allowMultipleInstances,
-              );
+              emitLoadingStatus(event);
             }
             try {
               await eventHandler(event, emit);
               if (emitSuccess) {
-                emitSuccessStatus(
-                  event,
-                  allowMultipleInstances: allowMultipleInstances,
-                );
+                emitSuccessStatus(event);
               }
             } catch (e) {
               if (emitFailure) {
-                emitFailureStatus(
-                  event,
-                  error: e,
-                  allowMultipleInstances: allowMultipleInstances,
-                );
+                emitFailureStatus(event, error: e);
               }
               addError(e, StackTrace.current);
             }

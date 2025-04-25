@@ -59,7 +59,6 @@ class BlocCustomEventStatusListener<
     super.key,
     required this.listener,
     this.bloc,
-    this.event,
     this.filter,
     this.listenWhen,
     super.child,
@@ -68,9 +67,6 @@ class BlocCustomEventStatusListener<
   /// The Bloc from which to listen to events of type [P]. If not provided,
   /// the nearest ancestor Bloc of type [TBloc] in the widget tree will be used.
   final TBloc? bloc;
-
-  /// TODO: Add a description
-  final TEventSubType? event;
 
   /// A function that defines the behavior when a new event of type [P] is
   /// emitted by the Bloc. It takes the current [BuildContext] and the
@@ -158,10 +154,11 @@ class _BloCustomcEventStatusListenerBaseState<
   }
 
   void _subscribe() {
-    _streamSubscription =
-        _bloc.streamStatusOf(widget.event)
+    _streamSubscription = _bloc
+        .streamStatusOf<TEventSubType>()
         .where((update) => widget.filter?.call(update.event) ?? true)
-        .transform(WithPrevious()).listen(
+        .transform(WithPrevious())
+        .listen(
       (data) {
         if (!mounted) return;
 

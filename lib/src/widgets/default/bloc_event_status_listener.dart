@@ -19,6 +19,8 @@ class BlocEventStatusListener<
   final BlocCustomEventStatusWidgetListener<TEventSubType, EventStatus>
       listener;
 
+  final BlocCustomEventFilter<TEventSubType>? filter;
+
   final BlocCustomEventStatusListenerCondition<TEventSubType, EventStatus>?
       listenWhen;
 
@@ -27,6 +29,7 @@ class BlocEventStatusListener<
     required this.listener,
     this.bloc,
     this.event,
+    this.filter,
     this.listenWhen,
     super.child,
   });
@@ -37,6 +40,7 @@ class BlocEventStatusListener<
         bloc: bloc,
         event: event,
         listener: listener,
+        filter: filter,
         listenWhen: listenWhen,
         child: child,
       );

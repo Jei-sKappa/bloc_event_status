@@ -9,7 +9,6 @@ typedef BlocCustomEventStatusWidgetBuilder<TEvent, TStatus> = Widget Function(
 );
 
 typedef BlocCustomEventStatusBuilderCondition<TEvent, TStatus> = bool Function(
-  TEvent event,
   TStatus? previous,
   TStatus current,
 );
@@ -26,6 +25,7 @@ class BlocCustomEventStatusBuilder<
     super.key,
     this.bloc,
     this.event,
+    this.filter,
     this.buildWhen,
   });
 
@@ -33,6 +33,8 @@ class BlocCustomEventStatusBuilder<
 
   /// TODO: Add a description
   final TEventSubType? event;
+
+  final BlocCustomEventFilter<TEventSubType>? filter;
 
   final BlocCustomEventStatusBuilderCondition<TEventSubType, TStatus>?
       buildWhen;
@@ -103,6 +105,7 @@ class _BloCustomcEventStatusBuilderState<
     }
     return BlocCustomEventStatusListener<TBloc, TEvent, TEventSubType, TStatus>(
       bloc: _bloc,
+      filter: widget.filter,
       listenWhen: widget.buildWhen,
       listener: (context, event, state) => setState(() {
         _event = event;

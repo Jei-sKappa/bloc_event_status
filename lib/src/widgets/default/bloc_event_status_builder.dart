@@ -11,6 +11,8 @@ class BlocEventStatusBuilder<TBloc extends BlocEventStatusMixin<TEvent, TState>,
   /// TODO: Add a description
   final TEventSubType? event;
 
+  final BlocCustomEventFilter<TEventSubType>? filter;
+
   /// {@macro bloc_builder_build_when}
   final BlocCustomEventStatusBuilderCondition<TEventSubType, EventStatus>?
       buildWhen;
@@ -26,6 +28,7 @@ class BlocEventStatusBuilder<TBloc extends BlocEventStatusMixin<TEvent, TState>,
     required this.builder,
     this.bloc,
     this.event,
+    this.filter,
     this.buildWhen,
   });
 
@@ -35,6 +38,7 @@ class BlocEventStatusBuilder<TBloc extends BlocEventStatusMixin<TEvent, TState>,
         bloc: bloc,
         event: event,
         builder: builder,
+        filter: filter,
         buildWhen: buildWhen,
       );
 }

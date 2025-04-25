@@ -12,6 +12,8 @@ class BlocBuilderWithEventStatus<
   /// TODO: Add a description
   final TEventSubType? event;
 
+  final BlocCustomEventFilter<TEventSubType>? eventFilter;
+
   final BlocBuilderCondition<TState>? buildWhenState;
 
   final BlocCustomEventStatusBuilderCondition<TEventSubType, EventStatus>?
@@ -25,6 +27,7 @@ class BlocBuilderWithEventStatus<
     required this.builder,
     this.bloc,
     this.event,
+    this.eventFilter,
     this.buildWhenState,
     this.buildWhenStatus,
   });
@@ -34,6 +37,7 @@ class BlocBuilderWithEventStatus<
           TEvent, TEventSubType, TState, EventStatus>(
         bloc: bloc,
         event: event,
+        eventFilter: eventFilter,
         buildWhenState: buildWhenState,
         buildWhenStatus: buildWhenStatus,
         builder: builder,

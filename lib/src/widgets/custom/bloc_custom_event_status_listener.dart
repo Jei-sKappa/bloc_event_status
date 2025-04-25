@@ -6,9 +6,6 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:nested/nested.dart';
 
-/// Signature for the `listener` function which takes the `BuildContext` along
-/// with the `event` and is responsible for executing in response to
-/// new events.
 typedef BlocCustomEventStatusWidgetListener<TEventSubType, TStatus> = void
     Function(
   BuildContext context,
@@ -16,13 +13,12 @@ typedef BlocCustomEventStatusWidgetListener<TEventSubType, TStatus> = void
   TStatus status,
 );
 
-/// Signature for the `listenWhen` function which takes the previous `state`
-/// and the current `state` and is responsible for returning a [bool] which
-/// determines whether or not to call [BlocWidgetListener] of [BlocListener]
-/// with the current `state`.
+typedef BlocCustomEventFilter<TEventSubType> = bool Function(
+  TEventSubType event,
+);
+
 typedef BlocCustomEventStatusListenerCondition<TEventSubType, TStatus> = bool
     Function(
-  TEventSubType event,
   TStatus? previous,
   TStatus current,
 );
@@ -64,6 +60,7 @@ class BlocCustomEventStatusListener<
     required this.listener,
     this.bloc,
     this.event,
+    this.filter,
     this.listenWhen,
     super.child,
   });
@@ -79,6 +76,8 @@ class BlocCustomEventStatusListener<
   /// emitted by the Bloc. It takes the current [BuildContext] and the
   /// event itself as parameters and is responsible for handling the event.
   final BlocCustomEventStatusWidgetListener<TEventSubType, TStatus> listener;
+
+  final BlocCustomEventFilter<TEventSubType>? filter;
 
   final BlocCustomEventStatusListenerCondition<TEventSubType, TStatus>?
       listenWhen;
@@ -160,7 +159,9 @@ class _BloCustomcEventStatusListenerBaseState<
 
   void _subscribe() {
     _streamSubscription =
-        _bloc.streamStatusOf(widget.event).transform(WithPrevious()).listen(
+        _bloc.streamStatusOf(widget.event)
+        .where((update) => widget.filter?.call(update.event) ?? true)
+        .transform(WithPrevious()).listen(
       (data) {
         if (!mounted) return;
 
@@ -169,12 +170,8 @@ class _BloCustomcEventStatusListenerBaseState<
         final currentStatus = update.status;
         final previousStatus = data.previous?.status;
 
-        final shouldTrigger = widget.listenWhen?.call(
-              event,
-              previousStatus,
-              currentStatus,
-            ) ??
-            true;
+        final shouldTrigger =
+            widget.listenWhen?.call(previousStatus, currentStatus) ?? true;
         if (shouldTrigger) {
           widget.listener(context, event, currentStatus);
         }

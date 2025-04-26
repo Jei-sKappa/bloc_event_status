@@ -132,11 +132,7 @@ mixin BlocEventStatusMixin<TEvent, TState> on Bloc<TEvent, TState>
   /// emitLoadingStatus(event); // equivalent to emitEventStatus(event, LoadingEventStatus());
   /// ```
   @protected
-  void emitLoadingStatus<TEventSubType extends TEvent>(
-    TEventSubType event, {
-    // TODO: Remove this parameter
-    bool allowMultipleInstances = false,
-  }) =>
+  void emitLoadingStatus<TEventSubType extends TEvent>(TEventSubType event) =>
       _getContainer().emitEventStatus(event, LoadingEventStatus());
 
   /// Emits a failure status for the given [event].
@@ -156,8 +152,6 @@ mixin BlocEventStatusMixin<TEvent, TState> on Bloc<TEvent, TState>
   void emitFailureStatus<TEventSubType extends TEvent>(
     TEventSubType event, {
     Object? error,
-    // TODO: Remove this parameter
-    bool allowMultipleInstances = false,
   }) =>
       _getContainer().emitEventStatus(event, FailureEventStatus(error));
 
@@ -177,8 +171,6 @@ mixin BlocEventStatusMixin<TEvent, TState> on Bloc<TEvent, TState>
   void emitSuccessStatus<TEventSubType extends TEvent>(
     TEventSubType event, {
     Object? data,
-    // TODO: Remove this parameter
-    bool allowMultipleInstances = false,
   }) =>
       _getContainer().emitEventStatus(event, SuccessEventStatus(data));
 

@@ -42,6 +42,16 @@ class BlocBuilderWithEventStatus<
     TEvent,
     TEventSubType extends TEvent,
     TState> extends StatelessWidget {
+  /// {@macro bloc_builder_with_event_status}
+  const BlocBuilderWithEventStatus({
+    required this.builder,
+    super.key,
+    this.bloc,
+    this.eventFilter,
+    this.buildWhenState,
+    this.buildWhenStatus,
+  });
+
   /// {@macro bloc_custom_event_status_listener.bloc}
   final TBloc? bloc;
 
@@ -52,8 +62,7 @@ class BlocBuilderWithEventStatus<
   final BlocBuilderCondition<TState>? buildWhenState;
 
   /// {@macro bloc_event_status_builder.buildWhen}
-  final BlocCustomEventStatusBuilderCondition<EventStatus>?
-      buildWhenStatus;
+  final BlocCustomEventStatusBuilderCondition<EventStatus>? buildWhenStatus;
 
   /// {@template bloc_builder_with_event_status.builder}
   /// A function that renders the widget based on the current event, status and
@@ -65,16 +74,6 @@ class BlocBuilderWithEventStatus<
   /// {@endtemplate}
   final BlocWidgetBuilderWithCustomEventStatus<TEventSubType, EventStatus,
       TState> builder;
-
-  /// {@macro bloc_builder_with_event_status}
-  const BlocBuilderWithEventStatus({
-    super.key,
-    required this.builder,
-    this.bloc,
-    this.eventFilter,
-    this.buildWhenState,
-    this.buildWhenStatus,
-  });
 
   @override
   Widget build(BuildContext context) => BlocBuilderWithCustomEventStatus<TBloc,

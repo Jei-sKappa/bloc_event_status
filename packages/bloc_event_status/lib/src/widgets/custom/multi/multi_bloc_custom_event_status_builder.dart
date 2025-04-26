@@ -96,8 +96,8 @@ class _BloCustomEventStatusBuilderState<
 
   @override
   void didUpdateWidget(
-      MultiBlocCustomEventStatusBuilder<TBloc, TEvent, TState, TStatus>
-          oldWidget) {
+    MultiBlocCustomEventStatusBuilder<TBloc, TEvent, TState, TStatus> oldWidget,
+  ) {
     super.didUpdateWidget(oldWidget);
     final oldBloc = oldWidget.bloc ?? context.read<TBloc>();
     final currentBloc = widget.bloc ?? oldBloc;

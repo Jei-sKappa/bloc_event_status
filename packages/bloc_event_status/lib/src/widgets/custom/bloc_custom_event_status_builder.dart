@@ -90,8 +90,7 @@ class BlocCustomEventStatusBuilder<
   /// It takes the previous and current status of type [TStatus] and returns a
   /// boolean value.
   /// {@endtemplate}
-  final BlocCustomEventStatusBuilderCondition<TStatus>?
-      buildWhen;
+  final BlocCustomEventStatusBuilderCondition<TStatus>? buildWhen;
 
   /// {@template bloc_custom_event_status_builder.builder}
   /// A function that renders the widget based on the current event and status.
@@ -134,9 +133,9 @@ class _BloCustomEventStatusBuilderState<
 
   @override
   void didUpdateWidget(
-      BlocCustomEventStatusBuilder<TBloc, TEvent, TEventSubType, TState,
-              TStatus>
-          oldWidget) {
+    BlocCustomEventStatusBuilder<TBloc, TEvent, TEventSubType, TState, TStatus>
+        oldWidget,
+  ) {
     super.didUpdateWidget(oldWidget);
     final oldBloc = oldWidget.bloc ?? context.read<TBloc>();
     final currentBloc = widget.bloc ?? oldBloc;

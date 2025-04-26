@@ -34,6 +34,15 @@ import 'package:flutter/widgets.dart';
 /// {@endtemplate}
 class BlocEventStatusBuilder<TBloc extends BlocEventStatusMixin<TEvent, TState>,
     TEvent, TEventSubType extends TEvent, TState> extends StatelessWidget {
+  /// {@macro bloc_event_status_builder}
+  const BlocEventStatusBuilder({
+    required this.builder,
+    super.key,
+    this.bloc,
+    this.filter,
+    this.buildWhen,
+  });
+
   /// {@macro bloc_custom_event_status_listener.bloc}
   final TBloc? bloc;
 
@@ -45,8 +54,7 @@ class BlocEventStatusBuilder<TBloc extends BlocEventStatusMixin<TEvent, TState>,
   /// It takes the previous and current status of type [EventStatus] and returns
   /// a boolean value.
   /// {@endtemplate}
-  final BlocCustomEventStatusBuilderCondition<EventStatus>?
-      buildWhen;
+  final BlocCustomEventStatusBuilderCondition<EventStatus>? buildWhen;
 
   /// {@template bloc_event_status_builder.builder}
   /// A function that renders the widget based on the current event and status.
@@ -56,15 +64,6 @@ class BlocEventStatusBuilder<TBloc extends BlocEventStatusMixin<TEvent, TState>,
   /// The event can be null ony during the first build.
   /// {@endtemplate}
   final BlocCustomEventStatusWidgetBuilder<TEventSubType, EventStatus> builder;
-
-  /// {@macro bloc_event_status_builder}
-  const BlocEventStatusBuilder({
-    super.key,
-    required this.builder,
-    this.bloc,
-    this.filter,
-    this.buildWhen,
-  });
 
   @override
   Widget build(BuildContext context) => BlocCustomEventStatusBuilder<TBloc,

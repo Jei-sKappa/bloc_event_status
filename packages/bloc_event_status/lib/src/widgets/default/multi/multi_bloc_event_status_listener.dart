@@ -32,6 +32,16 @@ import 'package:nested/nested.dart';
 class MultiBlocEventStatusListener<
     TBloc extends BlocEventStatusMixin<TEvent, dynamic>,
     TEvent> extends SingleChildStatelessWidget {
+  /// {@macro multi_bloc_event_status_listener}
+  const MultiBlocEventStatusListener({
+    required this.listener,
+    super.key,
+    this.bloc,
+    this.filter,
+    this.listenWhen,
+    super.child,
+  });
+
   /// {@macro multi_bloc_custom_event_status_listener.bloc}
   final TBloc? bloc;
 
@@ -48,16 +58,6 @@ class MultiBlocEventStatusListener<
 
   /// {@macro bloc_event_status_listener.listenWhen}
   final BlocCustomEventStatusListenerCondition<EventStatus>? listenWhen;
-
-  /// {@macro multi_bloc_event_status_listener}
-  const MultiBlocEventStatusListener({
-    super.key,
-    required this.listener,
-    this.bloc,
-    this.filter,
-    this.listenWhen,
-    super.child,
-  });
 
   @override
   Widget buildWithChild(BuildContext context, Widget? child) =>

@@ -1,4 +1,10 @@
-include: package:flutter_lints/flutter.yaml
+include: package:very_good_analysis/analysis_options.yaml
 
-# Additional information about this file can be found at
-# https://dart.dev/guides/language/analysis-options
+linter:
+  rules:
+    # I prefer to specify the arguments explicitly to be clear
+    avoid_redundant_argument_values: false
+    # Currently I'm the only one working on this project, so I don't need to worry about this
+    flutter_style_todos: false
+    # I have comment with code that I want to keep in the same line
+    lines_longer_than_80_chars: false

@@ -70,8 +70,8 @@ class BlocCustomEventStatusListener<
     TStatus> extends SingleChildStatefulWidget {
   /// {@macro bloc_custom_event_status_listener}
   const BlocCustomEventStatusListener({
-    super.key,
     required this.listener,
+    super.key,
     this.bloc,
     this.filter,
     this.listenWhen,

@@ -43,6 +43,16 @@ class MultiBlocBuilderWithEventStatus<
     TBloc extends BlocEventStatusMixin<TEvent, TState>,
     TEvent,
     TState> extends StatelessWidget {
+  /// {@macro multi_bloc_builder_with_event_status}
+  const MultiBlocBuilderWithEventStatus({
+    required this.builder,
+    super.key,
+    this.bloc,
+    this.eventFilter,
+    this.buildWhenState,
+    this.buildWhenStatus,
+  });
+
   /// {@macro multi_bloc_custom_event_status_listener.bloc}
   final TBloc? bloc;
 
@@ -65,16 +75,6 @@ class MultiBlocBuilderWithEventStatus<
   /// {@endtemplate}
   final BlocWidgetBuilderWithCustomEventStatus<TEvent, EventStatus, TState>
       builder;
-
-  /// {@macro multi_bloc_builder_with_event_status}
-  const MultiBlocBuilderWithEventStatus({
-    super.key,
-    required this.builder,
-    this.bloc,
-    this.eventFilter,
-    this.buildWhenState,
-    this.buildWhenStatus,
-  });
 
   @override
   Widget build(BuildContext context) =>

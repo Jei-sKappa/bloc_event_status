@@ -133,7 +133,7 @@ mixin BlocEventStatusMixin<TEvent, TState> on Bloc<TEvent, TState>
   /// ```
   @protected
   void emitLoadingStatus<TEventSubType extends TEvent>(TEventSubType event) =>
-      _getContainer().emitEventStatus(event, LoadingEventStatus());
+      _getContainer().emitEventStatus(event, const LoadingEventStatus());
 
   /// Emits a failure status for the given [event].
   ///
@@ -219,7 +219,7 @@ mixin BlocEventStatusMixin<TEvent, TState> on Bloc<TEvent, TState>
               if (emitSuccess) {
                 emitSuccessStatus(event);
               }
-            } catch (e) {
+            } on Object catch (e) {
               if (emitFailure) {
                 emitFailureStatus(event, error: e);
               }

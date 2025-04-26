@@ -39,7 +39,7 @@ typedef EventStatusUpdate<TEvent, TStatus> = ({
 class BlocEventStatusContainer<TEvent, TState, TStatus> {
   /// {@macro bloc_event_status_container}
   ///
-  /// Creates a [BlocEventStatusContainer] that wraps the given [bloc].
+  /// Creates a [BlocEventStatusContainer] that wraps the given [_bloc].
   ///
   /// The container uses the bloc to report errors when emitting statuses and
   /// to close resources when [close] is called.
@@ -171,18 +171,22 @@ class BlocEventStatusContainer<TEvent, TState, TStatus> {
       final streamController =
           _getEventStatusMapValue<TEventSubType>().streamController;
       if (!streamController.isClosed) {
-        streamController.add((
-          event: event,
-          status: status,
-        ));
+        streamController.add(
+          (
+            event: event,
+            status: status,
+          ),
+        );
       }
 
       // Add the event with the status to the event-specific streamcontroller
       if (!_allEventStatusStreamController.isClosed) {
-        _allEventStatusStreamController.add((
-          event: event,
-          status: status,
-        ));
+        _allEventStatusStreamController.add(
+          (
+            event: event,
+            status: status,
+          ),
+        );
       }
     } catch (error, stackTrace) {
       // This class is wrapping a Bloc
@@ -201,7 +205,7 @@ class BlocEventStatusContainer<TEvent, TState, TStatus> {
   /// {@endtemplate}
   @mustCallSuper
   Future<void> close() async {
-    _allEventStatusStreamController.close();
+    await _allEventStatusStreamController.close();
     // Single events
     for (final record in _eventStatusMap.values) {
       await record.streamController.close();

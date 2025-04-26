@@ -80,8 +80,7 @@ class BlocBuilderWithCustomEventStatus<
   final BlocBuilderCondition<TState>? buildWhenState;
 
   /// {@macro bloc_custom_event_status_builder.buildWhen}
-  final BlocCustomEventStatusBuilderCondition<TStatus>?
-      buildWhenStatus;
+  final BlocCustomEventStatusBuilderCondition<TStatus>? buildWhenStatus;
 
   /// {@template bloc_builder_with_custom_event_status.builder}
   /// A function that renders the widget based on the current event, status and

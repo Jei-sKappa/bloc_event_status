@@ -31,6 +31,16 @@ class BlocEventStatusListener<
     TBloc extends BlocEventStatusMixin<TEvent, dynamic>,
     TEvent,
     TEventSubType extends TEvent> extends SingleChildStatelessWidget {
+  /// {@macro bloc_event_status_listener}
+  const BlocEventStatusListener({
+    required this.listener,
+    super.key,
+    this.bloc,
+    this.filter,
+    this.listenWhen,
+    super.child,
+  });
+
   /// {@macro bloc_custom_event_status_listener.bloc}
   final TBloc? bloc;
 
@@ -52,16 +62,6 @@ class BlocEventStatusListener<
   /// boolean value.
   /// {@endtemplate}
   final BlocCustomEventStatusListenerCondition<EventStatus>? listenWhen;
-
-  /// {@macro bloc_event_status_listener}
-  const BlocEventStatusListener({
-    super.key,
-    required this.listener,
-    this.bloc,
-    this.filter,
-    this.listenWhen,
-    super.child,
-  });
 
   @override
   Widget buildWithChild(BuildContext context, Widget? child) =>

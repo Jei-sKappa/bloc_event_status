@@ -39,8 +39,8 @@ class MultiBlocCustomEventStatusListener<
     TStatus> extends SingleChildStatefulWidget {
   /// {@macro multi_bloc_custom_event_status_listener}
   const MultiBlocCustomEventStatusListener({
-    super.key,
     required this.listener,
+    super.key,
     this.bloc,
     this.filter,
     this.listenWhen,
@@ -176,7 +176,8 @@ class _BloCustomcEventStatusListenerBaseState<
   }
 
   void _unsubscribe() {
-    for (var streamSubscription in _streamSubscriptionMap.values) {
+    _allEventsStreamSubscription?.cancel();
+    for (final streamSubscription in _streamSubscriptionMap.values) {
       streamSubscription.cancel();
     }
     _streamSubscriptionMap.clear();

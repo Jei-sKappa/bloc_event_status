@@ -2,22 +2,54 @@ import 'package:bloc_event_status/bloc_event_status.dart';
 import 'package:flutter/widgets.dart';
 import 'package:nested/nested.dart';
 
+/// {@template multi_bloc_event_status_listener}
+/// A widget that listens to event statuses from a bloc and invokes a listener
+/// function in response to new statuses.
+///
+/// This widget is used to interact with [BlocEventStatusMixin] and listen
+/// to events of type [TEvent]. When a new event of type [TEvent] is emitted by
+/// the Bloc, the provided [listener] function is called with the current
+/// `context`, the `event` itself, and the current `status`.
+///
+/// Example:
+/// ```dart
+/// MultiBlocEventStatusListener<SubjectBloc, SubjectEvent>(
+///   // optionally filter the events to listen to
+///   filter: (event) =>
+///       (event is MySubjectEvent && event.subject == "Flutter") ||
+///       (event is MyOtherSubjectEvent && event.otherSubject == "Dart"),
+///   // optionally select when the listener should be called
+///   listenWhen: (previous, current) => previous != current && current is FailureEventStatus,
+///   // The listener function that will be called when a new status is emitted
+///   listener: (context, event, status) {
+///     print('Oops! Something went wrong with the Flutter subject: ${event.error}');
+///   },
+///   bloc: subjectBloc, // You don't have to pass it if you provided it in context
+///   child: SomeWidget(),
+/// )
+/// ```
+/// {@endtemplate}
 class MultiBlocEventStatusListener<
     TBloc extends BlocEventStatusMixin<TEvent, dynamic>,
     TEvent> extends SingleChildStatelessWidget {
-  /// The Bloc from which to listen to events of type [P]. If not provided,
-  /// the nearest ancestor Bloc of type [TBloc] in the widget tree will be used.
+  /// {@macro multi_bloc_custom_event_status_listener.bloc}
   final TBloc? bloc;
 
-  /// A function that defines the behavior when a new event of type [P] is
-  /// emitted by the Bloc. It takes the current [BuildContext] and the
-  /// event itself as parameters and is responsible for handling the event.
+  /// {@template multi_bloc_custom_event_status_listener.listener}
+  /// A function that defines the action to be taken when a new event status is
+  /// emitted.
+  /// It takes the `context`, the `event` of type [TEvent], and the
+  /// `status` of type [EventStatus] as parameters.
+  /// {@endtemplate}
   final BlocCustomEventStatusWidgetListener<TEvent, EventStatus> listener;
 
-  final BlocCustomEventFilter<TEvent>? filter;
+  /// {@macro multi_bloc_custom_event_status_listener.filter}
+  final BlocEventFilterListener<TEvent>? filter;
 
-  final BlocCustomEventStatusListenerCondition<TEvent, EventStatus>? listenWhen;
+  /// {@macro bloc_event_status_listener.listenWhen}
+  final BlocCustomEventStatusListenerCondition<EventStatus>? listenWhen;
 
+  /// {@macro multi_bloc_event_status_listener}
   const MultiBlocEventStatusListener({
     super.key,
     required this.listener,

@@ -2,24 +2,75 @@ import 'package:bloc_event_status/bloc_event_status.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+/// Signature for the `builder` function which takes the [context] along with
+/// the [event] and [status] as parameters.
+///
+/// It is called whenever the [BlocCustomEventStatusBuilder] receives
+/// an event that matches the `filter` and the `listenWhen` condition specified.
 typedef BlocCustomEventStatusWidgetBuilder<TEvent, TStatus> = Widget Function(
   BuildContext context,
   TEvent? event,
   TStatus? status,
 );
 
-typedef BlocCustomEventStatusBuilderCondition<TEvent, TStatus> = bool Function(
+/// Signature for the `filter` function which takes an event of type
+/// [TEventSubType] and returns a boolean value.
+///
+/// It is called every time a new status is emitted from the bloc in order to
+/// filter out the events that should not trigger `buildWhen` and the
+/// `builder`.
+typedef BlocEventFilterBuilder<TEventSubType> = bool Function(
+  TEventSubType event,
+);
+
+/// Signature for the `buildWhen` function which takes the previous and current
+/// status of type [TStatus] and returns a boolean value.
+///
+/// It is called every time a new status is emitted from the bloc in order to
+/// determine whether the `builder` should be triggered or not.
+typedef BlocCustomEventStatusBuilderCondition<TStatus> = bool Function(
   TStatus? previous,
   TStatus current,
 );
 
+/// {@template bloc_custom_event_status_builder}
+/// A widget that listens to event statuses from a bloc and invokes a builder
+/// function in response to new statuses.
+///
+/// This widget is used to interact with [BlocCustomEventStatusMixin] and listen
+/// to events of type [TEventSubType]. When a new event of type [TEventSubType]
+/// is emitted by the Bloc, the provided [builder] function is called with the
+/// current `context`, the `event` itself, and the current `status`.
+///
+/// Example:
+/// ```dart
+/// BlocCustomEventStatusBuilder<SubjectBloc, SubjectEvent, MySubjectEvent, SubjectState, MyStatus>(
+///   // optionally filter the events to listen to
+///   filter: (event) => event.subject == 'Flutter',
+///   // optionally select when the builder should be called
+///   buildWhen: (previous, current) =>
+///       previous != current &&
+///       (previous is MyLoadingStatus || current is MyLoadingStatus),
+///   // The builder function that will be called when a new status is emitted
+///   builder: (context, event, status) {
+///     if (status is MyLoadingStatus) {
+///       return const CircularProgressIndicator();
+///     }
+///
+///     return const Text('Flutter is awesome!');
+///   },
+///   bloc: subjectBloc, // You don't have to pass it if you provided it in context
+///   child: SomeWidget(),
+/// )
+/// ```
+/// {@endtemplate}
 class BlocCustomEventStatusBuilder<
     TBloc extends BlocCustomEventStatusMixin<TEvent, TState, TStatus>,
     TEvent,
     TEventSubType extends TEvent,
     TState,
     TStatus> extends StatefulWidget {
-  /// {@macro bloc_builder_base}
+  /// {@macro bloc_custom_event_status_builder}
   const BlocCustomEventStatusBuilder({
     required this.builder,
     super.key,
@@ -28,14 +79,27 @@ class BlocCustomEventStatusBuilder<
     this.buildWhen,
   });
 
+  /// {@macro bloc_custom_event_status_listener.bloc}
   final TBloc? bloc;
 
-  final BlocCustomEventFilter<TEventSubType>? filter;
+  /// {@macro bloc_custom_event_status_listener.filter}
+  final BlocEventFilterBuilder<TEventSubType>? filter;
 
-  final BlocCustomEventStatusBuilderCondition<TEventSubType, TStatus>?
+  /// {@template bloc_custom_event_status_builder.buildWhen}
+  /// A function that determines when the `builder` should be called.
+  /// It takes the previous and current status of type [TStatus] and returns a
+  /// boolean value.
+  /// {@endtemplate}
+  final BlocCustomEventStatusBuilderCondition<TStatus>?
       buildWhen;
 
-  /// The event can be null ony during the first build
+  /// {@template bloc_custom_event_status_builder.builder}
+  /// A function that renders the widget based on the current event and status.
+  /// It takes the `context`, the `event` of type [TEventSubType], and the
+  /// `status` of type [TStatus] as parameters.
+  ///
+  /// The event can be null ony during the first build.
+  /// {@endtemplate}
   final BlocCustomEventStatusWidgetBuilder<TEventSubType, TStatus> builder;
 
   @override

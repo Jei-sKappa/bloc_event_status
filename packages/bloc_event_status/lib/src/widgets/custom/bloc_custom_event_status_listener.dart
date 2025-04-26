@@ -6,6 +6,11 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:nested/nested.dart';
 
+/// Signature for the `listener` function which takes the [context] along with
+/// the [event] and [status] as parameters.
+///
+/// It is called whenever the [BlocCustomEventStatusListener] receives
+/// an event that matches the `filter` and the `listenWhen` condition specified.
 typedef BlocCustomEventStatusWidgetListener<TEventSubType, TStatus> = void
     Function(
   BuildContext context,
@@ -13,48 +18,57 @@ typedef BlocCustomEventStatusWidgetListener<TEventSubType, TStatus> = void
   TStatus status,
 );
 
-typedef BlocCustomEventFilter<TEventSubType> = bool Function(
+/// Signature for the `filter` function which takes an event of type
+/// [TEventSubType] and returns a boolean value.
+///
+/// It is called every time a new status is emitted from the bloc in order to
+/// filter out the events that should not trigger `listenWhen` and the
+/// `listener`.
+typedef BlocEventFilterListener<TEventSubType> = bool Function(
   TEventSubType event,
 );
 
-typedef BlocCustomEventStatusListenerCondition<TEventSubType, TStatus> = bool
-    Function(
+/// Signature for the `listenWhen` function which takes the previous and current
+/// status of type [TStatus] and returns a boolean value.
+///
+/// It is called every time a new status is emitted from the bloc in order to
+/// determine whether the `listener` should be triggered or not.
+typedef BlocCustomEventStatusListenerCondition<TStatus> = bool Function(
   TStatus? previous,
   TStatus current,
 );
 
-/// A widget that listens to events from a bloc or cubit and invokes a listener
-/// function in response to new events.
+/// {@template bloc_custom_event_status_listener}
+/// A widget that listens to event statuses from a bloc and invokes a listener
+/// function in response to new statuses.
 ///
 /// This widget is used to interact with [BlocCustomEventStatusMixin] and listen
-/// to events of type [P]. When a new event of type [P] is emitted by the Bloc,
-/// the provided [listener] function is called with the current [BuildContext]
-/// and the event itself.
+/// to events of type [TEventSubType]. When a new event of type [TEventSubType]
+/// is emitted by the Bloc, the provided [listener] function is called with the
+/// current `context`, the `event` itself, and the current `status`.
 ///
 /// Example:
 /// ```dart
-/// BlocCustomEventStatusListener<MyBloc, MyEvent>(
-///   listener: (context, event) {
-///     // Handle the event here
+/// BlocCustomEventStatusListener<SubjectBloc, SubjectEvent, MySubjectEvent, MyStatus>(
+///   // optionally filter the events to listen to
+///   filter: (event) => event.subject == 'Flutter',
+///   // optionally select when the listener should be called
+///   listenWhen: (previous, current) => previous != current && current is MyFailureStatus,
+///   // The listener function that will be called when a new status is emitted
+///   listener: (context, event, status) {
+///     print('Oops! Something went wrong with the Flutter subject: ${event.error}');
 ///   },
-///   bloc: myBloc, // You don't have to pass it if you provided it in context
+///   bloc: subjectBloc, // You don't have to pass it if you provided it in context
 ///   child: SomeWidget(),
 /// )
 /// ```
+/// {@endtemplate}
 class BlocCustomEventStatusListener<
     TBloc extends BlocCustomEventStatusMixin<TEvent, dynamic, TStatus>,
     TEvent,
     TEventSubType extends TEvent,
     TStatus> extends SingleChildStatefulWidget {
-  /// Creates a [BlocCustomEventStatusListener].
-  ///
-  /// The [listener] function is required and will be called with the
-  /// current [BuildContext] and the event of type [P] when new events are
-  /// emitted by the Bloc.
-  ///
-  /// The [bloc] parameter is optional and can be used to specify the
-  /// Bloc to listen to. If not provided, the nearest ancestor Bloc of
-  /// type [TBloc] in the widget tree will be used.
+  /// {@macro bloc_custom_event_status_listener}
   const BlocCustomEventStatusListener({
     super.key,
     required this.listener,
@@ -64,19 +78,33 @@ class BlocCustomEventStatusListener<
     super.child,
   });
 
-  /// The Bloc from which to listen to events of type [P]. If not provided,
-  /// the nearest ancestor Bloc of type [TBloc] in the widget tree will be used.
+  /// {@template bloc_custom_event_status_listener.bloc}
+  /// The Bloc from which to listen to events of type [TEventSubType]. If not
+  /// provided, the nearest ancestor Bloc of type [TBloc] in the widget tree
+  /// will be used.
+  /// {@endtemplate}
   final TBloc? bloc;
 
-  /// A function that defines the behavior when a new event of type [P] is
-  /// emitted by the Bloc. It takes the current [BuildContext] and the
-  /// event itself as parameters and is responsible for handling the event.
+  /// {@template bloc_custom_event_status_listener.listener}
+  /// A function that defines the action to be taken when a new event status is
+  /// emitted.
+  /// It takes the `context`, the `event` of type [TEventSubType], and the
+  /// `status` of type [TStatus] as parameters.
+  /// {@endtemplate}
   final BlocCustomEventStatusWidgetListener<TEventSubType, TStatus> listener;
 
-  final BlocCustomEventFilter<TEventSubType>? filter;
+  /// {@template bloc_custom_event_status_listener.filter}
+  /// A function that filters the events to listen to.
+  /// It takes an event of type [TEventSubType] and returns a boolean value.
+  /// {@endtemplate}
+  final BlocEventFilterListener<TEventSubType>? filter;
 
-  final BlocCustomEventStatusListenerCondition<TEventSubType, TStatus>?
-      listenWhen;
+  /// {@template bloc_custom_event_status_listener.listenWhen}
+  /// A function that determines when the `listener` should be called.
+  /// It takes the previous and current status of type [TStatus] and returns a
+  /// boolean value.
+  /// {@endtemplate}
+  final BlocCustomEventStatusListenerCondition<TStatus>? listenWhen;
 
   @override
   SingleChildState<

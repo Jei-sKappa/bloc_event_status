@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:bloc_event_status/bloc_event_status.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:meta/meta.dart';
 
@@ -49,7 +50,7 @@ class BlocEventStatusContainer<TEvent, TState, TStatus> {
   /// used.
   BlocEventStatusContainer(this._bloc);
 
-  final Bloc<TEvent, TState> _bloc;
+  final BlocCustomEventStatusMixin<TEvent, TState, TStatus> _bloc;
 
   // Retrieved only by type
   final Map<Type, _MapData<TEvent, TStatus>> _eventStatusMap = {};

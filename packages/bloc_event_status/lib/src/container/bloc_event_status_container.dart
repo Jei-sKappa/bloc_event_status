@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:bloc_event_status/bloc_event_status.dart';
 import 'package:meta/meta.dart';
 
 typedef _MapData<TEvent, TStatus> = ({
@@ -39,7 +38,7 @@ typedef EventStatusUpdate<TEvent, TStatus> = ({
 class BlocEventStatusContainer<TEvent, TState, TStatus> {
   /// {@macro bloc_event_status_container}
   ///
-  /// Creates a [BlocEventStatusContainer] that wraps the given [_bloc].
+  /// Creates a [BlocEventStatusContainer].
   ///
   /// The container uses the bloc to report errors when emitting statuses and
   /// to close resources when [close] is called.
@@ -47,15 +46,13 @@ class BlocEventStatusContainer<TEvent, TState, TStatus> {
   /// Parameters:
   /// - bloc: The underlying bloc whose lifecycle and error handling will be
   /// used.
-  BlocEventStatusContainer(this._bloc);
+  BlocEventStatusContainer();
 
   /// Whether the container is closed.
   ///
   /// A container is considered closed once [close] is called.
   /// Subsequent state changes cannot occur within a closed container.
   bool isClosed = false;
-
-  final BlocCustomEventStatusMixin<TEvent, TState, TStatus> _bloc;
 
   // Retrieved only by type
   final Map<Type, _MapData<TEvent, TStatus>> _eventStatusMap = {};
@@ -163,37 +160,30 @@ class BlocEventStatusContainer<TEvent, TState, TStatus> {
       throw StateError('Cannot emit new states after calling close');
     }
 
-    try {
-      // This is wrong
-      //// if (status == statusOf<TEventSubType>()) return;
+    // This is wrong
+    //// if (status == statusOf<TEventSubType>()) return;
 
-      // Update the status
-      _updateStatusInMap<TEventSubType>(status);
+    // Update the status
+    _updateStatusInMap<TEventSubType>(status);
 
-      // Update the last status
-      _lastStatusOfAllEvents = status;
+    // Update the last status
+    _lastStatusOfAllEvents = status;
 
-      // Add the status to the stream
-      _getEventStatusMapValue<TEventSubType>().streamController.add(
-        (
-          event: event,
-          status: status,
-        ),
-      );
+    // Add the status to the stream
+    _getEventStatusMapValue<TEventSubType>().streamController.add(
+      (
+        event: event,
+        status: status,
+      ),
+    );
 
-      // Add the event with the status to the event-specific streamcontroller
-      _allEventStatusStreamController.add(
-        (
-          event: event,
-          status: status,
-        ),
-      );
-    } catch (error, stackTrace) {
-      // This class is wrapping a Bloc
-      // ignore: invalid_use_of_protected_member
-      _bloc.onError(error, stackTrace);
-      rethrow;
-    }
+    // Add the event with the status to the event-specific streamcontroller
+    _allEventStatusStreamController.add(
+      (
+        event: event,
+        status: status,
+      ),
+    );
   }
 
   /// {@template bloc_event_status_container.close}

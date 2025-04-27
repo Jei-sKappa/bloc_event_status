@@ -62,7 +62,7 @@ mixin BlocCustomEventStatusMixin<TEvent, TState, TStatus>
   // status across Classes and Mixins
   // ignore: invalid_use_of_visible_for_testing_member
   BlocEventStatusContainer<TEvent, TState, TStatus> _getContainer() =>
-      _container ??= BlocEventStatusContainer(this);
+      _container ??= BlocEventStatusContainer();
 
   /// {@macro bloc_event_status_container.status_of_all_events}
   TStatus? statusOfAllEvents() => _getContainer().statusOfAllEvents();

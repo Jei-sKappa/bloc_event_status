@@ -94,8 +94,8 @@ mixin BlocCustomEventStatusMixin<TEvent, TState, TStatus>
   /// {@macro bloc_event_status_container.close}
   @override
   @mustCallSuper
-  // `super.close()` is called in the `BlocEventStatusContainer.close()`
-  // method
-  // ignore: must_call_super
-  Future<void> close() async => _getContainer().close();
+  Future<void> close() async {
+    await _getContainer().close();
+    await super.close();
+  }
 }

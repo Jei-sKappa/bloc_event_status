@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:bloc_event_status/bloc_event_status.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:meta/meta.dart';
 
 typedef _MapData<TEvent, TStatus> = ({
@@ -198,11 +197,11 @@ class BlocEventStatusContainer<TEvent, TState, TStatus> {
   }
 
   /// {@template bloc_event_status_container.close}
-  /// Closes all internal resources and the underlying [Bloc].
+  /// Closes all internal resources.
   ///
   /// After calling this method, no further status updates can be emitted.
-  /// Returns a [Future] that completes once all streams and the wrapped bloc
-  /// have been properly closed.
+  /// Returns a [Future] that completes once all streams have been properly
+  /// closed.
   /// {@endtemplate}
   @mustCallSuper
   Future<void> close() async {
@@ -212,6 +211,5 @@ class BlocEventStatusContainer<TEvent, TState, TStatus> {
       await record.streamController.close();
     }
     _eventStatusMap.clear();
-    await _bloc.close();
   }
 }

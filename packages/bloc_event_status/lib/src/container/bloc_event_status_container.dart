@@ -49,6 +49,12 @@ class BlocEventStatusContainer<TEvent, TState, TStatus> {
   /// used.
   BlocEventStatusContainer(this._bloc);
 
+  /// Whether the container is closed.
+  ///
+  /// A container is considered closed once [close] is called.
+  /// Subsequent state changes cannot occur within a closed container.
+  bool isClosed = false;
+
   final BlocCustomEventStatusMixin<TEvent, TState, TStatus> _bloc;
 
   // Retrieved only by type
@@ -153,11 +159,11 @@ class BlocEventStatusContainer<TEvent, TState, TStatus> {
     TEventSubType event,
     TStatus status,
   ) {
-    try {
-      if (_bloc.isClosed) {
-        throw StateError('Cannot emit new states after calling close');
-      }
+    if (isClosed) {
+      throw StateError('Cannot emit new states after calling close');
+    }
 
+    try {
       // This is wrong
       //// if (status == statusOf<TEventSubType>()) return;
 
@@ -168,26 +174,20 @@ class BlocEventStatusContainer<TEvent, TState, TStatus> {
       _lastStatusOfAllEvents = status;
 
       // Add the status to the stream
-      final streamController =
-          _getEventStatusMapValue<TEventSubType>().streamController;
-      if (!streamController.isClosed) {
-        streamController.add(
-          (
-            event: event,
-            status: status,
-          ),
-        );
-      }
+      _getEventStatusMapValue<TEventSubType>().streamController.add(
+        (
+          event: event,
+          status: status,
+        ),
+      );
 
       // Add the event with the status to the event-specific streamcontroller
-      if (!_allEventStatusStreamController.isClosed) {
-        _allEventStatusStreamController.add(
-          (
-            event: event,
-            status: status,
-          ),
-        );
-      }
+      _allEventStatusStreamController.add(
+        (
+          event: event,
+          status: status,
+        ),
+      );
     } catch (error, stackTrace) {
       // This class is wrapping a Bloc
       // ignore: invalid_use_of_protected_member

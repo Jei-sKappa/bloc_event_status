@@ -154,7 +154,7 @@ class _BloCustomcEventStatusListenerBaseState<
 
   void _subscribe() {
     _allEventsStreamSubscription = _bloc
-        .streamAllEventStatus()
+        .streamStatusOfAllEvents()
         .where((update) => widget.filter?.call(update.event) ?? true)
         .transform(WithPrevious())
         .listen(

@@ -96,7 +96,7 @@ mixin BlocEventStatusMixin<TEvent, TState> on Bloc<TEvent, TState>
 
   /// {@macro bloc_event_status_container.stream_status_of_all_events}
   @override
-  Stream<EventStatusUpdate<TEvent, EventStatus>> streamAllEventStatus() =>
+  Stream<EventStatusUpdate<TEvent, EventStatus>> streamStatusOfAllEvents() =>
       _getContainer().streamStatusOfAllEvents();
 
   /// {@macro bloc_event_status_container.status_of}

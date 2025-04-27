@@ -68,7 +68,7 @@ mixin BlocCustomEventStatusMixin<TEvent, TState, TStatus>
   TStatus? statusOfAllEvents() => _getContainer().statusOfAllEvents();
 
   /// {@macro bloc_event_status_container.stream_status_of_all_events}
-  Stream<EventStatusUpdate<TEvent, TStatus>> streamAllEventStatus() =>
+  Stream<EventStatusUpdate<TEvent, TStatus>> streamStatusOfAllEvents() =>
       _getContainer().streamStatusOfAllEvents();
 
   /// {@macro bloc_event_status_container.status_of}

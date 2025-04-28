@@ -13,9 +13,6 @@ import 'package:equatable/equatable.dart';
 sealed class EventStatus with EquatableMixin {
   /// {@macro event_status}
   const EventStatus();
-
-  @override
-  List<Object?> get props => [];
 }
 
 /// {@template loading_event_status}

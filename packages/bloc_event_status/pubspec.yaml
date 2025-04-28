@@ -16,9 +16,12 @@ dependencies:
   nested: ^1.0.0
 
 dev_dependencies:
+  bloc_test: ^10.0.0 # Added for bloc testing utilities
   flutter_lints: ^5.0.0
   flutter_test:
     sdk: flutter
+  mocktail: ^1.0.4 # Added for mocking
+  test: ^1.25.8 # Added for core testing functions
   very_good_analysis: ^7.0.0
 
 flutter: null

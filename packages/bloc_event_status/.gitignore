@@ -30,5 +30,8 @@ migrate_working_dir/
 .flutter-plugins-dependencies
 build/
 
+# Do not track coverage folder in version control
+coverage/
+
 # Custom
 temp/

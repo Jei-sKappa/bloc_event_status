@@ -1,5 +1,5 @@
 name: bloc_event_status
-description: "Add status to your BLoC Events"
+description: "Track the status of events in a bloc without updating the state."
 version: 1.0.0
 homepage: https://github.com/Jei-sKappa/bloc_event_status/tree/main/packages/bloc_event_status
 repository: https://github.com/Jei-sKappa/bloc_event_status/tree/main/packages/bloc_event_status

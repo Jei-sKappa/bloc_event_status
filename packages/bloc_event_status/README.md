@@ -1,39 +1,36 @@
-<!--
-This README describes the package. If you publish this package to pub.dev,
-this README's contents appear on the landing page for your package.
+# BlocEventStatus
 
-For information about how to write a good package README, see the guide for
-[writing package pages](https://dart.dev/tools/pub/writing-package-pages).
+[![BlocEventStatus CI](https://github.com/Jei-sKappa/bloc_event_status/actions/workflows/bloc_event_status-test.yml/badge.svg)](https://github.com/Jei-sKappa/bloc_event_status/actions/workflows/bloc_event_status-test.yml)
+[![codecov](https://codecov.io/github/Jei-sKappa/bloc_event_status/graph/badge.svg?token=LYNF1FJ8YF)](https://codecov.io/github/Jei-sKappa/bloc_event_status)
+[![pub package](https://img.shields.io/pub/v/bloc_event_status.svg)](https://pub.dev/packages/bloc_event_status)
+![pub points](https://img.shields.io/pub/points/bloc_event_status)
+![pub Popularity](https://img.shields.io/pub/popularity/bloc_event_status)
+![pub Likes](https://img.shields.io/pub/likes/bloc_event_status)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
-For general information about developing packages, see the Dart guide for
-[creating packages](https://dart.dev/guides/libraries/create-packages)
-and the Flutter guide for
-[developing packages and plugins](https://flutter.dev/to/develop-packages).
--->
+Track the status of events in a bloc without updating the state.
 
-TODO: Put a short description of the package here that helps potential users
-know whether this package might be useful for them.
+## Installation
 
-## Features
+Add the package to your `pubspec.yaml`:
 
-TODO: List what your package can do. Maybe include images, gifs, or videos.
-
-## Getting started
-
-TODO: List prerequisites and provide or point to information on how to
-start using the package.
-
-## Usage
-
-TODO: Include short and useful examples for package users. Add longer examples
-to `/example` folder.
-
-```dart
-const like = 'sample';
+```yaml
+dependencies:
+  bloc_event_status: ^1.0.0
 ```
 
-## Additional information
+and then run:
 
-TODO: Tell users more about the package: where to find more information, how to
-contribute to the package, how to file issues, what response they can expect
-from the package authors, and more.
+```bash
+flutter pub get
+```
+
+Or just install it with flutter cli:
+
+```bash
+flutter pub add bloc_event_status
+```
+
+## Getting Started
+
+Coming soon

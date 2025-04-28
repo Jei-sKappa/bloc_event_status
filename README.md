@@ -1,6 +1,6 @@
 # BlocEventStatus
 
-[![Flutter CI](https://github.com/Jei-sKappa/bloc_event_status/actions/workflows/ci.yml/badge.svg)](https://github.com/Jei-sKappa/bloc_event_status/actions/workflows/ci.yml)
+[![BlocEventStatus CI](https://github.com/Jei-sKappa/bloc_event_status/actions/workflows/bloc_event_status-test.yml/badge.svg)](https://github.com/Jei-sKappa/bloc_event_status/actions/workflows/bloc_event_status-test.yml)
 [![codecov](https://codecov.io/github/Jei-sKappa/bloc_event_status/graph/badge.svg?token=LYNF1FJ8YF)](https://codecov.io/github/Jei-sKappa/bloc_event_status)
 [![pub package](https://img.shields.io/pub/v/bloc_event_status.svg)](https://pub.dev/packages/bloc_event_status)
 ![pub points](https://img.shields.io/pub/points/bloc_event_status)

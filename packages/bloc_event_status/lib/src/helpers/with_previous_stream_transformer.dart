@@ -42,11 +42,36 @@ class WithPrevious<T> extends StreamTransformerBase<T, PreviousValuePair<T>> {
   final T? initialPrevious;
 
   @override
-  Stream<PreviousValuePair<T>> bind(Stream<T> stream) async* {
+  Stream<PreviousValuePair<T>> bind(Stream<T> stream) {
+    StreamController<PreviousValuePair<T>>? controller;
+    StreamSubscription<T>? subscription;
     var previous = initialPrevious;
-    await for (final element in stream) {
-      yield (previous: previous, current: element);
-      previous = element;
-    }
+    var isFirstEvent = true;
+
+    controller = StreamController<PreviousValuePair<T>>(
+      onListen: () {
+        subscription = stream.listen(
+          (data) {
+            // Use initialPrevious only for the very first data event
+            final prevValue = isFirstEvent ? initialPrevious : previous;
+            isFirstEvent = false;
+
+            try {
+              controller?.add((previous: prevValue, current: data));
+              previous = data;
+            } on Object catch (e, s) {
+              controller?.addError(e, s);
+            }
+          },
+          onError: controller?.addError,
+          onDone: controller?.close,
+        );
+      },
+      onPause: () => subscription?.pause(),
+      onResume: () => subscription?.resume(),
+      onCancel: () => subscription?.cancel(),
+    );
+
+    return controller.stream;
   }
 }

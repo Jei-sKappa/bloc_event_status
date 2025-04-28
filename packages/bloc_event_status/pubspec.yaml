@@ -1,7 +1,11 @@
 name: bloc_event_status
 description: "Add status to your BLoC Events"
-version: 0.0.1
-homepage: null
+version: 1.0.0
+homepage: https://github.com/Jei-sKappa/bloc_event_status/tree/main/packages/bloc_event_status
+repository: https://github.com/Jei-sKappa/bloc_event_status/tree/main/packages/bloc_event_status
+issue_tracker: https://github.com/Jei-sKappa/bloc_event_status/issues
+documentation: https://github.com/Jei-sKappa/bloc_event_status/tree/main/packages/bloc_event_status
+topics: [bloc, state-management]
 
 environment:
   sdk: ^3.6.1
@@ -16,12 +20,12 @@ dependencies:
   nested: ^1.0.0
 
 dev_dependencies:
-  bloc_test: ^10.0.0 # Added for bloc testing utilities
+  bloc_test: ^10.0.0
   flutter_lints: ^5.0.0
   flutter_test:
     sdk: flutter
-  mocktail: ^1.0.4 # Added for mocking
-  test: ^1.25.8 # Added for core testing functions
+  mocktail: ^1.0.4
+  test: ^1.25.8
   very_good_analysis: ^7.0.0
 
 flutter: null

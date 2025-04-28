@@ -1,0 +1,51 @@
+name: CI
+on:
+  push:
+    branches: [ "main" ]
+    paths:
+      - 'packages/bloc_event_status/**'
+      - .github/workflows/bloc_event_status-test.yml
+  pull_request:
+    branches: [ "main" ]
+    paths:
+      - 'packages/bloc_event_status/**'
+      - .github/workflows/bloc_event_status-test.yml
+
+jobs:
+  test:
+    name: Run Flutter Tests & Analyze
+
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: packages/bloc_event_status
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+
+      - name: Download pub Dependencies
+        run: flutter pub get
+
+      - name: Check formatting
+        run: dart format --set-exit-if-changed --output none .
+
+      - name: Run analyzer
+        run: flutter analyze --fatal-warnings --fatal-infos
+
+      - name: Run tests & collect coverage
+        run: flutter test --coverage
+
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v2
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          file: packages/bloc_event_status/coverage/lcov.info
+          flags: unittests
+          fail_ci_if_error: true

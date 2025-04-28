@@ -149,11 +149,13 @@ mixin BlocEventStatusMixin<TEvent, TState> on Bloc<TEvent, TState>
   /// emitFailureStatus(event, error: e); // equivalent to emitEventStatus(event, FailureEventStatus(e));
   /// ```
   @protected
-  void emitFailureStatus<TEventSubType extends TEvent>(
+  void emitFailureStatus<TEventSubType extends TEvent,
+          TFailure extends Exception>(
     TEventSubType event, {
-    Object? error,
+    TFailure? error,
   }) =>
-      _getContainer().emitEventStatus(event, FailureEventStatus(error));
+      _getContainer()
+          .emitEventStatus(event, FailureEventStatus<TFailure>(error));
 
   /// Emits a success status for the given [event].
   ///
@@ -168,18 +170,18 @@ mixin BlocEventStatusMixin<TEvent, TState> on Bloc<TEvent, TState>
   /// emitSuccessStatus(event); // equivalent to emitEventStatus(event, SuccessEventStatus());
   /// ```
   @protected
-  void emitSuccessStatus<TEventSubType extends TEvent>(
+  void emitSuccessStatus<TEventSubType extends TEvent, TData>(
     TEventSubType event, {
-    Object? data,
+    TData? data,
   }) =>
-      _getContainer().emitEventStatus(event, SuccessEventStatus(data));
+      _getContainer().emitEventStatus(event, SuccessEventStatus<TData>(data));
 
   /// Wrapper function for event handlers that automatically emits loading,
   /// success, and failure statuses.
   ///
   /// This method also automatically handles the try-catch block for you, so you
-  /// don't have to; it will catch any errors thrown by the event handler and
-  /// add them to the bloc's error stream using `addError`.
+  /// don't have to; it will catch any object of type [TFailure] throwed by the
+  /// event handler and add them to the bloc's error stream using `addError`.
   ///
   /// Usage:
   /// ```dart
@@ -203,29 +205,29 @@ mixin BlocEventStatusMixin<TEvent, TState> on Bloc<TEvent, TState>
   ///   }
   /// }
   /// ```
-  EventHandler<TEventSubType, TState>
-      handleEventStatus<TEventSubType extends TEvent>(
+  EventHandler<TEventSubType, TState> handleEventStatus<
+          TEventSubType extends TEvent, TFailure extends Exception>(
     EventHandler<TEventSubType, TState> eventHandler, {
     bool emitLoading = true,
     bool emitSuccess = true,
     bool emitFailure = true,
   }) =>
-          (event, emit) async {
-            if (emitLoading) {
-              emitLoadingStatus(event);
-            }
-            try {
-              await eventHandler(event, emit);
-              if (emitSuccess) {
-                emitSuccessStatus(event);
-              }
-            } on Object catch (e) {
-              if (emitFailure) {
-                emitFailureStatus(event, error: e);
-              }
-              addError(e, StackTrace.current);
-            }
-          };
+      (event, emit) async {
+        if (emitLoading) {
+          emitLoadingStatus(event);
+        }
+        try {
+          await eventHandler(event, emit);
+          if (emitSuccess) {
+            emitSuccessStatus<TEventSubType, Null>(event);
+          }
+        } on TFailure catch (e) {
+          if (emitFailure) {
+            emitFailureStatus(event, error: e);
+          }
+          addError(e, StackTrace.current);
+        }
+      };
 
   /// {@macro BlocEventStatusContainer.close}
   @override

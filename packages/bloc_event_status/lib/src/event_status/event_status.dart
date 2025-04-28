@@ -70,7 +70,7 @@ class SuccessEventStatus<TData> extends EventStatus {
 /// final status = FailureEventStatus<String>('Operation failed');
 /// ```
 /// {@endtemplate}
-class FailureEventStatus<TFailure> extends EventStatus {
+class FailureEventStatus<TFailure extends Exception> extends EventStatus {
   /// {@macro failure_event_status}
   const FailureEventStatus([this.error]);
 

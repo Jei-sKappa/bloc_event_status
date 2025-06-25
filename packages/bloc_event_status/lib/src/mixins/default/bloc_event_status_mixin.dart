@@ -135,7 +135,8 @@ mixin BlocEventStatusMixin<TEvent, TState> on Bloc<TEvent, TState>
   void emitLoadingStatus<TEventSubType extends TEvent>(TEventSubType event) =>
       _getContainer().emitEventStatus(event, const LoadingEventStatus());
 
-  /// Emits a failure status for the given [event].
+  /// Emits a failure status for the given [event] and optionally adds the
+  /// [error] to the bloc.
   ///
   /// This method is a convenience wrapper around [emitEventStatus] that
   /// automatically creates a [FailureEventStatus] instance.
@@ -144,18 +145,25 @@ mixin BlocEventStatusMixin<TEvent, TState> on Bloc<TEvent, TState>
   /// The [error] parameter is optional and can be used to provide additional
   /// information about the failure.
   ///
+  /// If [addError] is set to `true`, the error will be added to the bloc using
+  /// `addError`.
+  ///
   /// Usage:
   /// ```dart
   /// emitFailureStatus(event, error: e); // equivalent to emitEventStatus(event, FailureEventStatus(e));
   /// ```
   @protected
   void emitFailureStatus<TEventSubType extends TEvent,
-          TFailure extends Exception>(
+      TFailure extends Exception>(
     TEventSubType event, {
     TFailure? error,
-  }) =>
-      _getContainer()
-          .emitEventStatus(event, FailureEventStatus(error));
+    bool addError = true,
+  }) {
+    _getContainer().emitEventStatus(event, FailureEventStatus(error));
+    if (addError && error != null) {
+      this.addError(error, StackTrace.current);
+    }
+  }
 
   /// Emits a success status for the given [event].
   ///

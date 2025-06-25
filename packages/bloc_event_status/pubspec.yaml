@@ -1,6 +1,6 @@
 name: bloc_event_status
 description: "Track the status of events in a bloc without updating the state."
-version: 1.0.0
+version: 1.1.0
 homepage: https://github.com/Jei-sKappa/bloc_event_status/tree/main/packages/bloc_event_status
 repository: https://github.com/Jei-sKappa/bloc_event_status/tree/main/packages/bloc_event_status
 issue_tracker: https://github.com/Jei-sKappa/bloc_event_status/issues
@@ -15,12 +15,11 @@ dependencies:
   equatable: ^2.0.7
   flutter:
     sdk: flutter
-  flutter_bloc: ^9.1.0
+  flutter_bloc: ^8.0.0
   meta: ^1.15.0
   nested: ^1.0.0
 
 dev_dependencies:
-  bloc_test: ^10.0.0
   flutter_lints: ^5.0.0
   flutter_test:
     sdk: flutter

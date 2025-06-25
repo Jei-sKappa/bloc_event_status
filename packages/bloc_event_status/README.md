@@ -16,7 +16,7 @@ Add the package to your `pubspec.yaml`:
 
 ```yaml
 dependencies:
-  bloc_event_status: ^1.0.0
+  bloc_event_status: ^1.1.0
 ```
 
 and then run:

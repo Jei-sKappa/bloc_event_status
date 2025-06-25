@@ -41,7 +41,7 @@ class LoadingEventStatus extends EventStatus {
 /// final status = SuccessEventStatus<String>('Operation completed');
 /// ```
 /// {@endtemplate}
-class SuccessEventStatus<TData> extends EventStatus {
+class SuccessEventStatus<TData extends dynamic> extends EventStatus {
   /// {@macro success_event_status}
   const SuccessEventStatus([this.data]);
 

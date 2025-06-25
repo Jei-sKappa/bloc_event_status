@@ -155,7 +155,7 @@ mixin BlocEventStatusMixin<TEvent, TState> on Bloc<TEvent, TState>
     TFailure? error,
   }) =>
       _getContainer()
-          .emitEventStatus(event, FailureEventStatus<TFailure>(error));
+          .emitEventStatus(event, FailureEventStatus(error));
 
   /// Emits a success status for the given [event].
   ///
@@ -170,11 +170,11 @@ mixin BlocEventStatusMixin<TEvent, TState> on Bloc<TEvent, TState>
   /// emitSuccessStatus(event); // equivalent to emitEventStatus(event, SuccessEventStatus());
   /// ```
   @protected
-  void emitSuccessStatus<TEventSubType extends TEvent, TData>(
+  void emitSuccessStatus<TEventSubType extends TEvent, TData extends dynamic>(
     TEventSubType event, {
     TData? data,
   }) =>
-      _getContainer().emitEventStatus(event, SuccessEventStatus<TData>(data));
+      _getContainer().emitEventStatus(event, SuccessEventStatus(data));
 
   /// Wrapper function for event handlers that automatically emits loading,
   /// success, and failure statuses.

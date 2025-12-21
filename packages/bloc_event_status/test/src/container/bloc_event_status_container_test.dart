@@ -55,7 +55,7 @@ void main() {
       expect(container.statusOfAllEvents(), isNull);
     });
 
-    test('main event class can\t be used', () {
+    test('main event class cannot be used', () {
       expect(
         () => container.statusOf<Event>(),
         throwsArgumentError,

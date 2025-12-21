@@ -67,7 +67,7 @@ void main() {
       expect(bloc.statusOfAllEvents(), isNull);
     });
 
-    test('main event class can\t be used', () {
+    test('main event class cannot be used', () {
       expect(
         () => bloc.statusOf<Event>(),
         throwsArgumentError,

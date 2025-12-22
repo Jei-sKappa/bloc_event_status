@@ -503,5 +503,61 @@ void main() {
       // Rebuilt
       expect(find.text('Event: EventB(1), Status: loading'), findsOneWidget);
     });
+
+    testWidgets(
+        'preserves the event status when the builder widget is disposed and rebuilt',
+        (tester) async {
+      final event1 = EventA('event1');
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: BlocProvider.value(
+              value: testBloc,
+              child: MultiBlocEventStatusBuilder<TestBloc, TestEvent, int>(
+                builder: testBuilder,
+              ),
+            ),
+          ),
+        ),
+      );
+
+      expect(find.text('Event: None, Status: None'), findsOneWidget);
+
+      testBloc.emitSuccessStatus(event1);
+      await tester.pumpAndSettle();
+      expect(find.text('Event: EventA(event1), Status: success'), findsOneWidget);
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: BlocProvider.value(
+              value: testBloc,
+              child: const SizedBox.shrink(),
+            ),
+          ),
+        ),
+      );
+
+      // Expect to not find any text widget
+      expect(find.byType(Text), findsNothing);
+
+      // Rebuild the original widget
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: BlocProvider.value(
+              value: testBloc,
+              child: MultiBlocEventStatusBuilder<TestBloc, TestEvent, int>(
+                builder: testBuilder,
+              ),
+            ),
+          ),
+        ),
+      );
+
+      // Expect to find the text widget with the previous event and status
+      expect(find.text('Event: EventA(event1), Status: success'), findsOneWidget);
+    });
   });
 }

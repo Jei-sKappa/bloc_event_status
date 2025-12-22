@@ -118,17 +118,14 @@ class _BloCustomEventStatusBuilderState<
         BlocCustomEventStatusBuilder<TBloc, TEvent, TEventSubType, TState,
             TStatus>> {
   late TBloc _bloc;
-  late TEventSubType? _event;
-  late TStatus? _status;
+  late EventStatusUpdate<TEventSubType, TStatus>? _eventStatus;
 
   @override
   void initState() {
     super.initState();
     _bloc = widget.bloc ?? context.read<TBloc>();
-    _event = null;
     // TODO: This should be filterd by the event filter otherwise it will return the status of the last event that was triggered and maybe not the one that was requested by the user
-    // _status = _bloc.eventStatusOf<TEventSubType>();
-    _status = null; // Temp fix
+    _eventStatus = _bloc.eventStatusOf<TEventSubType>();
   }
 
   @override
@@ -141,10 +138,8 @@ class _BloCustomEventStatusBuilderState<
     final currentBloc = widget.bloc ?? oldBloc;
     if (oldBloc != currentBloc) {
       _bloc = currentBloc;
-      _event = null;
       // TODO: This should be filterd by the event filter otherwise it will return the status of the last event that was triggered and maybe not the one that was requested by the user
-      // _status = _bloc.eventStatusOf<TEventSubType>();
-      _status = null; // Temp fix
+      _eventStatus = _bloc.eventStatusOf<TEventSubType>();
     }
   }
 
@@ -154,10 +149,8 @@ class _BloCustomEventStatusBuilderState<
     final bloc = widget.bloc ?? context.read<TBloc>();
     if (_bloc != bloc) {
       _bloc = bloc;
-      _event = null;
       // TODO: This should be filterd by the event filter otherwise it will return the status of the last event that was triggered and maybe not the one that was requested by the user
-      // _status = _bloc.eventStatusOf<TEventSubType>();
-      _status = null; // Temp fix
+      _eventStatus = _bloc.eventStatusOf<TEventSubType>();
     }
   }
 
@@ -173,10 +166,9 @@ class _BloCustomEventStatusBuilderState<
       filter: widget.filter,
       listenWhen: widget.buildWhen,
       listener: (context, event, state) => setState(() {
-        _event = event;
-        _status = state;
+        _eventStatus = (event: event, status: state);
       }),
-      child: widget.builder(context, _event, _status),
+      child: widget.builder(context, _eventStatus?.event, _eventStatus?.status),
     );
   }
 }

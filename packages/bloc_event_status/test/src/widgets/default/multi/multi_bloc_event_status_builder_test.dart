@@ -526,7 +526,10 @@ void main() {
 
       testBloc.emitSuccessStatus(event1);
       await tester.pumpAndSettle();
-      expect(find.text('Event: EventA(event1), Status: success'), findsOneWidget);
+      expect(
+        find.text('Event: EventA(event1), Status: success'),
+        findsOneWidget,
+      );
 
       await tester.pumpWidget(
         MaterialApp(
@@ -557,7 +560,10 @@ void main() {
       );
 
       // Expect to find the text widget with the previous event and status
-      expect(find.text('Event: EventA(event1), Status: success'), findsOneWidget);
+      expect(
+        find.text('Event: EventA(event1), Status: success'),
+        findsOneWidget,
+      );
     });
   });
 }

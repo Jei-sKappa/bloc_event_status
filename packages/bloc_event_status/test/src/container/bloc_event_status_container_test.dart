@@ -67,10 +67,16 @@ void main() {
       const statusB = TestStatus.success;
 
       container.emitEventStatus<EventA>(EventA('1'), statusA);
-      expect(container.eventStatusOfAllEvents(), equals((event: EventA('1'), status: statusA)));
+      expect(
+        container.eventStatusOfAllEvents(),
+        equals((event: EventA('1'), status: statusA)),
+      );
 
       container.emitEventStatus<EventB>(EventB(10), statusB);
-      expect(container.eventStatusOfAllEvents(), equals((event: EventB(10), status: statusB)));
+      expect(
+        container.eventStatusOfAllEvents(),
+        equals((event: EventB(10), status: statusB)),
+      );
     });
 
     test(
@@ -80,13 +86,22 @@ void main() {
       const statusB = TestStatus.success;
 
       container.emitEventStatus<EventA>(EventA('1'), statusA);
-      expect(container.eventStatusOf<EventA>(), equals((event: EventA('1'), status: statusA)));
+      expect(
+        container.eventStatusOf<EventA>(),
+        equals((event: EventA('1'), status: statusA)),
+      );
 
       container.emitEventStatus<EventB>(EventB(10), statusB);
-      expect(container.eventStatusOf<EventB>(), equals((event: EventB(10), status: statusB)));
+      expect(
+        container.eventStatusOf<EventB>(),
+        equals((event: EventB(10), status: statusB)),
+      );
 
       // Check that the status of EventA is still available
-      expect(container.eventStatusOf<EventA>(), equals((event: EventA('1'), status: statusA)));
+      expect(
+        container.eventStatusOf<EventA>(),
+        equals((event: EventA('1'), status: statusA)),
+      );
     });
 
     test('event statuses are emitted', () {

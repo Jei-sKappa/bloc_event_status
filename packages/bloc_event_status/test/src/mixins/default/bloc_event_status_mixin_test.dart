@@ -120,7 +120,10 @@ void main() {
 
     test('event statuses are available once emitted', () {
       bloc.emitLoadingStatus(EventA('1'));
-      expect(bloc.eventStatusOfAllEvents(), equals((event: EventA('1'), status: const LoadingEventStatus())));
+      expect(
+        bloc.eventStatusOfAllEvents(),
+        equals((event: EventA('1'), status: const LoadingEventStatus())),
+      );
 
       bloc.emitSuccessStatus<EventB, Null>(EventB(10));
       expect(
@@ -171,7 +174,10 @@ void main() {
         'event statuses of specific type remain available when an event of '
         'another type is emitted', () {
       bloc.emitLoadingStatus(EventA('1'));
-      expect(bloc.eventStatusOf<EventA>(), equals((event: EventA('1'), status: const LoadingEventStatus())));
+      expect(
+        bloc.eventStatusOf<EventA>(),
+        equals((event: EventA('1'), status: const LoadingEventStatus())),
+      );
 
       bloc.emitSuccessStatus<EventB, Null>(EventB(10));
       expect(
@@ -180,7 +186,10 @@ void main() {
       );
 
       // Check that the status of EventA is still available
-      expect(bloc.eventStatusOf<EventA>(), equals((event: EventA('1'), status: const LoadingEventStatus())));
+      expect(
+        bloc.eventStatusOf<EventA>(),
+        equals((event: EventA('1'), status: const LoadingEventStatus())),
+      );
     });
 
     test('event statuses are emitted', () {

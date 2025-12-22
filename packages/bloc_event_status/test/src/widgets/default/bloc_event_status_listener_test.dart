@@ -381,7 +381,7 @@ void main() {
       // Use a real StreamController to check listeners
       final controller =
           StreamController<EventStatusUpdate<EventA, EventStatus>>.broadcast();
-      when(() => mockBloc.streamStatusOf<EventA>()).thenAnswer(
+      when(() => mockBloc.streamEventStatusOf<EventA>()).thenAnswer(
         (_) => controller.stream,
       );
       addTearDown(() async => controller.close());

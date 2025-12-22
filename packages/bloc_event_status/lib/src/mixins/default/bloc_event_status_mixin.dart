@@ -64,7 +64,7 @@ import 'package:meta/meta.dart';
 ///
 /// You can also listen to the event status stream:
 /// ```dart
-/// final subscription = bloc.streamStatusOf<MySubjectEvent>().listen((update) {
+/// final subscription = bloc.streamEventStatusOf<MySubjectEvent>().listen((update) {
 ///   // Handle the event status update
 /// });
 /// ```
@@ -92,23 +92,26 @@ mixin BlocEventStatusMixin<TEvent, TState> on Bloc<TEvent, TState>
 
   /// {@macro bloc_event_status_container.status_of_all_events}
   @override
-  EventStatus? statusOfAllEvents() => _getContainer().statusOfAllEvents();
+  EventStatusUpdate<TEvent, EventStatus>? eventStatusOfAllEvents() =>
+      _getContainer().eventStatusOfAllEvents();
 
   /// {@macro bloc_event_status_container.stream_status_of_all_events}
   @override
-  Stream<EventStatusUpdate<TEvent, EventStatus>> streamStatusOfAllEvents() =>
-      _getContainer().streamStatusOfAllEvents();
+  Stream<EventStatusUpdate<TEvent, EventStatus>>
+      streamEventStatusOfAllEvents() =>
+          _getContainer().streamEventStatusOfAllEvents();
 
   /// {@macro bloc_event_status_container.status_of}
   @override
-  EventStatus? statusOf<TEventSubType extends TEvent>() =>
-      _getContainer().statusOf<TEventSubType>();
+  EventStatusUpdate<TEventSubType, EventStatus>?
+      eventStatusOf<TEventSubType extends TEvent>() =>
+          _getContainer().eventStatusOf<TEventSubType>();
 
   /// {@macro bloc_event_status_container.stream_status_of}
   @override
   Stream<EventStatusUpdate<TEventSubType, EventStatus>>
-      streamStatusOf<TEventSubType extends TEvent>() =>
-          _getContainer().streamStatusOf<TEventSubType>();
+      streamEventStatusOf<TEventSubType extends TEvent>() =>
+          _getContainer().streamEventStatusOf<TEventSubType>();
 
   /// {@macro bloc_event_status_container.emit_event_status}
   @override

@@ -64,12 +64,12 @@ void main() {
     });
 
     test('no event status is available initially', () {
-      expect(bloc.statusOfAllEvents(), isNull);
+      expect(bloc.eventStatusOfAllEvents(), isNull);
     });
 
     test('main event class cannot be used', () {
       expect(
-        () => bloc.statusOf<Event>(),
+        () => bloc.eventStatusOf<Event>(),
         throwsArgumentError,
       );
     });
@@ -79,10 +79,10 @@ void main() {
       const statusB = TestStatus.success;
 
       bloc.emitEventStatus<EventA>(EventA('1'), statusA);
-      expect(bloc.statusOfAllEvents(), equals(statusA));
+      expect(bloc.eventStatusOfAllEvents(), equals((event: EventA('1'), status: statusA)));
 
       bloc.emitEventStatus<EventB>(EventB(10), statusB);
-      expect(bloc.statusOfAllEvents(), equals(statusB));
+      expect(bloc.eventStatusOfAllEvents(), equals((event: EventB(10), status: statusB)));
     });
 
     test(
@@ -92,13 +92,13 @@ void main() {
       const statusB = TestStatus.success;
 
       bloc.emitEventStatus<EventA>(EventA('1'), statusA);
-      expect(bloc.statusOf<EventA>(), equals(statusA));
+      expect(bloc.eventStatusOf<EventA>(), equals((event: EventA('1'), status: statusA)));
 
       bloc.emitEventStatus<EventB>(EventB(10), statusB);
-      expect(bloc.statusOf<EventB>(), equals(statusB));
+      expect(bloc.eventStatusOf<EventB>(), equals((event: EventB(10), status: statusB)));
 
       // Check that the status of EventA is still available
-      expect(bloc.statusOf<EventA>(), equals(statusA));
+      expect(bloc.eventStatusOf<EventA>(), equals((event: EventA('1'), status: statusA)));
     });
 
     test('event statuses are emitted', () {
@@ -109,7 +109,7 @@ void main() {
       const statusB = TestStatus.success;
 
       expect(
-        bloc.streamStatusOfAllEvents(),
+        bloc.streamEventStatusOfAllEvents(),
         emitsInOrder([
           (event: eventA, status: statusA),
           (event: eventB, status: statusB),
@@ -117,14 +117,14 @@ void main() {
       );
 
       expect(
-        bloc.streamStatusOf<EventA>(),
+        bloc.streamEventStatusOf<EventA>(),
         emitsInOrder([
           (event: eventA, status: statusA),
         ]),
       );
 
       expect(
-        bloc.streamStatusOf<EventB>(),
+        bloc.streamEventStatusOf<EventB>(),
         emitsInOrder([
           (event: eventB, status: statusB),
         ]),
@@ -141,7 +141,7 @@ void main() {
       const statusA = TestStatus.loading;
 
       expect(
-        bloc.streamStatusOfAllEvents(),
+        bloc.streamEventStatusOfAllEvents(),
         emitsInOrder([
           (event: eventA, status: statusA),
           emitsDone,
@@ -149,7 +149,7 @@ void main() {
       );
 
       expect(
-        bloc.streamStatusOf<EventA>(),
+        bloc.streamEventStatusOf<EventA>(),
         emitsInOrder([
           (event: eventA, status: statusA),
           emitsDone,

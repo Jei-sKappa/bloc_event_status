@@ -90,7 +90,7 @@ class _BloCustomEventStatusBuilderState<
     _bloc = widget.bloc ?? context.read<TBloc>();
     _event = null;
     // TODO: This should be filterd by the event filter otherwise it will return the status of the last event that was triggered and maybe not the one that was requested by the user
-    // _status = _bloc.statusOfAllEvents();
+    // _status = _bloc.eventStatusOfAllEvents();
     _status = null; // Temp fix
   }
 
@@ -105,7 +105,7 @@ class _BloCustomEventStatusBuilderState<
       _bloc = currentBloc;
       _event = null;
       // TODO: This should be filterd by the event filter otherwise it will return the status of the last event that was triggered and maybe not the one that was requested by the user
-      // _status = _bloc.statusOfAllEvents();
+      // _status = _bloc.eventStatusOfAllEvents();
       _status = null; // Temp fix
     }
   }
@@ -118,7 +118,7 @@ class _BloCustomEventStatusBuilderState<
       _bloc = bloc;
       _event = null;
       // TODO: This should be filterd by the event filter otherwise it will return the status of the last event that was triggered and maybe not the one that was requested by the user
-      // _status = _bloc.statusOfAllEvents();
+      // _status = _bloc.eventStatusOfAllEvents();
       _status = null; // Temp fix
     }
   }

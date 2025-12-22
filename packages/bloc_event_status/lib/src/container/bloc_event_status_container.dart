@@ -2,9 +2,10 @@ import 'dart:async';
 
 import 'package:meta/meta.dart';
 
-typedef _MapData<TEvent, TStatus> = ({
-  TStatus? status,
-  StreamController<EventStatusUpdate<TEvent, TStatus>> streamController,
+typedef _EventStatusStreamControllerWithLastUpdate<TEvent, TStatus> = ({
+  EventStatusUpdate<TEvent, TStatus>? lastEventStatusUpdate,
+  StreamController<
+      EventStatusUpdate<TEvent, TStatus>> eventStatusStreamController,
 });
 
 /// A record type that associates an event with its updated status.
@@ -55,15 +56,26 @@ class BlocEventStatusContainer<TEvent, TState, TStatus> {
   bool isClosed = false;
 
   // Retrieved only by type
-  final Map<Type, _MapData<TEvent, TStatus>> _eventStatusMap = {};
+  final Map<Type, _EventStatusStreamControllerWithLastUpdate<TEvent, TStatus>>
+      _eventStatusStreamControllerWithLastUpdateMap = {};
 
-  TStatus? _lastStatusOfAllEvents;
+  _EventStatusStreamControllerWithLastUpdate<TEvent, TStatus>
+      _allEventStatusStreamControllerWithLastUpdate = (
+    lastEventStatusUpdate: null,
+    eventStatusStreamController:
+        StreamController<EventStatusUpdate<TEvent, TStatus>>.broadcast(),
+  );
 
-  final _allEventStatusStreamController =
-      StreamController<EventStatusUpdate<TEvent, TStatus>>.broadcast();
+  _EventStatusStreamControllerWithLastUpdate<TEventSubType, TStatus>
+      _getEventStatusStreamControllerWithLastUpdateValue<
+          TEventSubType extends TEvent>() {
+    _EventStatusStreamControllerWithLastUpdate<TEventSubType, TStatus>
+        createEmptyData() => (
+              lastEventStatusUpdate: null,
+              eventStatusStreamController: StreamController<
+                  EventStatusUpdate<TEventSubType, TStatus>>.broadcast()
+            );
 
-  _MapData<TEventSubType, TStatus>
-      _getEventStatusMapValue<TEventSubType extends TEvent>() {
     if (TEventSubType == TEvent) {
       throw ArgumentError(
         'The type parameter cannot be TEvent',
@@ -71,35 +83,26 @@ class BlocEventStatusContainer<TEvent, TState, TStatus> {
       );
     }
 
-    return _eventStatusMap.putIfAbsent(TEventSubType, _ifAbsent<TEventSubType>)
-        as _MapData<TEventSubType, TStatus>;
-  }
-
-  _MapData<TEventSubType, TStatus> _ifAbsent<TEventSubType extends TEvent>() =>
-      (
-        status: null,
-        streamController: StreamController<
-            EventStatusUpdate<TEventSubType, TStatus>>.broadcast()
-      );
-
-  void _updateStatusInMap<TEventSubType extends TEvent>(TStatus status) {
-    final record = _getEventStatusMapValue<TEventSubType>();
-
-    _eventStatusMap[TEventSubType] = (
-      // Update the status
-      status: status,
-      // Keep the stream controller as is
-      streamController: record.streamController,
+    final eventStatusStreamControllerWithLastUpdate =
+        _eventStatusStreamControllerWithLastUpdateMap.putIfAbsent(
+      TEventSubType,
+      createEmptyData,
     );
+
+    // Cast from TEvent to TEventSubType because we prevented it from being the
+    // same type
+    return eventStatusStreamControllerWithLastUpdate
+        as _EventStatusStreamControllerWithLastUpdate<TEventSubType, TStatus>;
   }
 
   /// {@template bloc_event_status_container.status_of_all_events}
-  /// Returns the most recent status emitted across all event types.
+  /// Returns the most recent event status update emitted across all event
+  /// types.
   ///
   /// Returns `null` if no statuses have been emitted yet.
   /// {@endtemplate}
-  TStatus? statusOfAllEvents() {
-    return _lastStatusOfAllEvents;
+  EventStatusUpdate<TEvent, TStatus>? eventStatusOfAllEvents() {
+    return _allEventStatusStreamControllerWithLastUpdate.lastEventStatusUpdate;
   }
 
   /// {@template bloc_event_status_container.stream_status_of_all_events}
@@ -108,19 +111,23 @@ class BlocEventStatusContainer<TEvent, TState, TStatus> {
   /// Each subscriber will receive every [EventStatusUpdate] emitted via
   /// [emitEventStatus], regardless of the event subtype.
   /// {@endtemplate}
-  Stream<EventStatusUpdate<TEvent, TStatus>> streamStatusOfAllEvents() =>
-      _allEventStatusStreamController.stream;
+  Stream<EventStatusUpdate<TEvent, TStatus>> streamEventStatusOfAllEvents() =>
+      _allEventStatusStreamControllerWithLastUpdate
+          .eventStatusStreamController.stream;
 
   /// {@template bloc_event_status_container.status_of}
-  /// Returns the most recent status emitted for events of type [TEventSubType].
+  /// Returns the most recent event status update emitted for events of type
+  /// [TEventSubType].
   ///
   /// Returns `null` if no statuses for that subtype have been emitted yet.
   ///
   /// Type parameters:
   /// - TEventSubType: The specific subtype of [TEvent] to query.
   /// {@endtemplate}
-  TStatus? statusOf<TEventSubType extends TEvent>() {
-    return _getEventStatusMapValue<TEventSubType>().status;
+  EventStatusUpdate<TEventSubType, TStatus>?
+      eventStatusOf<TEventSubType extends TEvent>() {
+    return _getEventStatusStreamControllerWithLastUpdateValue<TEventSubType>()
+        .lastEventStatusUpdate;
   }
 
   /// {@template bloc_event_status_container.stream_status_of}
@@ -133,8 +140,10 @@ class BlocEventStatusContainer<TEvent, TState, TStatus> {
   /// - TEventSubType: The specific subtype of [TEvent] to listen for.
   /// {@endtemplate}
   Stream<EventStatusUpdate<TEventSubType, TStatus>>
-      streamStatusOf<TEventSubType extends TEvent>() {
-    return _getEventStatusMapValue<TEventSubType>().streamController.stream;
+      streamEventStatusOf<TEventSubType extends TEvent>() {
+    return _getEventStatusStreamControllerWithLastUpdateValue<TEventSubType>()
+        .eventStatusStreamController
+        .stream;
   }
 
   /// {@template bloc_event_status_container.emit_event_status}
@@ -163,22 +172,42 @@ class BlocEventStatusContainer<TEvent, TState, TStatus> {
     // This is wrong
     //// if (status == statusOf<TEventSubType>()) return;
 
-    // Update the status
-    _updateStatusInMap<TEventSubType>(status);
+    final eventStatusStreamControllerWithLastUpdate =
+        _getEventStatusStreamControllerWithLastUpdateValue<TEventSubType>();
 
-    // Update the last status
-    _lastStatusOfAllEvents = status;
+    // Save the last update for the specific event type
+    _eventStatusStreamControllerWithLastUpdateMap[TEventSubType] = (
+      // Update the status
+      lastEventStatusUpdate: (
+        event: event,
+        status: status,
+      ),
+      // Keep the stream controller as is
+      eventStatusStreamController:
+          eventStatusStreamControllerWithLastUpdate.eventStatusStreamController,
+    );
 
-    // Add the status to the stream
-    _getEventStatusMapValue<TEventSubType>().streamController.add(
+    // Add the status to the stream controller for the specific event type
+    eventStatusStreamControllerWithLastUpdate.eventStatusStreamController.add(
       (
         event: event,
         status: status,
       ),
     );
 
-    // Add the event with the status to the event-specific streamcontroller
-    _allEventStatusStreamController.add(
+    // Save the last update for all events
+    _allEventStatusStreamControllerWithLastUpdate = (
+      lastEventStatusUpdate: (
+        event: event,
+        status: status,
+      ),
+      eventStatusStreamController: _allEventStatusStreamControllerWithLastUpdate
+          .eventStatusStreamController,
+    );
+
+    // Add the status to the global stream controller
+    _allEventStatusStreamControllerWithLastUpdate.eventStatusStreamController
+        .add(
       (
         event: event,
         status: status,
@@ -195,11 +224,13 @@ class BlocEventStatusContainer<TEvent, TState, TStatus> {
   /// {@endtemplate}
   @mustCallSuper
   Future<void> close() async {
-    await _allEventStatusStreamController.close();
+    await _allEventStatusStreamControllerWithLastUpdate
+        .eventStatusStreamController
+        .close();
     // Single events
-    for (final record in _eventStatusMap.values) {
-      await record.streamController.close();
+    for (final record in _eventStatusStreamControllerWithLastUpdateMap.values) {
+      await record.eventStatusStreamController.close();
     }
-    _eventStatusMap.clear();
+    _eventStatusStreamControllerWithLastUpdateMap.clear();
   }
 }

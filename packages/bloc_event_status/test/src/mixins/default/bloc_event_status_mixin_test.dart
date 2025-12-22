@@ -108,24 +108,24 @@ void main() {
     });
 
     test('no event status is available initially', () {
-      expect(bloc.statusOfAllEvents(), isNull);
+      expect(bloc.eventStatusOfAllEvents(), isNull);
     });
 
     test('main event class cannot be used', () {
       expect(
-        () => bloc.statusOf<Event>(),
+        () => bloc.eventStatusOf<Event>(),
         throwsArgumentError,
       );
     });
 
     test('event statuses are available once emitted', () {
       bloc.emitLoadingStatus(EventA('1'));
-      expect(bloc.statusOfAllEvents(), equals(const LoadingEventStatus()));
+      expect(bloc.eventStatusOfAllEvents(), equals((event: EventA('1'), status: const LoadingEventStatus())));
 
       bloc.emitSuccessStatus<EventB, Null>(EventB(10));
       expect(
-        bloc.statusOf<EventB>(),
-        equals(const SuccessEventStatus<Null>()),
+        bloc.eventStatusOf<EventB>(),
+        equals((event: EventB(10), status: const SuccessEventStatus<Null>())),
       );
     });
 
@@ -135,7 +135,7 @@ void main() {
       final eventC = EventC(11.1);
 
       expect(
-        bloc.streamStatusOf<EventA>(),
+        bloc.streamEventStatusOf<EventA>(),
         emitsInOrder([
           (event: eventA, status: const LoadingEventStatus()),
           (event: eventA, status: const SuccessEventStatus<Null>()),
@@ -143,7 +143,7 @@ void main() {
       );
 
       expect(
-        bloc.streamStatusOf<EventB>(),
+        bloc.streamEventStatusOf<EventB>(),
         emitsInOrder([
           (event: eventB, status: const LoadingEventStatus()),
           (event: eventB, status: const FailureEventStatus(_myFailure)),
@@ -151,7 +151,7 @@ void main() {
       );
 
       expect(
-        bloc.streamStatusOf<EventC>(),
+        bloc.streamEventStatusOf<EventC>(),
         emitsInOrder([
           (event: eventC, status: const LoadingEventStatus()),
           (
@@ -171,16 +171,16 @@ void main() {
         'event statuses of specific type remain available when an event of '
         'another type is emitted', () {
       bloc.emitLoadingStatus(EventA('1'));
-      expect(bloc.statusOf<EventA>(), equals(const LoadingEventStatus()));
+      expect(bloc.eventStatusOf<EventA>(), equals((event: EventA('1'), status: const LoadingEventStatus())));
 
       bloc.emitSuccessStatus<EventB, Null>(EventB(10));
       expect(
-        bloc.statusOf<EventB>(),
-        equals(const SuccessEventStatus<Null>()),
+        bloc.eventStatusOf<EventB>(),
+        equals((event: EventB(10), status: const SuccessEventStatus<Null>())),
       );
 
       // Check that the status of EventA is still available
-      expect(bloc.statusOf<EventA>(), equals(const LoadingEventStatus()));
+      expect(bloc.eventStatusOf<EventA>(), equals((event: EventA('1'), status: const LoadingEventStatus())));
     });
 
     test('event statuses are emitted', () {
@@ -191,7 +191,7 @@ void main() {
       const statusB = SuccessEventStatus<Null>();
 
       expect(
-        bloc.streamStatusOfAllEvents(),
+        bloc.streamEventStatusOfAllEvents(),
         emitsInOrder([
           (event: eventA, status: statusA),
           (event: eventB, status: statusB),
@@ -199,14 +199,14 @@ void main() {
       );
 
       expect(
-        bloc.streamStatusOf<EventA>(),
+        bloc.streamEventStatusOf<EventA>(),
         emitsInOrder([
           (event: eventA, status: statusA),
         ]),
       );
 
       expect(
-        bloc.streamStatusOf<EventB>(),
+        bloc.streamEventStatusOf<EventB>(),
         emitsInOrder([
           (event: eventB, status: statusB),
         ]),
@@ -224,7 +224,7 @@ void main() {
       const statusA = FailureEventStatus(failure);
 
       expect(
-        bloc.streamStatusOfAllEvents(),
+        bloc.streamEventStatusOfAllEvents(),
         emitsInOrder([
           (event: eventA, status: statusA),
           emitsDone,
@@ -232,7 +232,7 @@ void main() {
       );
 
       expect(
-        bloc.streamStatusOf<EventA>(),
+        bloc.streamEventStatusOf<EventA>(),
         emitsInOrder([
           (event: eventA, status: statusA),
           emitsDone,

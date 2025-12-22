@@ -183,7 +183,7 @@ class _BloCustomEventStatusListenerBaseState<
 
   void _subscribe() {
     _streamSubscription = _bloc
-        .streamStatusOf<TEventSubType>()
+        .streamEventStatusOf<TEventSubType>()
         .where((update) => widget.filter?.call(update.event) ?? true)
         .transform(WithPrevious())
         .listen(

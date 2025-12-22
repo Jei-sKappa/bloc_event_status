@@ -399,12 +399,12 @@ void main() {
       // Use a real StreamController to check listeners
       final controller = StreamController<
           EventStatusUpdate<TestEvent, EventStatus>>.broadcast();
-      when(mockBloc.streamStatusOfAllEvents).thenAnswer(
+      when(mockBloc.streamEventStatusOfAllEvents).thenAnswer(
         (_) => controller.stream,
       );
       final specificControllerA =
           StreamController<EventStatusUpdate<EventA, EventStatus>>.broadcast();
-      when(() => mockBloc.streamStatusOf<EventA>()).thenAnswer(
+      when(() => mockBloc.streamEventStatusOf<EventA>()).thenAnswer(
         (_) => specificControllerA.stream,
       );
 

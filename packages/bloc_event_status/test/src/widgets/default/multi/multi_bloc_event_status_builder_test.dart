@@ -565,5 +565,75 @@ void main() {
         findsOneWidget,
       );
     });
+
+    testWidgets('respects filter on initial build (initState)', (tester) async {
+      final eventA = EventA('blocked');
+
+      // Emit an event status before building the widget
+      testBloc.emitSuccessStatus(eventA);
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: BlocProvider.value(
+              value: testBloc,
+              child: MultiBlocEventStatusBuilder<TestBloc, TestEvent, int>(
+                // Filter out 'blocked' data
+                filter: (event) => event is! EventA || event.data != 'blocked',
+                builder: testBuilder,
+              ),
+            ),
+          ),
+        ),
+      );
+
+      // Should be None/None because the last event (EventA) is filtered out
+      expect(find.text('Event: None, Status: None'), findsOneWidget);
+    });
+
+    testWidgets('respects filter when switching blocs (didUpdateWidget)',
+        (tester) async {
+      final eventA = EventA('blocked');
+
+      final testBloc2 = TestBloc();
+      addTearDown(() async {
+        await testBloc2.close();
+      });
+
+      // testBloc2 has an event that will be filtered out
+      testBloc2.emitSuccessStatus(eventA);
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: MultiBlocEventStatusBuilder<TestBloc, TestEvent, int>(
+              bloc: testBloc,
+              filter: (event) => event is! EventA || event.data != 'blocked',
+              builder: testBuilder,
+            ),
+          ),
+        ),
+      );
+
+      // Initial state
+      expect(find.text('Event: None, Status: None'), findsOneWidget);
+
+      // Switch to testBloc2
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: MultiBlocEventStatusBuilder<TestBloc, TestEvent, int>(
+              bloc: testBloc2,
+              filter: (event) => event is! EventA || event.data != 'blocked',
+              builder: testBuilder,
+            ),
+          ),
+        ),
+      );
+
+      // Should still be None/None because testBloc2's last event
+      // (EventA('blocked')) is filtered out
+      expect(find.text('Event: None, Status: None'), findsOneWidget);
+    });
   });
 }

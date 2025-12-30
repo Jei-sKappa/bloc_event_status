@@ -83,12 +83,6 @@ class _BloCustomcEventStatusListenerBaseState<
         TStatus>
     extends SingleChildState<
         MultiBlocCustomEventStatusListener<TBloc, TEvent, TStatus>> {
-  final Map<
-          Type,
-          StreamSubscription<
-              PreviousValuePair<EventStatusUpdate<TEvent, TStatus>>>>
-      _streamSubscriptionMap = {};
-
   StreamSubscription<PreviousValuePair<EventStatusUpdate<TEvent, TStatus>>>?
       _allEventsStreamSubscription;
 
@@ -113,11 +107,10 @@ class _BloCustomcEventStatusListenerBaseState<
     final currentBloc = widget.bloc ?? oldBloc;
 
     if (oldBloc != currentBloc) {
-      if (_streamSubscriptionMap.isNotEmpty ||
-          _allEventsStreamSubscription != null) {
+      if (_allEventsStreamSubscription != null) {
         _unsubscribe();
-        _bloc = currentBloc;
       }
+      _bloc = currentBloc;
 
       _subscribe();
     }
@@ -130,11 +123,10 @@ class _BloCustomcEventStatusListenerBaseState<
     final bloc = widget.bloc ?? context.read<TBloc>();
 
     if (_bloc != bloc) {
-      if (_streamSubscriptionMap.isNotEmpty ||
-          _allEventsStreamSubscription != null) {
+      if (_allEventsStreamSubscription != null) {
         _unsubscribe();
-        _bloc = bloc;
       }
+      _bloc = bloc;
 
       _subscribe();
     }
@@ -177,9 +169,6 @@ class _BloCustomcEventStatusListenerBaseState<
 
   void _unsubscribe() {
     _allEventsStreamSubscription?.cancel();
-    for (final streamSubscription in _streamSubscriptionMap.values) {
-      streamSubscription.cancel();
-    }
-    _streamSubscriptionMap.clear();
+    _allEventsStreamSubscription = null;
   }
 }

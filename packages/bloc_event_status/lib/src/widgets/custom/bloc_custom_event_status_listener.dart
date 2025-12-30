@@ -146,8 +146,8 @@ class _BloCustomEventStatusListenerBaseState<
     if (oldBloc != currentBloc) {
       if (_streamSubscription != null) {
         _unsubscribe();
-        _bloc = currentBloc;
       }
+      _bloc = currentBloc;
 
       _subscribe();
     }
@@ -162,8 +162,8 @@ class _BloCustomEventStatusListenerBaseState<
     if (_bloc != bloc) {
       if (_streamSubscription != null) {
         _unsubscribe();
-        _bloc = bloc;
       }
+      _bloc = bloc;
 
       _subscribe();
     }

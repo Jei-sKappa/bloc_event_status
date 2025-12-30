@@ -94,5 +94,24 @@ void main() {
 
       await controller.close();
     });
+
+    test('propagates pause and resume events', () async {
+      final controller = StreamController<int>();
+      final stream = controller.stream;
+      final transformedStream = stream.transform(WithPrevious());
+
+      final sub = transformedStream.listen((_) {});
+
+      expect(controller.isPaused, isFalse);
+
+      sub.pause();
+      expect(controller.isPaused, isTrue);
+
+      sub.resume();
+      expect(controller.isPaused, isFalse);
+
+      await sub.cancel();
+      await controller.close();
+    });
   });
 }

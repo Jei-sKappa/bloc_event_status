@@ -179,6 +179,7 @@ class BlocEventStatusContainer<TEvent, TState, TStatus> {
   /// {@endtemplate}
   @mustCallSuper
   Future<void> close() async {
+    isClosed = true;
     await _globalStreamController.close();
     // Single events
     for (final record in _perEventTypeStreamControllerMap.values) {

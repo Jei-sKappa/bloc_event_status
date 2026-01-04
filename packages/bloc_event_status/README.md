@@ -195,7 +195,7 @@ You can use the `BlocEventStatusBuilder` widget to build your UI based on the ev
 It's equivalent to `BlocEventStatusListener` but instead of a listener function, it takes a builder function that returns a widget.
 
 ```dart
-BlocEventStatusBuilder<TodoBloc, TodoEvent, TodoDeleted, TodoState>(
+BlocEventStatusBuilder<TodoBloc, TodoEvent, TodoDeleted>(
   filter: (event) => event.todo.id == todos[index].id,
   buildWhen: (previous, current) =>
       previous != current &&

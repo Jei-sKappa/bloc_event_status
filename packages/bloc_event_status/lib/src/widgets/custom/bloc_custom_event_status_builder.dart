@@ -65,10 +65,9 @@ typedef BlocCustomEventStatusBuilderCondition<TStatus> = bool Function(
 /// ```
 /// {@endtemplate}
 class BlocCustomEventStatusBuilder<
-    TBloc extends BlocCustomEventStatusMixin<TEvent, TState, TStatus>,
+    TBloc extends BlocCustomEventStatusMixin<TEvent, dynamic, TStatus>,
     TEvent,
     TEventSubType extends TEvent,
-    TState,
     TStatus> extends StatefulWidget {
   /// {@macro bloc_custom_event_status_builder}
   const BlocCustomEventStatusBuilder({
@@ -102,21 +101,18 @@ class BlocCustomEventStatusBuilder<
   final BlocCustomEventStatusWidgetBuilder<TEventSubType, TStatus> builder;
 
   @override
-  State<
-      BlocCustomEventStatusBuilder<TBloc, TEvent, TEventSubType, TState,
-          TStatus>> createState() => _BloCustomEventStatusBuilderState<TBloc,
-      TEvent, TEventSubType, TState, TStatus>();
+  State<BlocCustomEventStatusBuilder<TBloc, TEvent, TEventSubType, TStatus>>
+      createState() => _BloCustomEventStatusBuilderState<TBloc, TEvent,
+          TEventSubType, TStatus>();
 }
 
 class _BloCustomEventStatusBuilderState<
-        TBloc extends BlocCustomEventStatusMixin<TEvent, TState, TStatus>,
+        TBloc extends BlocCustomEventStatusMixin<TEvent, dynamic, TStatus>,
         TEvent,
         TEventSubType extends TEvent,
-        TState,
         TStatus>
     extends State<
-        BlocCustomEventStatusBuilder<TBloc, TEvent, TEventSubType, TState,
-            TStatus>> {
+        BlocCustomEventStatusBuilder<TBloc, TEvent, TEventSubType, TStatus>> {
   late TBloc _bloc;
   late EventStatusUpdate<TEventSubType, TStatus>? _eventStatus;
 
@@ -134,7 +130,7 @@ class _BloCustomEventStatusBuilderState<
 
   @override
   void didUpdateWidget(
-    BlocCustomEventStatusBuilder<TBloc, TEvent, TEventSubType, TState, TStatus>
+    BlocCustomEventStatusBuilder<TBloc, TEvent, TEventSubType, TStatus>
         oldWidget,
   ) {
     super.didUpdateWidget(oldWidget);

@@ -100,7 +100,7 @@ void main() {
           home: Scaffold(
             body: BlocProvider.value(
               value: testBloc,
-              child: BlocEventStatusBuilder<TestBloc, TestEvent, EventA, int>(
+              child: BlocEventStatusBuilder<TestBloc, TestEvent, EventA>(
                 builder: testBuilder,
               ),
             ),
@@ -121,7 +121,7 @@ void main() {
           home: Scaffold(
             body: BlocProvider.value(
               value: testBloc,
-              child: BlocEventStatusBuilder<TestBloc, TestEvent, EventA, int>(
+              child: BlocEventStatusBuilder<TestBloc, TestEvent, EventA>(
                 builder: testBuilder,
               ),
             ),
@@ -148,7 +148,7 @@ void main() {
           home: Scaffold(
             body: BlocProvider.value(
               value: testBloc,
-              child: BlocEventStatusBuilder<TestBloc, TestEvent, EventA, int>(
+              child: BlocEventStatusBuilder<TestBloc, TestEvent, EventA>(
                 filter: (event) => event.data == 'allowed',
                 builder: testBuilder,
               ),
@@ -172,7 +172,7 @@ void main() {
           home: Scaffold(
             body: BlocProvider.value(
               value: testBloc,
-              child: BlocEventStatusBuilder<TestBloc, TestEvent, EventA, int>(
+              child: BlocEventStatusBuilder<TestBloc, TestEvent, EventA>(
                 // Only allow 'allowed' event
                 filter: (event) => event.data == 'allowed',
                 builder: testBuilder,
@@ -206,7 +206,7 @@ void main() {
           home: Scaffold(
             body: BlocProvider.value(
               value: testBloc,
-              child: BlocEventStatusBuilder<TestBloc, TestEvent, EventA, int>(
+              child: BlocEventStatusBuilder<TestBloc, TestEvent, EventA>(
                 // Only rebuild when status changes to success
                 buildWhen: (_, current) =>
                     current == const SuccessEventStatus<Null>(),
@@ -243,7 +243,7 @@ void main() {
           home: Scaffold(
             body: BlocProvider.value(
               value: testBloc,
-              child: BlocEventStatusBuilder<TestBloc, TestEvent, EventA, int>(
+              child: BlocEventStatusBuilder<TestBloc, TestEvent, EventA>(
                 // Only rebuild when status changes from loading to success
                 buildWhen: (prev, current) =>
                     prev == const LoadingEventStatus() &&
@@ -286,7 +286,7 @@ void main() {
           home: Scaffold(
             body: BlocProvider.value(
               value: testBloc,
-              child: BlocEventStatusBuilder<TestBloc, TestEvent, EventA, int>(
+              child: BlocEventStatusBuilder<TestBloc, TestEvent, EventA>(
                 // No bloc explicitly provided
                 builder: testBuilder,
               ),
@@ -316,7 +316,7 @@ void main() {
           home: Scaffold(
             body: BlocProvider.value(
               value: contextBloc,
-              child: BlocEventStatusBuilder<TestBloc, TestEvent, EventA, int>(
+              child: BlocEventStatusBuilder<TestBloc, TestEvent, EventA>(
                 bloc: providedBloc, // Explicitly provide the BLoC
                 builder: testBuilder,
               ),
@@ -356,7 +356,7 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
-            body: BlocEventStatusBuilder<TestBloc, TestEvent, EventA, int>(
+            body: BlocEventStatusBuilder<TestBloc, TestEvent, EventA>(
               bloc: blocA,
               builder: testBuilder,
             ),
@@ -374,7 +374,7 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
-            body: BlocEventStatusBuilder<TestBloc, TestEvent, EventA, int>(
+            body: BlocEventStatusBuilder<TestBloc, TestEvent, EventA>(
               bloc: blocB, // Switch to Bloc B
               builder: testBuilder,
             ),
@@ -412,7 +412,7 @@ void main() {
           home: Scaffold(
             body: BlocProvider.value(
               value: testBloc,
-              child: BlocEventStatusBuilder<TestBloc, TestEvent, EventA, int>(
+              child: BlocEventStatusBuilder<TestBloc, TestEvent, EventA>(
                 buildWhen: (prev, current) {
                   buildWhenCalled = true;
                   capturedPreviousStatus = prev;
@@ -452,7 +452,7 @@ void main() {
           home: Scaffold(
             body: BlocProvider.value(
               value: testBloc,
-              child: BlocEventStatusBuilder<TestBloc, TestEvent, EventA, int>(
+              child: BlocEventStatusBuilder<TestBloc, TestEvent, EventA>(
                 // Building specifically for EventA
                 builder: testBuilder, // Uses EventA?
               ),
@@ -484,7 +484,7 @@ void main() {
           home: Scaffold(
             body: BlocProvider.value(
               value: testBloc,
-              child: BlocEventStatusBuilder<TestBloc, TestEvent, EventA, int>(
+              child: BlocEventStatusBuilder<TestBloc, TestEvent, EventA>(
                 builder: testBuilder,
               ),
             ),
@@ -518,7 +518,7 @@ void main() {
           home: Scaffold(
             body: BlocProvider.value(
               value: testBloc,
-              child: BlocEventStatusBuilder<TestBloc, TestEvent, EventA, int>(
+              child: BlocEventStatusBuilder<TestBloc, TestEvent, EventA>(
                 builder: testBuilder,
               ),
             ),
@@ -542,7 +542,7 @@ void main() {
             body: BlocProvider.value(
               value: testBloc,
               // Listen only to EventA
-              child: BlocEventStatusBuilder<TestBloc, TestEvent, EventA, int>(
+              child: BlocEventStatusBuilder<TestBloc, TestEvent, EventA>(
                 // Filter out 'blocked' data
                 filter: (event) => event.data != 'blocked',
                 builder: testBuilder,
@@ -571,7 +571,7 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
-            body: BlocEventStatusBuilder<TestBloc, TestEvent, EventA, int>(
+            body: BlocEventStatusBuilder<TestBloc, TestEvent, EventA>(
               bloc: testBloc,
               filter: (event) => event.data != 'blocked',
               builder: testBuilder,
@@ -587,7 +587,7 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
-            body: BlocEventStatusBuilder<TestBloc, TestEvent, EventA, int>(
+            body: BlocEventStatusBuilder<TestBloc, TestEvent, EventA>(
               bloc: testBloc2,
               filter: (event) => event.data != 'blocked',
               builder: testBuilder,

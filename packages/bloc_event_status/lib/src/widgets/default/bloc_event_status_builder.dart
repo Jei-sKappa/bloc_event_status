@@ -32,8 +32,10 @@ import 'package:flutter/widgets.dart';
 /// )
 /// ```
 /// {@endtemplate}
-class BlocEventStatusBuilder<TBloc extends BlocEventStatusMixin<TEvent, TState>,
-    TEvent, TEventSubType extends TEvent, TState> extends StatelessWidget {
+class BlocEventStatusBuilder<
+    TBloc extends BlocEventStatusMixin<TEvent, dynamic>,
+    TEvent,
+    TEventSubType extends TEvent> extends StatelessWidget {
   /// {@macro bloc_event_status_builder}
   const BlocEventStatusBuilder({
     required this.builder,
@@ -66,8 +68,8 @@ class BlocEventStatusBuilder<TBloc extends BlocEventStatusMixin<TEvent, TState>,
   final BlocCustomEventStatusWidgetBuilder<TEventSubType, EventStatus> builder;
 
   @override
-  Widget build(BuildContext context) => BlocCustomEventStatusBuilder<TBloc,
-          TEvent, TEventSubType, TState, EventStatus>(
+  Widget build(BuildContext context) =>
+      BlocCustomEventStatusBuilder<TBloc, TEvent, TEventSubType, EventStatus>(
         bloc: bloc,
         builder: builder,
         filter: filter,

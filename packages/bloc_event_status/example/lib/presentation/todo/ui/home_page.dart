@@ -225,8 +225,7 @@ class _TodoList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocEventStatusBuilder<TodoBloc, TodoEvent, TodoLoadRequested,
-        TodoState>(
+    return BlocEventStatusBuilder<TodoBloc, TodoEvent, TodoLoadRequested>(
       builder: (context, event, status) {
         switch (status) {
           case null:
@@ -334,8 +333,7 @@ class _TodoTile extends StatelessWidget {
       ),
       trailing: SizedBox.square(
         dimension: _actionSize,
-        child:
-            BlocEventStatusBuilder<TodoBloc, TodoEvent, TodoDeleted, TodoState>(
+        child: BlocEventStatusBuilder<TodoBloc, TodoEvent, TodoDeleted>(
           filter: (event) => event.todo.id == todo.id,
           buildWhen: (previous, current) =>
               previous != current &&

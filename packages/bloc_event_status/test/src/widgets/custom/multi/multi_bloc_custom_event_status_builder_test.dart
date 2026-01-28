@@ -9,9 +9,6 @@ import 'package:mocktail/mocktail.dart';
 
 import '../../../../fakes.dart';
 
-class MockBloc extends Mock
-    implements BlocCustomEventStatusMixin<TestEvent, int, TestStatus> {}
-
 // Test Bloc
 class TestBloc extends Bloc<TestEvent, int>
     with BlocCustomEventStatusMixin<TestEvent, int, TestStatus> {
@@ -103,7 +100,7 @@ void main() {
           home: Scaffold(
             body: BlocProvider.value(
               value: testBloc,
-              child: MultiBlocCustomEventStatusBuilder<TestBloc, TestEvent, int,
+              child: MultiBlocCustomEventStatusBuilder<TestBloc, TestEvent,
                   TestStatus>(
                 builder: testBuilder,
               ),
@@ -126,7 +123,7 @@ void main() {
           home: Scaffold(
             body: BlocProvider.value(
               value: testBloc,
-              child: MultiBlocCustomEventStatusBuilder<TestBloc, TestEvent, int,
+              child: MultiBlocCustomEventStatusBuilder<TestBloc, TestEvent,
                   TestStatus>(
                 builder: testBuilder,
               ),
@@ -161,7 +158,7 @@ void main() {
           home: Scaffold(
             body: BlocProvider.value(
               value: testBloc,
-              child: MultiBlocCustomEventStatusBuilder<TestBloc, TestEvent, int,
+              child: MultiBlocCustomEventStatusBuilder<TestBloc, TestEvent,
                   TestStatus>(
                 filter: (event) =>
                     (event is EventA && event.data == 'allowed') ||
@@ -196,7 +193,7 @@ void main() {
           home: Scaffold(
             body: BlocProvider.value(
               value: testBloc,
-              child: MultiBlocCustomEventStatusBuilder<TestBloc, TestEvent, int,
+              child: MultiBlocCustomEventStatusBuilder<TestBloc, TestEvent,
                   TestStatus>(
                 // Only allow EventA with data 'allowed'
                 filter: (event) => event is EventA && event.data == 'allowed',
@@ -251,7 +248,7 @@ void main() {
           home: Scaffold(
             body: BlocProvider.value(
               value: testBloc,
-              child: MultiBlocCustomEventStatusBuilder<TestBloc, TestEvent, int,
+              child: MultiBlocCustomEventStatusBuilder<TestBloc, TestEvent,
                   TestStatus>(
                 // Only rebuild when status changes to success
                 buildWhen: (_, current) => current == TestStatus.success,
@@ -288,7 +285,7 @@ void main() {
           home: Scaffold(
             body: BlocProvider.value(
               value: testBloc,
-              child: MultiBlocCustomEventStatusBuilder<TestBloc, TestEvent, int,
+              child: MultiBlocCustomEventStatusBuilder<TestBloc, TestEvent,
                   TestStatus>(
                 // Only rebuild when status changes from loading to success
                 buildWhen: (prev, current) =>
@@ -334,7 +331,7 @@ void main() {
           home: Scaffold(
             body: BlocProvider.value(
               value: testBloc,
-              child: MultiBlocCustomEventStatusBuilder<TestBloc, TestEvent, int,
+              child: MultiBlocCustomEventStatusBuilder<TestBloc, TestEvent,
                   TestStatus>(
                 // No bloc explicitly provided
                 builder: testBuilder,
@@ -369,7 +366,7 @@ void main() {
           home: Scaffold(
             body: BlocProvider.value(
               value: contextBloc,
-              child: MultiBlocCustomEventStatusBuilder<TestBloc, TestEvent, int,
+              child: MultiBlocCustomEventStatusBuilder<TestBloc, TestEvent,
                   TestStatus>(
                 bloc: providedBloc, // Explicitly provide the BLoC
                 builder: testBuilder,
@@ -416,7 +413,7 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
-            body: MultiBlocCustomEventStatusBuilder<TestBloc, TestEvent, int,
+            body: MultiBlocCustomEventStatusBuilder<TestBloc, TestEvent,
                 TestStatus>(
               bloc: blocA,
               builder: testBuilder,
@@ -438,7 +435,7 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
-            body: MultiBlocCustomEventStatusBuilder<TestBloc, TestEvent, int,
+            body: MultiBlocCustomEventStatusBuilder<TestBloc, TestEvent,
                 TestStatus>(
               bloc: blocB, // Switch to Bloc B
               builder: testBuilder,
@@ -480,7 +477,7 @@ void main() {
           home: Scaffold(
             body: BlocProvider.value(
               value: testBloc,
-              child: MultiBlocCustomEventStatusBuilder<TestBloc, TestEvent, int,
+              child: MultiBlocCustomEventStatusBuilder<TestBloc, TestEvent,
                   TestStatus>(
                 buildWhen: (prev, current) {
                   buildWhenCalled = true;
@@ -521,7 +518,7 @@ void main() {
           home: Scaffold(
             body: BlocProvider.value(
               value: testBloc,
-              child: MultiBlocCustomEventStatusBuilder<TestBloc, TestEvent, int,
+              child: MultiBlocCustomEventStatusBuilder<TestBloc, TestEvent,
                   TestStatus>(
                 builder: testBuilder,
               ),
@@ -559,7 +556,7 @@ void main() {
           home: Scaffold(
             body: BlocProvider.value(
               value: testBloc,
-              child: MultiBlocCustomEventStatusBuilder<TestBloc, TestEvent, int,
+              child: MultiBlocCustomEventStatusBuilder<TestBloc, TestEvent,
                   TestStatus>(
                 builder: testBuilder,
               ),
@@ -586,7 +583,7 @@ void main() {
           home: Scaffold(
             body: BlocProvider.value(
               value: testBloc,
-              child: MultiBlocCustomEventStatusBuilder<TestBloc, TestEvent, int,
+              child: MultiBlocCustomEventStatusBuilder<TestBloc, TestEvent,
                   TestStatus>(
                 // Filter out 'blocked' data
                 filter: (event) => event is! EventA || event.data != 'blocked',
@@ -616,7 +613,7 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
-            body: MultiBlocCustomEventStatusBuilder<TestBloc, TestEvent, int,
+            body: MultiBlocCustomEventStatusBuilder<TestBloc, TestEvent,
                 TestStatus>(
               bloc: testBloc,
               filter: (event) => event is! EventA || event.data != 'blocked',
@@ -633,7 +630,7 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
-            body: MultiBlocCustomEventStatusBuilder<TestBloc, TestEvent, int,
+            body: MultiBlocCustomEventStatusBuilder<TestBloc, TestEvent,
                 TestStatus>(
               bloc: testBloc2,
               filter: (event) => event is! EventA || event.data != 'blocked',
@@ -667,7 +664,7 @@ void main() {
           home: Scaffold(
             body: BlocProvider.value(
               value: testBloc,
-              child: MultiBlocCustomEventStatusBuilder<TestBloc, TestEvent, int,
+              child: MultiBlocCustomEventStatusBuilder<TestBloc, TestEvent,
                   TestStatus>(
                 key: key,
                 filter: (event) => event is! EventA || event.data != 'blocked',
@@ -687,7 +684,7 @@ void main() {
           home: Scaffold(
             body: BlocProvider.value(
               value: testBloc2,
-              child: MultiBlocCustomEventStatusBuilder<TestBloc, TestEvent, int,
+              child: MultiBlocCustomEventStatusBuilder<TestBloc, TestEvent,
                   TestStatus>(
                 key: key,
                 filter: (event) => event is! EventA || event.data != 'blocked',

@@ -78,7 +78,7 @@ class MultiBlocBuilderWithCustomEventStatus<
 
   @override
   Widget build(BuildContext context) {
-    return MultiBlocCustomEventStatusBuilder<TBloc, TEvent, TState, TStatus>(
+    return MultiBlocCustomEventStatusBuilder<TBloc, TEvent, TStatus>(
       bloc: bloc,
       filter: eventFilter,
       buildWhen: buildWhenStatus,

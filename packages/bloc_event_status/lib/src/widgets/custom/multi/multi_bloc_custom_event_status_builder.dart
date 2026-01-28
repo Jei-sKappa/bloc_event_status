@@ -13,7 +13,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 ///
 /// Example:
 /// ```dart
-/// MultiBlocCustomEventStatusBuilder<SubjectBloc, SubjectEvent, SubjectState, MyStatus>(
+/// MultiBlocCustomEventStatusBuilder<SubjectBloc, SubjectEvent, MyStatus>(
 ///   // optionally filter the events to listen to
 ///   filter: (event) =>
 ///       (event is MySubjectEvent && event.subject == "Flutter") ||
@@ -36,9 +36,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 /// ```
 /// {@endtemplate}
 class MultiBlocCustomEventStatusBuilder<
-    TBloc extends BlocCustomEventStatusMixin<TEvent, TState, TStatus>,
+    TBloc extends BlocCustomEventStatusMixin<TEvent, dynamic, TStatus>,
     TEvent,
-    TState,
     TStatus> extends StatefulWidget {
   /// {@macro multi_bloc_custom_event_status_builder}
   const MultiBlocCustomEventStatusBuilder({
@@ -68,18 +67,16 @@ class MultiBlocCustomEventStatusBuilder<
   final BlocCustomEventStatusWidgetBuilder<TEvent, TStatus> builder;
 
   @override
-  State<MultiBlocCustomEventStatusBuilder<TBloc, TEvent, TState, TStatus>>
+  State<MultiBlocCustomEventStatusBuilder<TBloc, TEvent, TStatus>>
       createState() =>
-          _BloCustomEventStatusBuilderState<TBloc, TEvent, TState, TStatus>();
+          _BloCustomEventStatusBuilderState<TBloc, TEvent, TStatus>();
 }
 
 class _BloCustomEventStatusBuilderState<
-        TBloc extends BlocCustomEventStatusMixin<TEvent, TState, TStatus>,
+        TBloc extends BlocCustomEventStatusMixin<TEvent, dynamic, TStatus>,
         TEvent,
-        TState,
         TStatus>
-    extends State<
-        MultiBlocCustomEventStatusBuilder<TBloc, TEvent, TState, TStatus>> {
+    extends State<MultiBlocCustomEventStatusBuilder<TBloc, TEvent, TStatus>> {
   late TBloc _bloc;
   late EventStatusUpdate<TEvent, TStatus>? _eventStatus;
 
@@ -97,7 +94,7 @@ class _BloCustomEventStatusBuilderState<
 
   @override
   void didUpdateWidget(
-    MultiBlocCustomEventStatusBuilder<TBloc, TEvent, TState, TStatus> oldWidget,
+    MultiBlocCustomEventStatusBuilder<TBloc, TEvent, TStatus> oldWidget,
   ) {
     super.didUpdateWidget(oldWidget);
     final oldBloc = oldWidget.bloc ?? context.read<TBloc>();

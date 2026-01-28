@@ -298,9 +298,9 @@ class _TodoTile extends StatelessWidget {
       leading: SizedBox.square(
         dimension: _actionSize,
         child:
-            //   BlocEventStatusBuilder<TodoBloc, TodoEvent, TodoToggled, TodoState>(
+            //   BlocEventStatusBuilder<TodoBloc, TodoEvent, TodoToggled>(
             // filter: (event) => event.todo.id == todo.id,
-            MultiBlocEventStatusBuilder<TodoBloc, TodoEvent, TodoState>(
+            MultiBlocEventStatusBuilder<TodoBloc, TodoEvent>(
           filter: (event) =>
               (event is TodoToggled && event.todo.id == todo.id) ||
               (event is TodoCompletitionSet && event.todo.id == todo.id),

@@ -12,7 +12,7 @@ import 'package:flutter/widgets.dart';
 ///
 /// Example:
 /// ```dart
-/// MultiBlocEventStatusBuilder<SubjectBloc, SubjectEvent, SubjectState>(
+/// MultiBlocEventStatusBuilder<SubjectBloc, SubjectEvent>(
 ///   // optionally filter the events to listen to
 ///   filter: (event) =>
 ///       (event is MySubjectEvent && event.subject == "Flutter") ||
@@ -35,9 +35,8 @@ import 'package:flutter/widgets.dart';
 /// ```
 /// {@endtemplate}
 class MultiBlocEventStatusBuilder<
-    TBloc extends BlocEventStatusMixin<TEvent, TState>,
-    TEvent,
-    TState> extends StatelessWidget {
+    TBloc extends BlocEventStatusMixin<TEvent, dynamic>,
+    TEvent> extends StatelessWidget {
   /// {@macro multi_bloc_event_status_builder}
   const MultiBlocEventStatusBuilder({
     required this.builder,
@@ -67,7 +66,7 @@ class MultiBlocEventStatusBuilder<
 
   @override
   Widget build(BuildContext context) =>
-      MultiBlocCustomEventStatusBuilder<TBloc, TEvent, TState, EventStatus>(
+      MultiBlocCustomEventStatusBuilder<TBloc, TEvent, EventStatus>(
         bloc: bloc,
         builder: builder,
         filter: filter,

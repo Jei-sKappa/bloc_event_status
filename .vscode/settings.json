@@ -1,4 +1,7 @@
 {
   "conventionalCommits.gitmoji": false,
-  "conventionalCommits.scopes": ["example"]
+  "conventionalCommits.scopes": [
+    "example"
+  ],
+  "dart.flutterSdkPath": ".fvm/versions/3.38.6"
 }

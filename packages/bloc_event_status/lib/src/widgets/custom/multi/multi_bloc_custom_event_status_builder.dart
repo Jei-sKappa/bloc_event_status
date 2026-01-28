@@ -127,11 +127,6 @@ class _BloCustomEventStatusBuilderState<
 
   @override
   Widget build(BuildContext context) {
-    if (widget.bloc == null) {
-      // Trigger a rebuild if the bloc reference has changed.
-      // See https://github.com/felangel/bloc/issues/2127.
-      context.select<TBloc, bool>((bloc) => identical(_bloc, bloc));
-    }
     return MultiBlocCustomEventStatusListener<TBloc, TEvent, TStatus>(
       bloc: _bloc,
       filter: widget.filter,

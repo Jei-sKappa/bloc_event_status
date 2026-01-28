@@ -171,6 +171,11 @@ class _BloCustomEventStatusListenerBaseState<
 
   @override
   Widget buildWithChild(BuildContext context, Widget? child) {
+    if (widget.bloc == null) {
+      // Trigger a rebuild if the bloc reference has changed.
+      // See https://github.com/felangel/bloc/issues/2127.
+      context.select<TBloc, bool>((bloc) => identical(_bloc, bloc));
+    }
     return child ?? const SizedBox();
   }
 

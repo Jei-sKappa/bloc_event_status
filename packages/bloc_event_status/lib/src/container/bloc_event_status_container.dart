@@ -146,9 +146,8 @@ class BlocEventStatusContainer<TEvent, TState, TStatus> {
     TEventSubType event,
     TStatus status,
   ) {
-    if (isClosed) {
-      throw StateError('Cannot emit new states after calling close');
-    }
+    // If the container is closed, do not emit the status
+    if (isClosed) return;
 
     // This is wrong
     //// if (status == statusOf<TEventSubType>()) return;

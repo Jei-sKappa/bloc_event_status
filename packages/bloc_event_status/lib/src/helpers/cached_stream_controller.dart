@@ -59,7 +59,10 @@ class CachedStreamController<T> implements StreamController<T> {
       _innerStreamController.addStream(source, cancelOnError: cancelOnError);
 
   @override
-  Future<dynamic> close() => _innerStreamController.close();
+  Future<dynamic> close() async {
+    await _innerStreamController.close();
+    _lastEvent = null;
+  }
 
   @override
   Future<dynamic> get done => _innerStreamController.done;

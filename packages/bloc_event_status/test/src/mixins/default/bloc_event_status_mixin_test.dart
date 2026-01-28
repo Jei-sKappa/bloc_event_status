@@ -251,11 +251,33 @@ void main() {
       bloc.emitFailureStatus(eventA, error: failure);
       await bloc.close();
 
-      // Verify that emitting new statuses after closing the container throws an
-      // error
+      // Verify that the statuses are cleared
+      expect(
+        bloc.eventStatusOfAllEvents(),
+        isNull,
+      );
+
+      expect(
+        bloc.eventStatusOf<EventA>(),
+        isNull,
+      );
+
+      // Verify that emitting new statuses after closing the container DO NOT
+      // throw an error
       expect(
         () => bloc.emitSuccessStatus<EventA, Null>(eventA),
-        throwsStateError,
+        returnsNormally,
+      );
+
+      // Verify that the statuses are unchanged
+      expect(
+        bloc.eventStatusOfAllEvents(),
+        isNull,
+      );
+
+      expect(
+        bloc.eventStatusOf<EventA>(),
+        isNull,
       );
     });
   });

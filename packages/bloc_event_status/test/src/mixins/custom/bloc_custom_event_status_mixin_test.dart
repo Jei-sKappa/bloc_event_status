@@ -154,6 +154,7 @@ void main() {
         () async {
       final eventA = EventA('1');
       const statusA = TestStatus.loading;
+      const statusB = TestStatus.success;
 
       expect(
         bloc.streamEventStatusOfAllEvents(),
@@ -174,11 +175,33 @@ void main() {
       bloc.emitEventStatus(eventA, statusA);
       await bloc.close();
 
-      // Verify that emitting new statuses after closing the container throws an
-      // error
+      // Verify that the statuses are cleared
       expect(
-        () => bloc.emitEventStatus<EventA>(eventA, statusA),
-        throwsStateError,
+        bloc.eventStatusOfAllEvents(),
+        isNull,
+      );
+
+      expect(
+        bloc.eventStatusOf<EventA>(),
+        isNull,
+      );
+
+      // Verify that emitting new statuses after closing the container DO NOT
+      // throw an error
+      expect(
+        () => bloc.emitEventStatus<EventA>(eventA, statusB),
+        returnsNormally,
+      );
+
+      // Verify that the statuses are unchanged
+      expect(
+        bloc.eventStatusOfAllEvents(),
+        isNull,
+      );
+
+      expect(
+        bloc.eventStatusOf<EventA>(),
+        isNull,
       );
     });
   });

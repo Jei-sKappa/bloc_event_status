@@ -142,6 +142,7 @@ void main() {
         () async {
       final eventA = EventA('1');
       const statusA = TestStatus.loading;
+      const statusB = TestStatus.success;
 
       expect(
         container.streamEventStatusOfAllEvents(),
@@ -162,11 +163,33 @@ void main() {
       container.emitEventStatus(eventA, statusA);
       await container.close();
 
-      // Verify that emitting new statuses after closing the container throws an
-      // error
+      // Verify that the statuses are cleared
       expect(
-        () => container.emitEventStatus<EventA>(eventA, statusA),
-        throwsStateError,
+        container.eventStatusOfAllEvents(),
+        isNull,
+      );
+
+      expect(
+        container.eventStatusOf<EventA>(),
+        isNull,
+      );
+
+      // Verify that emitting new statuses after closing the container DO NOT
+      // throw an error
+      expect(
+        () => container.emitEventStatus<EventA>(eventA, statusB),
+        returnsNormally,
+      );
+
+      // Verify that the statuses are unchanged
+      expect(
+        container.eventStatusOfAllEvents(),
+        isNull,
+      );
+
+      expect(
+        container.eventStatusOf<EventA>(),
+        isNull,
       );
     });
   });

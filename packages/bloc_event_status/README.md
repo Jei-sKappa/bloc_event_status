@@ -215,32 +215,6 @@ BlocEventStatusBuilder<TodoBloc, TodoEvent, TodoDeleted>(
 ),
 ```
 
-#### BlocBuilderWithEventStatus
-
-In case you want to use the `BlocBuilder` widget and listen to the event status at the same time, you can use the `BlocBuilderWithEventStatus` widget.
-
-```dart
-BlocBuilderWithEventStatus<TodoBloc, TodoEvent, TodoToggled, TodoState>(
-  filter: (event) => event.todo.title == 'Learn Flutter',
-  // optionally select when the builder should be called based on the status
-  buildWhenStatus: (previous, current) =>
-      previous != current &&
-      (previous is LoadingEventStatus || current is LoadingEventStatus),
-  // optionally select when the builder should be called based on the state
-  buildWhenState: (previous, current) =>
-      previous.filter != current.filter && current.filter == Filter.done,
-  builder: (context, event, status, state) {
-    if (status is LoadingEventStatus) {
-      return const CircularProgressIndicator();
-    }
-
-    return const Text('Flutter is awesome! Here is the state: $state');
-  },
-  bloc: subjectBloc,
-  child: SomeWidget(),
-)
-```
-
 
 ## Advanced Usage
 

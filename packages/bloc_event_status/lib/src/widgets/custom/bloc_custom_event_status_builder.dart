@@ -168,8 +168,8 @@ class _BloCustomEventStatusBuilderState<
       bloc: _bloc,
       filter: widget.filter,
       listenWhen: widget.buildWhen,
-      listener: (context, event, state) => setState(() {
-        _eventStatus = (event: event, status: state);
+      listener: (context, event, status) => setState(() {
+        _eventStatus = (event: event, status: status);
       }),
       child: widget.builder(context, _eventStatus?.event, _eventStatus?.status),
     );

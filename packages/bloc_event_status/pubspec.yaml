@@ -10,6 +10,8 @@ topics: [bloc, state-management]
 environment:
   sdk: ^3.6.1
 
+resolution: workspace
+
 dependencies:
   bloc: '>=8.0.0 <10.0.0'
   equatable: ^2.0.8

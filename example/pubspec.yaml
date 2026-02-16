@@ -7,9 +7,10 @@ version: 1.0.0+1
 environment:
   sdk: ^3.6.1
 
+resolution: workspace
+
 dependencies:
-  bloc_event_status:
-    path: ../
+  bloc_event_status: ^2.0.0
   cupertino_icons: ^1.0.8
   equatable: ^2.0.8
   flutter:
@@ -24,12 +25,9 @@ dependencies:
   uuid: ^4.5.1
 
 dev_dependencies:
-  bloc_event_status_generator:
-    path: ../../bloc_event_status_generator
+  bloc_event_status_generator: ^1.0.0
   build_runner: ^2.11.1
   flutter_lints: ^5.0.0
-  flutter_test:
-    sdk: flutter
   freezed: ^3.2.5
   json_serializable: ^6.12.0
 

@@ -1,0 +1,8 @@
+name: _
+publish_to: none
+environment:
+  sdk: ^3.6.1
+workspace:
+  - example
+  - packages/bloc_event_status
+  - packages/bloc_event_status_generator

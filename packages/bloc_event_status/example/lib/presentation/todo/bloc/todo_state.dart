@@ -28,24 +28,28 @@ final initialTodos = [
 ];
 
 @freezed
-class TodoState with _$TodoState {
+class TodoState with _$TodoState, EventStatusesMixin<TodoEvent, EventStatus> {
   @override
   final List<Todo> todos;
   @override
   final Filter selectedFilter;
   @override
   final String query;
+  @override
+  final EventStatuses<TodoEvent, EventStatus> eventStatuses;
 
   const TodoState({
     required this.todos,
     required this.selectedFilter,
     required this.query,
+    required this.eventStatuses,
   });
 
   const TodoState.initial()
       : todos = const [],
         selectedFilter = Filter.all,
-        query = '';
+        query = '',
+        eventStatuses = const EventStatuses();
 
   List<Todo> get filteredTodos {
     late final List<Todo> matchingTodos;

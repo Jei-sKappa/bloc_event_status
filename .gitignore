@@ -1,5 +1,8 @@
+# Dart & Flutter
+.dart_tool/
 
 # FVM Version Cache
 .fvm/
 
+# Custom
 temp

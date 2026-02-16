@@ -85,7 +85,7 @@ class TodoBloc extends Bloc<TodoEvent, TodoState> {
       return;
     }
 
-    final newTodo = Todo(title: event.title);
+    final newTodo = Todo.autoGenerateId(title: event.title);
     final updatedTodos = [...state.todos, newTodo];
     emit.success(event, state.copyWith(todos: updatedTodos));
   }

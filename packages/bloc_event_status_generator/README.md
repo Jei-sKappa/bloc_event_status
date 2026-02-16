@@ -1,4 +1,4 @@
-# bloc_event_status_builder
+# bloc_event_status_generator
 
 Code generator for [bloc_event_status](https://pub.dev/packages/bloc_event_status) emitter extensions.
 
@@ -11,7 +11,7 @@ dependencies:
   bloc_event_status: ^2.0.0
 
 dev_dependencies:
-  bloc_event_status_builder: ^1.0.0
+  bloc_event_status_generator: ^1.0.0
   build_runner: ^2.0.0
 ```
 

@@ -1,6 +1,10 @@
 {
   "conventionalCommits.gitmoji": false,
+  "conventionalCommits.promptFooter": false,
   "conventionalCommits.scopes": [
+    // `packages/bloc_event_status`
+    "bes",
+    // `packages/bloc_event_status/example`
     "example"
   ],
   "dart.flutterSdkPath": ".fvm/versions/3.38.6"

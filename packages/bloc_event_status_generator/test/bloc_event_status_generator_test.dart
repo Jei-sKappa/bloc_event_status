@@ -1,7 +1,7 @@
 @Timeout.factor(3)
 library;
 
-import 'package:bloc_event_status_builder/bloc_event_status_builder.dart';
+import 'package:bloc_event_status_generator/bloc_event_status_generator.dart';
 import 'package:build/build.dart';
 import 'package:build_test/build_test.dart';
 import 'package:source_gen/source_gen.dart';
@@ -116,9 +116,11 @@ Future<String> _generate(
 
 String _defaultClassName(String assetId) {
   // Extract from 'a|lib/test_bloc.dart' -> 'TestBloc'
-  final fileName =
-      assetId.split('/').last.replaceAll('.dart', '');
-  return fileName.split('_').map((s) => s[0].toUpperCase() + s.substring(1)).join();
+  final fileName = assetId.split('/').last.replaceAll('.dart', '');
+  return fileName
+      .split('_')
+      .map((s) => s[0].toUpperCase() + s.substring(1))
+      .join();
 }
 
 class _FakeBuildStep implements BuildStep {

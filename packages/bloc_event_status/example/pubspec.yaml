@@ -24,8 +24,8 @@ dependencies:
   uuid: ^4.5.1
 
 dev_dependencies:
-  bloc_event_status_builder:
-    path: ../../bloc_event_status_builder
+  bloc_event_status_generator:
+    path: ../../bloc_event_status_generator
   build_runner: ^2.11.1
   flutter_lints: ^5.0.0
   flutter_test:

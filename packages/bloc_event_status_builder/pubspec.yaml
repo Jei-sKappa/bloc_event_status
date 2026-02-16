@@ -1,0 +1,25 @@
+name: bloc_event_status_builder
+description: Code generator for bloc_event_status emitter extensions.
+version: 1.0.0
+homepage: https://github.com/Jei-sKappa/bloc_event_status/tree/main/packages/bloc_event_status_builder
+repository: https://github.com/Jei-sKappa/bloc_event_status/tree/main/packages/bloc_event_status_builder
+issue_tracker: https://github.com/Jei-sKappa/bloc_event_status/issues
+topics: [bloc, state-management, code-generation]
+
+environment:
+  sdk: ^3.6.1
+
+dependencies:
+  analyzer: '>=6.0.0 <11.0.0'
+  bloc_event_status:
+    path: ../bloc_event_status
+  build: '>=2.0.0 <5.0.0'
+  source_gen: '>=2.0.0 <5.0.0'
+
+dev_dependencies:
+  bloc: '>=8.0.0 <10.0.0'
+  build_test: ^3.5.7
+  equatable: ^2.0.8
+  source_gen_test: ^1.0.0
+  test: ^1.29.0
+  very_good_analysis: ^10.1.0

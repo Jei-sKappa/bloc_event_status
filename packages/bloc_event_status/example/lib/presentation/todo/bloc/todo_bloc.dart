@@ -9,35 +9,11 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:example/presentation/programmed_failure/cubit/programmed_failure_cubit.dart';
 
 part 'todo_bloc.freezed.dart';
+part 'todo_bloc.g.dart';
 part 'todo_events.dart';
 part 'todo_state.dart';
 
-extension _TodoEventStatusEmitterX on Emitter<TodoState> {
-  void loading<TEventSubType extends TodoEvent>(TEventSubType event, TodoState newState) {
-    _emitEventStatus(event, const LoadingEventStatus(), newState);
-  }
-
-  void failure<TEventSubType extends TodoEvent>(TEventSubType event, TodoState newState, {required Exception error}) {
-    _emitEventStatus(event, FailureEventStatus(error), newState);
-  }
-
-  void success<TEventSubType extends TodoEvent>(TEventSubType event, TodoState newState) {
-    _emitEventStatus(event, const SuccessEventStatus(), newState);
-  }
-
-  void _emitEventStatus<TEventSubType extends TodoEvent>(
-    TEventSubType event,
-    EventStatus status,
-    TodoState state,
-  ) {
-    this(
-      state.copyWith(
-        eventStatuses: state.eventStatuses.update(event, status),
-      ),
-    );
-  }
-}
-
+@blocEventStatus
 class TodoBloc extends Bloc<TodoEvent, TodoState> {
   TodoBloc({
     required ProgrammedFailureCubit programmedFailureCubit,
@@ -65,7 +41,7 @@ class TodoBloc extends Bloc<TodoEvent, TodoState> {
     try {
       await _expensiveTask();
     } on Exception catch (e) {
-      emit.failure(event, state, error: e);
+      emit.failure(event, state, e);
       return;
     }
 
@@ -81,7 +57,7 @@ class TodoBloc extends Bloc<TodoEvent, TodoState> {
     try {
       await _expensiveTask();
     } on Exception catch (e) {
-      emit.failure(event, state, error: e);
+      emit.failure(event, state, e);
       return;
     }
 
@@ -99,7 +75,7 @@ class TodoBloc extends Bloc<TodoEvent, TodoState> {
     try {
       await _expensiveTask();
     } on Exception catch (e) {
-      emit.failure(event, state, error: e);
+      emit.failure(event, state, e);
       return;
     }
 
@@ -126,7 +102,7 @@ class TodoBloc extends Bloc<TodoEvent, TodoState> {
     try {
       await _expensiveTask();
     } on Exception catch (e) {
-      emit.failure(event, state, error: e);
+      emit.failure(event, state, e);
       return;
     }
 
@@ -150,7 +126,7 @@ class TodoBloc extends Bloc<TodoEvent, TodoState> {
     try {
       await _expensiveTask();
     } on Exception catch (e) {
-      emit.failure(event, state, error: e);
+      emit.failure(event, state, e);
       return;
     }
 

@@ -1,7 +1,5 @@
 # BlocEventStatus
 
-<!-- TODO: Update README -->
-
 [![BlocEventStatus CI](https://github.com/Jei-sKappa/bloc_event_status/actions/workflows/bloc_event_status-test.yml/badge.svg)](https://github.com/Jei-sKappa/bloc_event_status/actions/workflows/bloc_event_status-test.yml)
 [![codecov](https://codecov.io/github/Jei-sKappa/bloc_event_status/graph/badge.svg?token=LYNF1FJ8YF)](https://codecov.io/github/Jei-sKappa/bloc_event_status)
 [![pub package](https://img.shields.io/pub/v/bloc_event_status.svg)](https://pub.dev/packages/bloc_event_status)
@@ -10,34 +8,91 @@
 ![pub Likes](https://img.shields.io/pub/likes/bloc_event_status)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
-Track the status of events in a bloc without updating the state.
+Compose event status tracking into your BLoC state.
 
 ## Installation
-
-Add the package to your `pubspec.yaml`:
-
-```yaml
-dependencies:
-  bloc_event_status: ^2.0.0
-```
-
-and then run:
-
-```bash
-dart pub get
-```
-
-Or just install it with flutter cli:
 
 ```bash
 dart pub add bloc_event_status
 ```
 
+## Overview
+
+`bloc_event_status` lets you track the status of individual event types (loading, success, failure, or any custom status) directly inside your BLoC state. The status for each event type is stored in an `EventStatuses` field on the state, so you can react to it using standard `flutter_bloc` widgets (`BlocListener`, `BlocBuilder`, `BlocSelector`) without any extra widgets or streams.
+
 ## Getting Started
 
-### Update the Bloc
+### Step 1: Define your status type
 
-Start by creating a Bloc as usual:
+The package is status-agnostic — you define what statuses mean in your app. A sealed class is a natural fit:
+
+```dart
+sealed class EventStatus {
+  const EventStatus();
+}
+
+class LoadingEventStatus extends EventStatus {
+  const LoadingEventStatus();
+}
+
+class SuccessEventStatus extends EventStatus {
+  const SuccessEventStatus();
+}
+
+class FailureEventStatus extends EventStatus {
+  const FailureEventStatus(this.error);
+  final Exception error;
+}
+```
+
+An enum works just as well for simpler cases.
+
+### Step 2: Add `EventStatuses` to your state
+
+Add an `EventStatuses<TEvent, TStatus>` field to your state class. This is the only required change to your state.
+
+```dart
+class TodoState {
+  const TodoState({
+    required this.todos,
+    required this.eventStatuses,
+  });
+
+  const TodoState.initial()
+      : todos = const [],
+        eventStatuses = const EventStatuses();
+
+  final List<Todo> todos;
+  final EventStatuses<TodoEvent, EventStatus> eventStatuses;
+
+  TodoState copyWith({
+    List<Todo>? todos,
+    EventStatuses<TodoEvent, EventStatus>? eventStatuses,
+  }) {
+    return TodoState(
+      todos: todos ?? this.todos,
+      eventStatuses: eventStatuses ?? this.eventStatuses,
+    );
+  }
+}
+```
+
+**Optional: mix in `EventStatusesMixin`** to add convenience accessors directly on your state. This lets you write `state.statusOf<TodoLoadRequested>()` instead of `state.eventStatuses.statusOf<TodoLoadRequested>()`.
+
+```dart
+class TodoState with EventStatusesMixin<TodoEvent, EventStatus> {
+  // ... same as above ...
+
+  @override
+  final EventStatuses<TodoEvent, EventStatus> eventStatuses;
+}
+```
+
+The examples below use the mixin variant.
+
+### Step 3: Emit statuses in the BLoC
+
+Call `eventStatuses.update<EventType>(event, status)` and emit the resulting state via `copyWith`:
 
 ```dart
 class TodoBloc extends Bloc<TodoEvent, TodoState> {
@@ -49,246 +104,196 @@ class TodoBloc extends Bloc<TodoEvent, TodoState> {
     TodoLoadRequested event,
     Emitter<TodoState> emit,
   ) async {
+    emit(state.copyWith(
+      eventStatuses: state.eventStatuses.update(event, const LoadingEventStatus()),
+    ));
+
     try {
       final todos = await loadTodos();
 
-      emit(state.copyWith(todos: todos));
+      emit(state.copyWith(
+        todos: todos,
+        eventStatuses: state.eventStatuses.update(event, const SuccessEventStatus()),
+      ));
     } on Exception catch (e) {
-      addError(e);
-      return;
+      emit(state.copyWith(
+        eventStatuses: state.eventStatuses.update(event, FailureEventStatus(e)),
+      ));
     }
   }
 }
 ```
 
-Add the `BlocEventStatusMixin` to your Bloc class:
+**Tip:** An Emitter extension cleans this up significantly — see [Tips](#tips).
+
+### Step 4: React in the UI
+
+Use standard `flutter_bloc` widgets. The `EventStatusesMixin` methods (`statusOf`, `eventStatusOf`, `eventOf`) slot directly into `listenWhen` / `buildWhen` / `selector`.
+
+#### BlocListener — show a snackbar on failure
 
 ```dart
-class TodoBloc extends Bloc<TodoEvent, TodoState> with BlocEventStatusMixin<TodoEvent, TodoState> {
-  /* ... */
-}
-```
-
-Now you can use `emitEventStatus` to emit the status of the event:
-
-```dart
-/* ... */
-
-Future<void> _onLoadRequested(
-  TodoLoadRequested event,
-  Emitter<TodoState> emit,
-) async {
-  emitEventStatus(event, LoadingEventStatus()); // Emit loading status
-
-  try {
-    final todos = await loadTodos();
-
-    emit(state.copyWith(todos: todos));
-
-    emitEventStatus(event, SuccessEventStatus()); // Emit success status
-  } on Exception catch (e) {
-    emitEventStatus(event, FailureEventStatus(e)); // Emit failure status
-
-    addError(e);
-    return;
-  }
-}
-
-/* ... */
-```
-
-When using `BlocEventStatusMixin` you also get access to some useful methods:
-
-- `emitLoadingStatus()` - Emit loading status (equivalent to `emitEventStatus(event, LoadingEventStatus())`)
-- `emitSuccessStatus(data)` - Emit success status (equivalent to `emitEventStatus(event, SuccessEventStatus(data))`)
-- `emitFailureStatus(error)` - Emit failure status (equivalent to `emitEventStatus(event, FailureEventStatus(error))`)
-
-Let's see them in action:
-
-```dart
-/* ... */
-
-Future<void> _onLoadRequested(
-  TodoLoadRequested event,
-  Emitter<TodoState> emit,
-) async {
-  emitLoadingStatus(event);
-
-  try {
-    final todos = await loadTodos();
-
-    emit(state.copyWith(todos: todos));
-
-    emitSuccessStatus(event);
-  } on Exception catch (e) {
-    emitFailureStatus(event, error: e);
-
-    addError(e);
-    return;
-  }
-}
-
-/* ... */
-```
-
-The most powerful method of `BlocEventStatusMixin` is `handleEventStatus`. It allows you to wrap your already existing event handler and automatically emit the statuses of the event for you.
-Let's see how to use it:
-
-```dart
-class TodoBloc extends Bloc<TodoEvent, TodoState> with BlocEventStatusMixin<TodoEvent, TodoState> {
-  TodoBloc() : super(const TodoState.initial()) {
-    on<TodoLoadRequested>(handleEventStatus(_onLoadRequested)); // Wrap the event handler with handleEventStatus
-  }
-
-  Future<void> _onLoadRequested(
-    TodoLoadRequested event,
-    Emitter<TodoState> emit,
-  ) async {
-    final todos = await loadTodos();
-
-    emit(state.copyWith(todos: todos));
-  }
-}
-```
-
-### React to Event Statuses
-
-Now that you have your Bloc set up, you can listen to the event statuses in your UI.
-
-#### BlocEventStatusListener
-
-You can use the `BlocEventStatusListener` widget to listen to one event status in your UI.
-
-```dart
-BlocEventStatusListener<TodoBloc, TodoEvent, TodoLoadRequested>(
-  // optionally filter the events to listen to
-  filter: (event) => /* select only the events you want */,
-  // optionally select when the listener should be called
-  listenWhen: (previous, current) => previous != current && current is FailureEventStatus,
-  // The listener function that will be called when a new status is emitted
-  listener: (context, event, status) {
-    final error = (status as FailureEventStatus).error;
-    final messenger = ScaffoldMessenger.of(context);
-    messenger
-      ..hideCurrentSnackBar()
-      ..showSnackBar(
-        SnackBar(
-          content: Text(
-            'Error loading todos: $error',
-          ),
-          action: SnackBarAction(
-            label: "Retry",
-            onPressed: () {
-              messenger.hideCurrentSnackBar();
-              context.read<TodoBloc>().add(event);
-            },
-          ),
+BlocListener<TodoBloc, TodoState>(
+  listenWhen: (previous, current) =>
+      previous.eventStatusOf<TodoLoadRequested>() !=
+          current.eventStatusOf<TodoLoadRequested>() &&
+      current.statusOf<TodoLoadRequested>() is FailureEventStatus,
+  listener: (context, state) {
+    final eventStatus = state.eventStatusOf<TodoLoadRequested>()!;
+    final error = (eventStatus.status as FailureEventStatus).error;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Error loading todos: $error'),
+        action: SnackBarAction(
+          label: 'Retry',
+          onPressed: () => context.read<TodoBloc>().add(eventStatus.event),
         ),
-      );
-  },
-  bloc: subjectBloc,
-  child: SomeWidget(),
-)
-```
-
-#### BlocEventStatusBuilder
-
-You can use the `BlocEventStatusBuilder` widget to build your UI based on the event status.
-It's equivalent to `BlocEventStatusListener` but instead of a listener function, it takes a builder function that returns a widget.
-
-```dart
-BlocEventStatusBuilder<TodoBloc, TodoEvent, TodoDeleted>(
-  filter: (event) => event.todo.id == todos[index].id,
-  buildWhen: (previous, current) =>
-      previous != current &&
-      (previous is LoadingEventStatus || current is LoadingEventStatus),
-  builder: (context, event, status) {
-    if (status is LoadingEventStatus) {
-      return CircularProgressIndicator();
-    }
-
-    return IconButton(
-      icon: Icon(Icons.delete),
-      onPressed: () {
-        context.read<TodoBloc>().add(TodoDeleted(todos[index]));
-      },
+      ),
     );
   },
-),
+  child: child,
+)
 ```
 
-
-## Advanced Usage
-
-### React to multiple event types
-
-Every widget that reacts to a specific event type has it corresponding widget that reacts to multiple event types.
-For example, `BlocEventStatusListener` has `MultiBlocEventStatusListener`.
-The only difference is that you can't specify a specific event type in it's type parameters but you can use the `filter` parameter to filter the events you want to listen to.
+#### BlocSelector — switch on load status
 
 ```dart
-MultiBlocEventStatusListener<TodoBloc, TodoEvent>(
-  filter: (event) => event is TodoLoadRequested || event is TodoDeleted,
-  listener: (context, event, status) {
-    // Handle the event status here
+BlocSelector<TodoBloc, TodoState, EventStatus?>(
+  selector: (state) => state.statusOf<TodoLoadRequested>(),
+  builder: (context, status) {
+    return switch (status) {
+      null => const SizedBox.shrink(),
+      LoadingEventStatus() => const CircularProgressIndicator(),
+      FailureEventStatus() => const Text('Error loading todos'),
+      SuccessEventStatus() => const TodoListView(),
+    };
   },
 )
 ```
 
-If you want to listen to all events, you can just ignore the `filter` parameter.
+#### BlocBuilder — show a spinner per-item
 
 ```dart
-MultiBlocEventStatusListener<TodoBloc, TodoEvent>(
-  listener: (context, event, status) {
-    // Handle the event status here
+BlocBuilder<TodoBloc, TodoState>(
+  buildWhen: (previous, current) =>
+      current.eventOf<TodoDeleted>()?.todo.id == todo.id &&
+      previous.eventStatusOf<TodoDeleted>() !=
+          current.eventStatusOf<TodoDeleted>() &&
+      (previous.statusOf<TodoDeleted>() is LoadingEventStatus ||
+          current.statusOf<TodoDeleted>() is LoadingEventStatus),
+  builder: (context, state) {
+    if (state.statusOf<TodoDeleted>() is LoadingEventStatus) {
+      return const CircularProgressIndicator();
+    }
+    return IconButton(
+      icon: const Icon(Icons.delete),
+      onPressed: () => context.read<TodoBloc>().add(TodoDeleted(todo)),
+    );
   },
 )
 ```
 
-### Custom Event Statuses
+## API Reference
 
-In order to use your own event statuses, you need to use `BlocCustomEventStatusMixin` mixin instead of `BlocEventStatusMixin`.
+### `EventStatuses<TEvent, TStatus>`
+
+Immutable class (extends `Equatable`) that stores the status of each event type.
+
+| Member | Description |
+|---|---|
+| `const EventStatuses()` | Creates an empty instance (use as initial value). |
+| `update<TEventSubType>(event, status)` | Returns a **new** `EventStatuses` with the entry for `TEventSubType` updated. |
+| `statusOf<TEventSubType>()` | Returns the current `TStatus` for `TEventSubType`, or `null`. |
+| `eventOf<TEventSubType>()` | Returns the last `TEventSubType` instance that was updated, or `null`. |
+| `eventStatusOf<TEventSubType>()` | Returns the full `EventStatusUpdate` record `({event, status})` for `TEventSubType`, or `null`. |
+| `lastEventStatus` | Returns the most recently updated `EventStatusUpdate`, regardless of event type. |
+
+### `EventStatusesMixin<TEvent, TStatus>`
+
+Optional mixin for your BLoC state. Requires you to implement `EventStatuses<TEvent, TStatus> get eventStatuses`. Delegates all four query methods (`statusOf`, `eventOf`, `eventStatusOf`, `lastEventStatus`) to `eventStatuses`, so you can call them directly on the state.
+
+### `EventStatusUpdate<TEvent, TStatus>`
+
+A record typedef: `({TEvent event, TStatus status})`. Returned by `eventStatusOf` and `lastEventStatus`.
+
+## Tips
+
+### Emitter extension for cleaner Bloc code
+
+An extension on `Emitter` removes the `copyWith` boilerplate from every handler:
 
 ```dart
-enum MyStatus { initial, loading, success, failure }
-
-class TodoBloc extends Bloc<TodoEvent, TodoState> with BlocCustomEventStatusMixin<TodoEvent, TodoState, MyStatus> {
-  TodoBloc() : super(const TodoState.initial()) {
-    on<TodoLoadRequested>(_onLoadRequested);
+extension _TodoEmitterX on Emitter<TodoState> {
+  void _emit<T extends TodoEvent>(T event, EventStatus status, TodoState state) {
+    this(state.copyWith(
+      eventStatuses: state.eventStatuses.update(event, status),
+    ));
   }
 
-  Future<void> _onLoadRequested(
-    TodoLoadRequested event,
-    Emitter<TodoState> emit,
-  ) async {
-    emitEventStatus(event, MyStatus.loading); // Emit loading status
+  void loading<T extends TodoEvent>(T event, TodoState state) =>
+      _emit(event, const LoadingEventStatus(), state);
 
-    try {
-      final todos = await loadTodos();
+  void success<T extends TodoEvent>(T event, TodoState state) =>
+      _emit(event, const SuccessEventStatus(), state);
 
-      emit(state.copyWith(todos: todos));
+  void failure<T extends TodoEvent>(T event, TodoState state, {required Exception error}) =>
+      _emit(event, FailureEventStatus(error), state);
+}
+```
 
-      emitEventStatus(event, MyStatus.success); // Emit success status
-    } on Exception catch (e) {
-      emitEventStatus(event, MyStatus.failure); // Emit failure status
+Usage in the handler:
 
-      addError(e);
-      return;
-    }
+```dart
+Future<void> _onLoadRequested(
+  TodoLoadRequested event,
+  Emitter<TodoState> emit,
+) async {
+  emit.loading(event, state);
+  try {
+    final todos = await loadTodos();
+    emit.success(event, state.copyWith(todos: todos));
+  } on Exception catch (e) {
+    emit.failure(event, state, error: e);
   }
 }
 ```
 
-If you use this mixin you need also to change the widgets from `BlocEventStatus*` to `BlocCustomEventStatus*`.
-For example, `BlocEventStatusListener` becomes `BlocCustomEventStatusListener` and so on.
+### Access the triggering event for retry
+
+You can access the event instance that produced the last status update for any event. This is useful for retry actions — pass the original event back to the bloc:
+
+```dart
+listener: (context, state) {
+  final event = state.eventOf<TodoLoadRequested>()!; // Equivalent to `state.eventStatusOf<TodoLoadRequested>()!.event`
+
+  // Re-add the exact same event that failed
+  context.read<TodoBloc>().add(event);
+},
+```
+
+### Observe any status change with `lastEventStatus`
+
+`lastEventStatus` returns the most recent update regardless of event type. Use it to drive a global loading indicator or activity log:
+
+```dart
+BlocSelector<TodoBloc, TodoState, EventStatusUpdate<TodoEvent, EventStatus>?>(
+  selector: (state) => state.lastEventStatus,
+  builder: (context, lastStatus) {
+    if (lastStatus?.status is LoadingEventStatus) {
+      return const LinearProgressIndicator();
+    }
+    return const SizedBox.shrink();
+  },
+)
+```
 
 ## Example
 
-See the [example](/packages/bloc_event_status/example) folder for a complete example of how to use the package.
+See the [example](/packages/bloc_event_status/example) folder for a complete working app.
 
 ## Acknowledgments
 
-A special thanks to [LeanCode](https://github.com/leancodepl) for their inspiring work on the [bloc_presentation](https://github.com/leancodepl/bloc_presentation/tree/master/packages/bloc_presentation) package, which served as a foundational reference and inspiration for this project.
+A special thanks to [LeanCode](https://github.com/leancodepl) for their inspiring work on the [bloc_presentation](https://github.com/leancodepl/bloc_presentation/tree/master/packages/bloc_presentation) package, which served as a foundational reference and inspiration for the initial version of this project.
 
 ## Contributing
 

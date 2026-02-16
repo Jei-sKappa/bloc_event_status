@@ -3,7 +3,9 @@
   "conventionalCommits.promptFooter": false,
   "conventionalCommits.scopes": [
     // `packages/bloc_event_status`
-    "bes",
+    "main",
+    // `packages/bloc_event_status_generator`
+    "generator",
     // `packages/bloc_event_status/example`
     "example"
   ],

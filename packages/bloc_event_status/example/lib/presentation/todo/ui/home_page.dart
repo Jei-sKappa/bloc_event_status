@@ -1,4 +1,4 @@
-import 'package:bloc_event_status/bloc_event_status.dart';
+import 'package:example/core/bloc/bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:example/domain/todo.dart';
@@ -97,11 +97,15 @@ class _HomeViewState extends State<HomeView> {
       ),
       body: MultiBlocListener(
         listeners: [
-          BlocEventStatusListener<TodoBloc, TodoEvent, TodoLoadRequested>(
+          BlocListener<TodoBloc, TodoState>(
             listenWhen: (previous, current) =>
-                previous != current && current is FailureEventStatus,
-            listener: (context, event, status) {
-              final error = (status as FailureEventStatus).error;
+                previous.eventStatusOf<TodoLoadRequested>() !=
+                    current.eventStatusOf<TodoLoadRequested>() &&
+                current.statusOf<TodoLoadRequested>() is FailureEventStatus,
+            listener: (context, state) {
+              final eventStatus = state.eventStatusOf<TodoLoadRequested>();
+
+              final error = (eventStatus!.status as FailureEventStatus).error;
               final messenger = ScaffoldMessenger.of(context);
               messenger
                 ..hideCurrentSnackBar()
@@ -114,20 +118,33 @@ class _HomeViewState extends State<HomeView> {
                       label: "Retry",
                       onPressed: () {
                         messenger.hideCurrentSnackBar();
-                        context.read<TodoBloc>().add(event);
+                        context.read<TodoBloc>().add(eventStatus.event);
                       },
                     ),
                   ),
                 );
             },
           ),
-          BlocEventStatusListener<TodoBloc, TodoEvent, TodoToggled>(
+          BlocListener<TodoBloc, TodoState>(
             // Togged a [Todo] that is already done: notify the user if he is
             // sure
-            filter: (event) => event.todo.isDone,
-            listenWhen: (previous, current) =>
-                previous != current && current is SuccessEventStatus,
-            listener: (context, event, status) {
+            // filter: (event) => event.todo.isDone,
+            // listenWhen: (previous, current) =>
+            //     previous != current && current is SuccessEventStatus,
+            listenWhen: (previous, current) {
+              if (previous.eventStatusOf<TodoToggled>() ==
+                  current.eventStatusOf<TodoToggled>()) {
+                return false;
+              }
+
+              final eventStatus = current.eventStatusOf<TodoToggled>();
+              return eventStatus != null &&
+                  eventStatus.status is SuccessEventStatus &&
+                  eventStatus.event.todo.isDone;
+            },
+            listener: (context, state) {
+              final event = state.eventOf<TodoToggled>()!;
+
               final messenger = ScaffoldMessenger.of(context);
               messenger
                 ..hideCurrentSnackBar()
@@ -149,48 +166,55 @@ class _HomeViewState extends State<HomeView> {
                 );
             },
           ),
-          BlocEventStatusListener<TodoBloc, TodoEvent, TodoToggled>(
+          BlocListener<TodoBloc, TodoState>(
             listenWhen: (previous, current) =>
-                previous != current && current is FailureEventStatus,
-            listener: (context, event, status) {
-              final error = (status as FailureEventStatus).error;
+                previous.eventStatusOf<TodoToggled>() !=
+                    current.eventStatusOf<TodoToggled>() &&
+                current.statusOf<TodoToggled>() is FailureEventStatus,
+            listener: (context, state) {
+              final eventStatus = state.eventStatusOf<TodoToggled>()!;
+
+              final error = (eventStatus.status as FailureEventStatus).error;
               final messenger = ScaffoldMessenger.of(context);
               messenger
                 ..hideCurrentSnackBar()
                 ..showSnackBar(
                   SnackBar(
                     content: Text(
-                      'Error while toggling todo \'${event.todo.title}\': $error',
+                      'Error while toggling todo \'${eventStatus.event.todo.title}\': $error',
                     ),
                     action: SnackBarAction(
                       label: "Retry",
                       onPressed: () {
                         messenger.hideCurrentSnackBar();
-                        context.read<TodoBloc>().add(event);
+                        context.read<TodoBloc>().add(eventStatus.event);
                       },
                     ),
                   ),
                 );
             },
           ),
-          BlocEventStatusListener<TodoBloc, TodoEvent, TodoDeleted>(
+          BlocListener<TodoBloc, TodoState>(
             listenWhen: (previous, current) =>
-                previous != current && current is FailureEventStatus,
-            listener: (context, event, status) {
-              final error = (status as FailureEventStatus).error;
+                previous.eventStatusOf<TodoDeleted>() !=
+                    current.eventStatusOf<TodoDeleted>() &&
+                current.statusOf<TodoDeleted>() is FailureEventStatus,
+            listener: (context, state) {
+              final eventStatus = state.eventStatusOf<TodoDeleted>()!;
+              final error = (eventStatus.status as FailureEventStatus).error;
               final messenger = ScaffoldMessenger.of(context);
               messenger
                 ..hideCurrentSnackBar()
                 ..showSnackBar(
                   SnackBar(
                     content: Text(
-                      'Error while deleting todo \'Buy groceries\': $error',
+                      'Error while deleting todo \'${eventStatus.event.todo.title}\': $error',
                     ),
                     action: SnackBarAction(
                       label: "Retry",
                       onPressed: () {
                         messenger.hideCurrentSnackBar();
-                        context.read<TodoBloc>().add(event);
+                        context.read<TodoBloc>().add(eventStatus.event);
                       },
                     ),
                   ),
@@ -225,8 +249,9 @@ class _TodoList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocEventStatusBuilder<TodoBloc, TodoEvent, TodoLoadRequested>(
-      builder: (context, event, status) {
+    return BlocSelector<TodoBloc, TodoState, EventStatus?>(
+      selector: (state) => state.statusOf<TodoLoadRequested>(),
+      builder: (context, status) {
         switch (status) {
           case null:
             return SizedBox.shrink();
@@ -242,9 +267,12 @@ class _TodoList extends StatelessWidget {
               ),
             );
           case SuccessEventStatus():
-            return BlocSelector<TodoBloc, TodoState, List<Todo>>(
-              selector: (state) => state.filteredTodos,
-              builder: (context, filteredTodos) {
+            return BlocBuilder<TodoBloc, TodoState>(
+              buildWhen: (previous, current) =>
+                  previous.filteredTodos.map((todo) => todo.id).join(',') !=
+                  current.filteredTodos.map((todo) => todo.id).join(','),
+              builder: (context, state) {
+                final filteredTodos = state.filteredTodos;
                 if (filteredTodos.isEmpty) {
                   return Center(
                     child: Text(
@@ -297,18 +325,38 @@ class _TodoTile extends StatelessWidget {
       ),
       leading: SizedBox.square(
         dimension: _actionSize,
-        child:
-            //   BlocEventStatusBuilder<TodoBloc, TodoEvent, TodoToggled>(
-            // filter: (event) => event.todo.id == todo.id,
-            MultiBlocEventStatusBuilder<TodoBloc, TodoEvent>(
-          filter: (event) =>
-              (event is TodoToggled && event.todo.id == todo.id) ||
-              (event is TodoCompletitionSet && event.todo.id == todo.id),
-          buildWhen: (previous, current) =>
-              previous != current &&
-              (previous is LoadingEventStatus || current is LoadingEventStatus),
-          builder: (context, event, status) {
-            if (status is LoadingEventStatus) {
+        child: BlocBuilder<TodoBloc, TodoState>(
+          buildWhen: (previous, current) {
+            if (current.eventOf<TodoToggled>()?.todo.id == todo.id) {
+              if (previous.eventStatusOf<TodoToggled>() !=
+                  current.eventStatusOf<TodoToggled>()) {
+                if (previous.statusOf<TodoToggled>() is LoadingEventStatus ||
+                    current.statusOf<TodoToggled>() is LoadingEventStatus) {
+                  return true;
+                }
+              }
+            }
+
+            if (current.eventOf<TodoCompletitionSet>()?.todo.id == todo.id) {
+              if (previous.eventStatusOf<TodoCompletitionSet>() !=
+                  current.eventStatusOf<TodoCompletitionSet>()) {
+                if (previous.statusOf<TodoCompletitionSet>()
+                        is TodoCompletitionSet ||
+                    current.statusOf<TodoCompletitionSet>()
+                        is TodoCompletitionSet) {
+                  return true;
+                }
+              }
+            }
+
+            return false;
+          },
+          builder: (context, state) {
+            final completitionSetStatus = state.statusOf<TodoCompletitionSet>();
+            final toggledStatus = state.statusOf<TodoToggled>();
+
+            if (toggledStatus is LoadingEventStatus ||
+                completitionSetStatus is LoadingEventStatus) {
               return Padding(
                 padding: const EdgeInsets.all(
                   _circularProgressIndicatorPadding,
@@ -333,12 +381,16 @@ class _TodoTile extends StatelessWidget {
       ),
       trailing: SizedBox.square(
         dimension: _actionSize,
-        child: BlocEventStatusBuilder<TodoBloc, TodoEvent, TodoDeleted>(
-          filter: (event) => event.todo.id == todo.id,
+        child: BlocBuilder<TodoBloc, TodoState>(
           buildWhen: (previous, current) =>
-              previous != current &&
-              (previous is LoadingEventStatus || current is LoadingEventStatus),
-          builder: (context, event, status) {
+              current.eventOf<TodoDeleted>()?.todo.id == todo.id &&
+              previous.eventStatusOf<TodoDeleted>() !=
+                  current.eventStatusOf<TodoDeleted>() &&
+              (previous.statusOf<TodoDeleted>() is LoadingEventStatus ||
+                  current.statusOf<TodoDeleted>() is LoadingEventStatus),
+          builder: (context, state) {
+            final status = state.statusOf<TodoDeleted>();
+
             if (status is LoadingEventStatus) {
               return Padding(
                 padding: const EdgeInsets.all(

@@ -7,7 +7,7 @@ part of 'todo.dart';
 // **************************************************************************
 
 Todo _$TodoFromJson(Map<String, dynamic> json) => Todo(
-      id: json['id'] as String?,
+      id: json['id'] as String,
       title: json['title'] as String,
       isDone: json['isDone'] as bool? ?? false,
       isDeleted: json['isDeleted'] as bool? ?? false,

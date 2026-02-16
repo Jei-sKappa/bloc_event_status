@@ -19,11 +19,17 @@ class Todo with _$Todo {
   final bool isDeleted;
 
   Todo({
-    TodoId? id,
+    required this.id,
     required this.title,
     this.isDone = false,
     this.isDeleted = false,
-  }) : id = id ?? uuid.v4();
+  });
+
+  Todo.autoGenerateId({
+    required this.title,
+    this.isDone = false,
+    this.isDeleted = false,
+  }) : id = uuid.v4();
 
   factory Todo.fromJson(Map<String, dynamic> json) => _$TodoFromJson(json);
 

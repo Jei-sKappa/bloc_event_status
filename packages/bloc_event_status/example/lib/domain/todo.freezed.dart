@@ -53,7 +53,7 @@ abstract mixin class $TodoCopyWith<$Res> {
   factory $TodoCopyWith(Todo value, $Res Function(Todo) _then) =
       _$TodoCopyWithImpl;
   @useResult
-  $Res call({TodoId? id, String title, bool isDone, bool isDeleted});
+  $Res call({String id, String title, bool isDone, bool isDeleted});
 }
 
 /// @nodoc
@@ -68,16 +68,16 @@ class _$TodoCopyWithImpl<$Res> implements $TodoCopyWith<$Res> {
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? id = freezed,
+    Object? id = null,
     Object? title = null,
     Object? isDone = null,
     Object? isDeleted = null,
   }) {
     return _then(Todo(
-      id: freezed == id
-          ? _self.id!
+      id: null == id
+          ? _self.id
           : id // ignore: cast_nullable_to_non_nullable
-              as TodoId?,
+              as String,
       title: null == title
           ? _self.title
           : title // ignore: cast_nullable_to_non_nullable

@@ -341,6 +341,81 @@ class GenericBloc extends Bloc<TestEvent, GenericState> {
       expect(output, contains('DataStatus<T>('));
     });
 
+    test('strips shared prefix when base name has a prefix', () async {
+      // CustomSuccessEventStatus / CustomEventStatus → success
+      final output = await _generate(
+        {
+          'a|lib/prefixed_status.dart': '''
+import 'package:equatable/equatable.dart';
+
+sealed class CustomEventStatus with EquatableMixin {
+  const CustomEventStatus();
+}
+
+class CustomLoadingEventStatus extends CustomEventStatus {
+  const CustomLoadingEventStatus();
+  @override
+  List<Object?> get props => [];
+}
+
+class CustomSuccessEventStatus extends CustomEventStatus {
+  const CustomSuccessEventStatus();
+  @override
+  List<Object?> get props => [];
+}
+
+class CustomFailureEventStatus extends CustomEventStatus {
+  const CustomFailureEventStatus([this.error]);
+  final Exception? error;
+  @override
+  List<Object?> get props => [error];
+}
+''',
+          'a|lib/test_event.dart': _eventHeader,
+          'a|lib/prefixed_state.dart': '''
+import 'package:bloc_event_status/bloc_event_status.dart';
+import 'package:equatable/equatable.dart';
+import 'prefixed_status.dart';
+import 'test_event.dart';
+
+class PrefixedState extends Equatable with EventStatusesMixin<TestEvent, CustomEventStatus> {
+  const PrefixedState({
+    this.eventStatuses = const EventStatuses(),
+  });
+
+  @override
+  final EventStatuses<TestEvent, CustomEventStatus> eventStatuses;
+
+  @override
+  List<Object?> get props => [eventStatuses];
+
+  PrefixedState copyWith({EventStatuses<TestEvent, CustomEventStatus>? eventStatuses}) {
+    return PrefixedState(eventStatuses: eventStatuses ?? this.eventStatuses);
+  }
+}
+''',
+          'a|lib/prefixed_bloc.dart': '''
+import 'package:bloc/bloc.dart';
+import 'prefixed_status.dart';
+import 'test_event.dart';
+import 'prefixed_state.dart';
+
+class PrefixedBloc extends Bloc<TestEvent, PrefixedState> {
+  PrefixedBloc() : super(const PrefixedState());
+}
+''',
+        },
+        'a|lib/prefixed_bloc.dart',
+      );
+
+      // CustomLoadingEventStatus → loading
+      expect(output, contains('void loading<T extends TestEvent>'));
+      // CustomSuccessEventStatus → success
+      expect(output, contains('void success<T extends TestEvent>'));
+      // CustomFailureEventStatus → failure
+      expect(output, contains('void failure'));
+    });
+
     test('handles status with required named params', () async {
       final output = await _generate(
         {

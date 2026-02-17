@@ -279,17 +279,33 @@ class BlocEventStatusGenerator
       );
   }
 
-  /// Derives the method name from a subtype name by stripping the base status
-  /// class name suffix and converting to lowerCamelCase.
+  /// Derives the method name from a subtype name by stripping both the shared
+  /// prefix and the remaining base suffix, then converting to lowerCamelCase.
   ///
-  /// E.g. `LoadingEventStatus` with base `EventStatus` → `loading`.
+  /// Examples:
+  /// - `LoadingEventStatus` / `EventStatus`       → `loading`
+  /// - `CustomSuccessEventStatus` / `CustomEventStatus` → `success`
   String _deriveMethodName(String subtypeName, String baseName) {
+    if (subtypeName == baseName) return _lowerCamelCase(subtypeName);
+
+    // Find the length of the common prefix.
+    final minLen =
+        subtypeName.length < baseName.length ? subtypeName.length : baseName.length;
+    var prefixLen = 0;
+    while (prefixLen < minLen && subtypeName[prefixLen] == baseName[prefixLen]) {
+      prefixLen++;
+    }
+
+    // The part of baseName after the common prefix (the "base suffix").
+    final baseSuffix = baseName.substring(prefixLen);
+    // The part of subtypeName after the common prefix.
+    final subtypeMiddle = subtypeName.substring(prefixLen);
+
     String stripped;
-    if (subtypeName.endsWith(baseName) && subtypeName != baseName) {
-      stripped = subtypeName.substring(
-        0,
-        subtypeName.length - baseName.length,
-      );
+    if (subtypeMiddle.endsWith(baseSuffix)) {
+      stripped = baseSuffix.isEmpty
+          ? subtypeMiddle
+          : subtypeMiddle.substring(0, subtypeMiddle.length - baseSuffix.length);
     } else {
       stripped = subtypeName;
     }

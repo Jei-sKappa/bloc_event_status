@@ -9,12 +9,16 @@ Remember to update this file when you make significant changes that needs to be 
 
 ## Repository Structure
 
-Monorepo with a single package:
+Monorepo with two packages:
 - `packages/bloc_event_status/` — main library package
   - `lib/src/event_statuses.dart` — core `EventStatuses<TEvent, TStatus>` immutable class
   - `lib/src/event_statuses_mixin.dart` — `EventStatusesMixin` convenience accessor mixin
   - `test/` — unit tests (Dart `test` package)
   - `example/` — Flutter example app demonstrating real-world usage
+- `packages/bloc_event_status_generator/` — code generator package
+  - `lib/generator.dart` — builder factory (`blocEventStatusGenerator`)
+  - `lib/src/bloc_event_status_generator.dart` — `BlocEventStatusGenerator` implementation
+  - `test/bloc_event_status_generator_test.dart` — generator tests (uses `build_test`)
 
 ## Flutter Version
 
@@ -22,29 +26,31 @@ Uses FVM (Flutter Version Manager). Flutter version is `3.38.6` (configured in `
 
 ## Commands
 
-All commands run from `packages/bloc_event_status/`:
+### `bloc_event_status` (run from `packages/bloc_event_status/`)
 
 ```bash
-# Install dependencies
-fvm flutter pub get
-
-# Run tests
-fvm flutter test
+fvm flutter pub get       # Install dependencies
+fvm flutter test          # Run tests
 fvm flutter test --coverage
-
-# Lint / analyze
-fvm flutter analyze
-
-# Format
-fvm dart format .
+fvm flutter analyze       # Lint / analyze
+fvm dart format .         # Format
 ```
 
-For the example app, run from `packages/bloc_event_status/example/`:
+### `bloc_event_status_generator` (run from `packages/bloc_event_status_generator/`)
+
+```bash
+fvm dart pub get          # Install dependencies
+fvm dart test             # Run tests
+fvm dart analyze          # Lint / analyze
+fvm dart format .         # Format
+```
+
+### Example app (run from `example/`)
+
 ```bash
 fvm flutter pub get
 fvm flutter run -d macos
-# Regenerate freezed models:
-fvm dart run build_runner build --delete-conflicting-outputs
+fvm dart run build_runner build --delete-conflicting-outputs  # Regenerate freezed models
 ```
 
 ## API Reference
@@ -78,6 +84,21 @@ A record typedef: `({TEvent event, TStatus status})`. Returned by `eventStatusOf
 - Emitter extension or manual `emit(state.copyWith(...))` propagates status updates
 - UI uses `BlocListener`, `BlocSelector`, or `BlocBuilder` to react to specific event statuses
 
+## Generator — How It Works
+
+`BlocEventStatusGenerator` is a `GeneratorForAnnotation<BlocEventStatus>` (from `source_gen`). Given a `@blocEventStatus`-annotated `Bloc` subclass it:
+
+1. Resolves the `Bloc<TEvent, TState>` supertype to get the event and state types.
+2. Finds `EventStatusesMixin<TEvent, TStatus>` on the state to get the status base type.
+3. Collects all concrete (non-abstract) subclasses of the status type declared in the same library.
+4. Generates an `extension $<BlocName>EmitterX on Emitter<TState>` with:
+   - A private `_emitEventStatus` helper that calls `state.copyWith(eventStatuses: ...)`.
+   - One public convenience method per concrete status subtype.
+
+### Testing the generator
+
+Tests use `resolveSources()` from `build_test` with `readAllSourcesFromFilesystem: true` (required to resolve external types like `Bloc`). `generateForAnnotatedElement` is called directly on the class element found via `LibraryReader.classes`, bypassing annotation resolution.
+
 ## Commit Scopes
 
-Conventional commits with scopes: `bes` (bloc_event_status package), `example` (example app).
+Conventional commits with scopes: `bes` (bloc_event_status package), `generator` (bloc_event_status_generator package), `example` (example app).

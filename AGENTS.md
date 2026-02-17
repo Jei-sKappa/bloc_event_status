@@ -1,6 +1,7 @@
 # AGENTS.md
 
 This file provides guidance to AI Agents when working with code in this repository.
+Remember to update this file when you make significant changes that needs to be remembered across session.
 
 ## Project Overview
 

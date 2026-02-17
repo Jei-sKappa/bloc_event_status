@@ -199,9 +199,7 @@ class BlocEventStatusGenerator
     if (classTypeParams.isNotEmpty) {
       final decls = classTypeParams.map((tp) {
         final bound = tp.bound;
-        if (bound != null &&
-            !bound.isDartCoreObject &&
-            bound is! DynamicType) {
+        if (bound != null) {
           return '${tp.name} extends ${bound.getDisplayString()}';
         }
         return tp.name;

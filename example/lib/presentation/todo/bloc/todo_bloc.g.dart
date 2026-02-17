@@ -22,7 +22,8 @@ extension $TodoBlocEmitterX on Emitter<TodoState> {
   void loading<T extends TodoEvent>(T event, TodoState state) =>
       _emitEventStatus(event, const LoadingEventStatus(), state);
 
-  void success<TData, T extends TodoEvent>(T event, TodoState state,
+  void success<TData extends dynamic, T extends TodoEvent>(
+          T event, TodoState state,
           [TData? data]) =>
       _emitEventStatus(
           event,

@@ -20,7 +20,7 @@ dev_dependencies:
 ```dart
 import 'package:bloc_event_status/bloc_event_status.dart';
 
-part 'my_bloc.g.dart';
+part 'my_bloc.bes.g.dart';
 
 @blocEventStatus
 class MyBloc extends Bloc<MyEvent, MyState> {
@@ -32,4 +32,16 @@ class MyBloc extends Bloc<MyEvent, MyState> {
 
 ```bash
 dart run build_runner build --delete-conflicting-outputs
+```
+
+## VS Code tip
+
+To keep generated `*.g.dart` files nested under their source file in the Explorer, add this to your `.vscode/settings.json`:
+
+```json
+{
+  "explorer.fileNesting.patterns": {
+    "*.dart": "${capture}*.g.dart"
+  }
+}
 ```

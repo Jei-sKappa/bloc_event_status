@@ -9,7 +9,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'todo_bloc.freezed.dart';
-part 'todo_bloc.g.dart';
+part 'todo_bloc.bes.g.dart';
 part 'todo_events.dart';
 part 'todo_state.dart';
 

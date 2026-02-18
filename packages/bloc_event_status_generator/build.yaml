@@ -2,7 +2,6 @@ builders:
   bloc_event_status_generator:
     import: "package:bloc_event_status_generator/generator.dart"
     builder_factories: ["blocEventStatusGenerator"]
-    build_extensions: {".dart": [".bloc_event_status.g.part"]}
+    build_extensions: {".dart": [".bes.g.dart"]}
     auto_apply: dependents
-    build_to: cache
-    applies_builders: ["source_gen|combining_builder"]
+    build_to: source

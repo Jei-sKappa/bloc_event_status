@@ -142,6 +142,8 @@ class BlocEventStatusGenerator
     final statusTypeName = statusElement.name!;
 
     final buffer = StringBuffer()
+      ..writeln('// dart format off')
+      ..writeln()
       ..writeln(
         'extension \$${blocName}EmitterX on Emitter<$stateTypeName> {',
       )
@@ -173,7 +175,10 @@ class BlocEventStatusGenerator
       );
     }
 
-    buffer.writeln('}');
+    buffer
+      ..writeln('}')
+      ..writeln()
+      ..write('// dart format on');
 
     return buffer.toString();
   }

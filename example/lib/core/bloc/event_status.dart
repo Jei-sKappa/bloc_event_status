@@ -7,8 +7,10 @@ import 'package:equatable/equatable.dart';
 ///
 /// See also:
 ///   * [LoadingEventStatus], which represents a loading state
-///   * [SuccessEventStatus], which represents a successful state with optional data
-///   * [FailureEventStatus], which represents a failed state with optional error
+///   * [SuccessEventStatus], which represents a successful state with optional
+/// data
+///   * [FailureEventStatus], which represents a failed state with optional
+/// error
 /// {@endtemplate}
 sealed class EventStatus with EquatableMixin {
   /// {@macro event_status}

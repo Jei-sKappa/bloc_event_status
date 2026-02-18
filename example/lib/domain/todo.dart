@@ -1,5 +1,5 @@
-import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:example/constants/uuid.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'todo.freezed.dart';
 part 'todo.g.dart';
@@ -9,15 +9,6 @@ typedef TodoId = String;
 @freezed
 @JsonSerializable()
 class Todo with _$Todo {
-  @override
-  final TodoId id;
-  @override
-  final String title;
-  @override
-  final bool isDone;
-  @override
-  final bool isDeleted;
-
   Todo({
     required this.id,
     required this.title,
@@ -32,6 +23,14 @@ class Todo with _$Todo {
   }) : id = uuid.v4();
 
   factory Todo.fromJson(Map<String, dynamic> json) => _$TodoFromJson(json);
+  @override
+  final TodoId id;
+  @override
+  final String title;
+  @override
+  final bool isDone;
+  @override
+  final bool isDeleted;
 
   Map<String, dynamic> toJson() => _$TodoToJson(this);
 }

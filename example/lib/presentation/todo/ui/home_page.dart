@@ -1,9 +1,11 @@
+import 'dart:async';
+
 import 'package:example/core/bloc/bloc.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:example/domain/todo.dart';
 import 'package:example/presentation/programmed_failure/components/components.dart';
 import 'package:example/presentation/todo/bloc/todo_bloc.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -14,7 +16,7 @@ class HomePage extends StatelessWidget {
       create: (context) => TodoBloc(
         programmedFailureCubit: context.read(),
       )..add(const TodoLoadRequested()),
-      child: HomeView(),
+      child: const HomeView(),
     );
   }
 }
@@ -29,44 +31,48 @@ class HomeView extends StatefulWidget {
 class _HomeViewState extends State<HomeView> {
   // Show a dialog with a form to add a new todo.
   void _showAddTodoDialog() {
-    String newTodoTitle = '';
+    var newTodoTitle = '';
     final todoBloc = BlocProvider.of<TodoBloc>(context);
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return BlocProvider.value(
-          value: todoBloc,
-          child: Builder(builder: (context) {
-            return AlertDialog(
-              title: Text('Add Todo'),
-              content: TextField(
-                autofocus: true,
-                decoration: InputDecoration(hintText: 'Todo title'),
-                onChanged: (value) {
-                  newTodoTitle = value;
-                },
-              ),
-              actions: <Widget>[
-                TextButton(
-                  child: Text('Cancel'),
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                ),
-                ElevatedButton(
-                  child: Text('Add'),
-                  onPressed: () {
-                    if (newTodoTitle.trim().isNotEmpty) {
-                      context.read<TodoBloc>().add(TodoAdded(newTodoTitle));
-                    }
-                    Navigator.of(context).pop();
-                  },
-                ),
-              ],
-            );
-          }),
-        );
-      },
+    unawaited(
+      showDialog<void>(
+        context: context,
+        builder: (context) {
+          return BlocProvider.value(
+            value: todoBloc,
+            child: Builder(
+              builder: (context) {
+                return AlertDialog(
+                  title: const Text('Add Todo'),
+                  content: TextField(
+                    autofocus: true,
+                    decoration: const InputDecoration(hintText: 'Todo title'),
+                    onChanged: (value) {
+                      newTodoTitle = value;
+                    },
+                  ),
+                  actions: <Widget>[
+                    TextButton(
+                      child: const Text('Cancel'),
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                    ),
+                    ElevatedButton(
+                      child: const Text('Add'),
+                      onPressed: () {
+                        if (newTodoTitle.trim().isNotEmpty) {
+                          context.read<TodoBloc>().add(TodoAdded(newTodoTitle));
+                        }
+                        Navigator.of(context).pop();
+                      },
+                    ),
+                  ],
+                );
+              },
+            ),
+          );
+        },
+      ),
     );
   }
 
@@ -74,17 +80,17 @@ class _HomeViewState extends State<HomeView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Todo App'),
-        actions: [
+        title: const Text('Todo App'),
+        actions: const [
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+            padding: EdgeInsets.symmetric(horizontal: 8),
             child: ProgrammedFailureCheckbox(),
           ),
         ],
-        bottom: PreferredSize(
-          preferredSize: Size.fromHeight(110.0),
+        bottom: const PreferredSize(
+          preferredSize: Size.fromHeight(110),
           child: Padding(
-            padding: EdgeInsets.all(8.0),
+            padding: EdgeInsets.all(8),
             child: Column(
               spacing: 12,
               children: [
@@ -115,7 +121,7 @@ class _HomeViewState extends State<HomeView> {
                       'Error loading todos: $error',
                     ),
                     action: SnackBarAction(
-                      label: "Retry",
+                      label: 'Retry',
                       onPressed: () {
                         messenger.hideCurrentSnackBar();
                         context.read<TodoBloc>().add(eventStatus.event);
@@ -151,10 +157,11 @@ class _HomeViewState extends State<HomeView> {
                 ..showSnackBar(
                   SnackBar(
                     content: Text(
-                      '\'${event.todo.title}\' was already done, are you sure you want remove it from the done list?',
+                      "'${event.todo.title}' was already done, are you sure "
+                      'you want remove it from the done list?',
                     ),
                     action: SnackBarAction(
-                      label: "Oops",
+                      label: 'Oops',
                       onPressed: () {
                         messenger.hideCurrentSnackBar();
                         context
@@ -181,10 +188,11 @@ class _HomeViewState extends State<HomeView> {
                 ..showSnackBar(
                   SnackBar(
                     content: Text(
-                      'Error while toggling todo \'${eventStatus.event.todo.title}\': $error',
+                      'Error while toggling todo '
+                      "'${eventStatus.event.todo.title}': $error",
                     ),
                     action: SnackBarAction(
-                      label: "Retry",
+                      label: 'Retry',
                       onPressed: () {
                         messenger.hideCurrentSnackBar();
                         context.read<TodoBloc>().add(eventStatus.event);
@@ -208,10 +216,11 @@ class _HomeViewState extends State<HomeView> {
                 ..showSnackBar(
                   SnackBar(
                     content: Text(
-                      'Error while deleting todo \'${eventStatus.event.todo.title}\': $error',
+                      'Error while deleting todo '
+                      "'${eventStatus.event.todo.title}': $error",
                     ),
                     action: SnackBarAction(
-                      label: "Retry",
+                      label: 'Retry',
                       onPressed: () {
                         messenger.hideCurrentSnackBar();
                         context.read<TodoBloc>().add(eventStatus.event);
@@ -222,7 +231,7 @@ class _HomeViewState extends State<HomeView> {
             },
           ),
         ],
-        child: _TodoList(),
+        child: const _TodoList(),
       ),
       floatingActionButton: Column(
         mainAxisSize: MainAxisSize.min,
@@ -232,11 +241,11 @@ class _HomeViewState extends State<HomeView> {
             onPressed: () {
               context.read<TodoBloc>().add(const TodoLoadRequested());
             },
-            child: Icon(Icons.refresh),
+            child: const Icon(Icons.refresh),
           ),
           FloatingActionButton(
             onPressed: _showAddTodoDialog,
-            child: Icon(Icons.add),
+            child: const Icon(Icons.add),
           ),
         ],
       ),
@@ -254,13 +263,13 @@ class _TodoList extends StatelessWidget {
       builder: (context, status) {
         switch (status) {
           case null:
-            return SizedBox.shrink();
+            return const SizedBox.shrink();
           case LoadingEventStatus():
-            return Center(
+            return const Center(
               child: CircularProgressIndicator(),
             );
           case FailureEventStatus():
-            return Center(
+            return const Center(
               child: Text(
                 'Error loading todos',
                 style: TextStyle(fontSize: 20),
@@ -274,7 +283,7 @@ class _TodoList extends StatelessWidget {
               builder: (context, state) {
                 final filteredTodos = state.filteredTodos;
                 if (filteredTodos.isEmpty) {
-                  return Center(
+                  return const Center(
                     child: Text(
                       'No todos found',
                       style: TextStyle(fontSize: 20),
@@ -308,14 +317,14 @@ class _TodoTile extends StatelessWidget {
 
   static const _circularProgressIndicatorSize = 18.0;
 
-  static const _circularProgressIndicatorPadding =
+  static const double _circularProgressIndicatorPadding =
       (_actionSize - _circularProgressIndicatorSize) / 2;
 
   @override
   Widget build(BuildContext context) {
     return ListTile(
       title: Text(
-        "${todo.id} - ${todo.title}",
+        '${todo.id} - ${todo.title}',
         style: TextStyle(
           decoration: todo.isDone ? TextDecoration.lineThrough : null,
           color: todo.isDeleted
@@ -357,8 +366,8 @@ class _TodoTile extends StatelessWidget {
 
             if (toggledStatus is LoadingEventStatus ||
                 completitionSetStatus is LoadingEventStatus) {
-              return Padding(
-                padding: const EdgeInsets.all(
+              return const Padding(
+                padding: EdgeInsets.all(
                   _circularProgressIndicatorPadding,
                 ),
                 child: CircularProgressIndicator(
@@ -392,8 +401,8 @@ class _TodoTile extends StatelessWidget {
             final status = state.statusOf<TodoDeleted>();
 
             if (status is LoadingEventStatus) {
-              return Padding(
-                padding: const EdgeInsets.all(
+              return const Padding(
+                padding: EdgeInsets.all(
                   _circularProgressIndicatorPadding,
                 ),
                 child: CircularProgressIndicator(
@@ -403,7 +412,7 @@ class _TodoTile extends StatelessWidget {
             }
 
             return IconButton(
-              icon: Icon(Icons.delete),
+              icon: const Icon(Icons.delete),
               onPressed: () {
                 context.read<TodoBloc>().add(TodoDeleted(todo));
               },
@@ -424,13 +433,12 @@ class _SearchBox extends StatelessWidget {
       decoration: InputDecoration(
         hintText: 'Search todos',
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8.0),
-          borderSide: BorderSide(
+          borderRadius: BorderRadius.circular(8),
+          borderSide: const BorderSide(
             color: Colors.grey,
-            width: 1.0,
           ),
         ),
-        suffixIcon: Icon(Icons.search),
+        suffixIcon: const Icon(Icons.search),
       ),
       onChanged: (value) {
         context.read<TodoBloc>().add(QuerySet(value));
@@ -448,29 +456,30 @@ class _FilterSelector extends StatelessWidget {
       selector: (state) => state.selectedFilter,
       builder: (context, selectedFilter) {
         return SegmentedButton(
-            showSelectedIcon: false,
-            selected: {selectedFilter},
-            segments: [
-              ButtonSegment<Filter>(
-                value: Filter.all,
-                label: Text('All'),
-              ),
-              ButtonSegment<Filter>(
-                value: Filter.done,
-                label: Text('Done'),
-              ),
-              ButtonSegment<Filter>(
-                value: Filter.notDone,
-                label: Text('Not Done'),
-              ),
-              ButtonSegment<Filter>(
-                value: Filter.deleted,
-                label: Text('Deleted'),
-              ),
-            ],
-            onSelectionChanged: (Set<Filter> newSelected) {
-              context.read<TodoBloc>().add(FilterSelected(newSelected.first));
-            });
+          showSelectedIcon: false,
+          selected: {selectedFilter},
+          segments: const [
+            ButtonSegment<Filter>(
+              value: Filter.all,
+              label: Text('All'),
+            ),
+            ButtonSegment<Filter>(
+              value: Filter.done,
+              label: Text('Done'),
+            ),
+            ButtonSegment<Filter>(
+              value: Filter.notDone,
+              label: Text('Not Done'),
+            ),
+            ButtonSegment<Filter>(
+              value: Filter.deleted,
+              label: Text('Deleted'),
+            ),
+          ],
+          onSelectionChanged: (newSelected) {
+            context.read<TodoBloc>().add(FilterSelected(newSelected.first));
+          },
+        );
       },
     );
   }

@@ -1,6 +1,6 @@
+import 'package:example/presentation/programmed_failure/cubit/programmed_failure_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:example/presentation/programmed_failure/cubit/programmed_failure_cubit.dart';
 
 class ProgrammedFailureCheckbox extends StatelessWidget {
   const ProgrammedFailureCheckbox({super.key});
@@ -21,7 +21,7 @@ class ProgrammedFailureCheckbox extends StatelessWidget {
               // tristate: true,
               value: shouldFail,
               onChanged: (value) {
-                context.read<ProgrammedFailureCubit>().set(value!);
+                context.read<ProgrammedFailureCubit>().set(shouldFail: value!);
               },
             ),
           ],

@@ -27,9 +27,9 @@ dependencies:
 dev_dependencies:
   bloc_event_status_generator: ^1.0.0
   build_runner: ^2.11.1
-  flutter_lints: ^5.0.0
   freezed: ^3.2.5
   json_serializable: ^6.12.0
+  very_good_analysis: ^10.1.0
 
 flutter:
   uses-material-design: true

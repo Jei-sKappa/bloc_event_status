@@ -1,12 +1,12 @@
 import 'dart:async';
 
 import 'package:bloc_event_status/bloc_event_status.dart';
-import 'package:example/core/bloc/bloc.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:example/core/bloc/bloc.dart';
 import 'package:example/domain/domain.dart';
-import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:example/presentation/programmed_failure/cubit/programmed_failure_cubit.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'todo_bloc.freezed.dart';
 part 'todo_bloc.g.dart';
@@ -118,7 +118,7 @@ class TodoBloc extends Bloc<TodoEvent, TodoState> {
     TodoDeleted event,
     Emitter<TodoState> emit,
   ) async {
-    bool isAlreadyDeleted = event.todo.isDeleted;
+    final isAlreadyDeleted = event.todo.isDeleted;
     if (isAlreadyDeleted) return;
 
     emit.loading(event, state);
@@ -150,11 +150,11 @@ class TodoBloc extends Bloc<TodoEvent, TodoState> {
     emit(state.copyWith(query: event.query));
   }
 
-  /// This task simulates a long-running task that takes 1.5 seconds to complete.
-  /// It also can also randomly fail.
+  /// This task simulates a long-running task that takes 1.5 seconds to
+  /// complete. It also can also randomly fail.
   Future<void> _expensiveTask() async {
     // Simulate a long-running task
-    await Future.delayed(const Duration(seconds: 1, milliseconds: 500));
+    await Future<void>.delayed(const Duration(seconds: 1, milliseconds: 500));
 
     switch (_programmedFailureCubit.state) {
       case true:

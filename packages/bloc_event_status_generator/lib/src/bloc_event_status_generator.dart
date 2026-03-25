@@ -6,8 +6,7 @@ import 'package:source_gen/source_gen.dart';
 
 /// Code generator that creates `Emitter<State>` extensions for Bloc classes
 /// annotated with `@blocEventStatus`.
-class BlocEventStatusGenerator
-    extends GeneratorForAnnotation<BlocEventStatus> {
+class BlocEventStatusGenerator extends GeneratorForAnnotation<BlocEventStatus> {
   @override
   String generateForAnnotatedElement(
     Element element,
@@ -221,8 +220,7 @@ class BlocEventStatusGenerator
         params.every((p) => p.isOptional);
 
     // Build method signature
-    final methodParams = StringBuffer()
-      ..write('T event, $stateTypeName state');
+    final methodParams = StringBuffer()..write('T event, $stateTypeName state');
 
     // Collect optional positional and named params separately
     final optionalPositionalParams = <String>[];
@@ -292,10 +290,12 @@ class BlocEventStatusGenerator
     if (subtypeName == baseName) return _lowerCamelCase(subtypeName);
 
     // Find the length of the common prefix.
-    final minLen =
-        subtypeName.length < baseName.length ? subtypeName.length : baseName.length;
+    final minLen = subtypeName.length < baseName.length
+        ? subtypeName.length
+        : baseName.length;
     var prefixLen = 0;
-    while (prefixLen < minLen && subtypeName[prefixLen] == baseName[prefixLen]) {
+    while (
+        prefixLen < minLen && subtypeName[prefixLen] == baseName[prefixLen]) {
       prefixLen++;
     }
 
@@ -308,7 +308,8 @@ class BlocEventStatusGenerator
     if (subtypeMiddle.endsWith(baseSuffix)) {
       stripped = baseSuffix.isEmpty
           ? subtypeMiddle
-          : subtypeMiddle.substring(0, subtypeMiddle.length - baseSuffix.length);
+          : subtypeMiddle.substring(
+              0, subtypeMiddle.length - baseSuffix.length);
     } else {
       stripped = subtypeName;
     }

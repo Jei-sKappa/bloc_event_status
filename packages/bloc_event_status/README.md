@@ -291,7 +291,7 @@ BlocSelector<TodoBloc, TodoState, EventStatusUpdate<TodoEvent, EventStatus>?>(
 
 ## Example
 
-See the [example](/packages/bloc_event_status/example) folder for a complete working app.
+See the [example](https://github.com/Jei-sKappa/bloc_event_status/tree/main/example) folder for a complete working app.
 
 ## Acknowledgments
 

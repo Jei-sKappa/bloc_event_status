@@ -4,15 +4,11 @@ Code generator for [bloc_event_status](https://pub.dev/packages/bloc_event_statu
 
 ## Usage
 
-1. Add dependencies to your `pubspec.yaml`:
+1. Add dependencies:
 
-```yaml
-dependencies:
-  bloc_event_status: ^2.0.0
-
-dev_dependencies:
-  bloc_event_status_generator: ^1.0.0
-  build_runner: ^2.0.0
+```bash
+dart pub add bloc_event_status
+dart pub add --dev bloc_event_status_generator build_runner
 ```
 
 2. Annotate your Bloc class:

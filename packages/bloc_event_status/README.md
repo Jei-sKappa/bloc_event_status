@@ -241,6 +241,8 @@ extension _TodoEmitterX on Emitter<TodoState> {
 }
 ```
 
+> **Prefer code generation?** The [bloc_event_status_generator](https://pub.dev/packages/bloc_event_status_generator) package can auto-generate this extension for you. Annotate your Bloc with `@blocEventStatus` and run `build_runner` — see the generator [README](https://pub.dev/packages/bloc_event_status_generator) for setup instructions.
+
 Usage in the handler:
 
 ```dart

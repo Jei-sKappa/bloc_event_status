@@ -4,6 +4,7 @@ version: 1.0.0
 homepage: https://github.com/Jei-sKappa/bloc_event_status/tree/main/packages/bloc_event_status_generator
 repository: https://github.com/Jei-sKappa/bloc_event_status/tree/main/packages/bloc_event_status_generator
 issue_tracker: https://github.com/Jei-sKappa/bloc_event_status/issues
+documentation: https://github.com/Jei-sKappa/bloc_event_status/tree/main/packages/bloc_event_status_generator
 topics: [bloc, state-management, code-generation]
 
 environment:

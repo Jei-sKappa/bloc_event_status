@@ -28,24 +28,13 @@ class BlocEventStatusGenerator extends GeneratorForAnnotation<BlocEventStatus> {
       );
     }
 
+    // Bloc<TEvent, TState> always has exactly 2 type arguments.
     final typeArgs = blocType.typeArguments;
-    if (typeArgs.length != 2) {
-      throw InvalidGenerationSourceError(
-        'Could not resolve Bloc type arguments.',
-        element: element,
-      );
-    }
-
     final eventType = typeArgs[0];
     final stateType = typeArgs[1];
 
-    final stateElement = stateType.element;
-    if (stateElement is! InterfaceElement) {
-      throw InvalidGenerationSourceError(
-        'State type must be a class.',
-        element: element,
-      );
-    }
+    // State type always resolves to an InterfaceElement.
+    final stateElement = stateType.element! as InterfaceElement;
 
     final statusType = _findEventStatusesMixinStatusType(stateElement);
     if (statusType == null) {
@@ -55,13 +44,8 @@ class BlocEventStatusGenerator extends GeneratorForAnnotation<BlocEventStatus> {
       );
     }
 
-    final statusElement = statusType.element;
-    if (statusElement is! InterfaceElement) {
-      throw InvalidGenerationSourceError(
-        'Status type must be a class or sealed class.',
-        element: element,
-      );
-    }
+    // Status type always resolves to an InterfaceElement.
+    final statusElement = statusType.element! as InterfaceElement;
 
     final subtypes = _findConcreteSubtypes(statusElement);
     if (subtypes.isEmpty) {

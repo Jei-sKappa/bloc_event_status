@@ -83,6 +83,34 @@ class TestBloc extends Bloc<TestEvent, TestState> {
 }
 ''';
 
+/// Resolves sources, finds a non-class element [elementName] in [targetAsset],
+/// and runs [BlocEventStatusGenerator.generateForAnnotatedElement] on it.
+Future<String> _generateForNonClass(
+  Map<String, String> sources,
+  String targetAsset,
+  String elementName,
+) {
+  return resolveSources(
+    sources,
+    (resolver) async {
+      final library = await resolver.libraryFor(AssetId.parse(targetAsset));
+      final reader = LibraryReader(library);
+      final element = reader.enums.firstWhere(
+        (e) => e.name == elementName,
+      );
+
+      final generator = BlocEventStatusGenerator();
+      return generator.generateForAnnotatedElement(
+        element,
+        ConstantReader(null),
+        _FakeBuildStep(resolver),
+      );
+    },
+    resolverFor: targetAsset,
+    readAllSourcesFromFilesystem: true,
+  );
+}
+
 /// Resolves sources, finds the class [className] in [targetAsset], and runs
 /// [BlocEventStatusGenerator.generateForAnnotatedElement] on it.
 Future<String> _generate(
@@ -483,6 +511,207 @@ class NamedBloc extends Bloc<TestEvent, NamedState> {
       expect(output, contains('int? code}'));
       expect(output, contains('message: message'));
       expect(output, contains('code: code'));
+    });
+
+    test('error when annotation is on a non-class element', () async {
+      expect(
+        () => _generateForNonClass(
+          {
+            'a|lib/some_enum.dart': '''
+enum SomeEnum { a, b, c }
+''',
+          },
+          'a|lib/some_enum.dart',
+          'SomeEnum',
+        ),
+        throwsA(
+          isA<InvalidGenerationSourceError>().having(
+            (e) => e.message,
+            'message',
+            contains('can only be applied to classes'),
+          ),
+        ),
+      );
+    });
+
+    test('error when no concrete subtypes exist', () async {
+      expect(
+        () => _generate(
+          {
+            'a|lib/empty_status.dart': '''
+import 'package:equatable/equatable.dart';
+
+sealed class EmptyStatus with EquatableMixin {
+  const EmptyStatus();
+}
+''',
+            'a|lib/test_event.dart': _eventHeader,
+            'a|lib/empty_state.dart': '''
+import 'package:bloc_event_status/bloc_event_status.dart';
+import 'package:equatable/equatable.dart';
+import 'empty_status.dart';
+import 'test_event.dart';
+
+class EmptyState extends Equatable with EventStatusesMixin<TestEvent, EmptyStatus> {
+  const EmptyState({this.eventStatuses = const EventStatuses()});
+  @override
+  final EventStatuses<TestEvent, EmptyStatus> eventStatuses;
+  @override
+  List<Object?> get props => [eventStatuses];
+  EmptyState copyWith({EventStatuses<TestEvent, EmptyStatus>? eventStatuses}) {
+    return EmptyState(eventStatuses: eventStatuses ?? this.eventStatuses);
+  }
+}
+''',
+            'a|lib/empty_bloc.dart': '''
+import 'package:bloc/bloc.dart';
+import 'empty_status.dart';
+import 'test_event.dart';
+import 'empty_state.dart';
+
+class EmptyBloc extends Bloc<TestEvent, EmptyState> {
+  EmptyBloc() : super(const EmptyState());
+}
+''',
+          },
+          'a|lib/empty_bloc.dart',
+          className: 'EmptyBloc',
+        ),
+        throwsA(
+          isA<InvalidGenerationSourceError>().having(
+            (e) => e.message,
+            'message',
+            contains('No concrete subtypes found'),
+          ),
+        ),
+      );
+    });
+
+    test('handles bounded type params and default param values', () async {
+      final output = await _generate(
+        {
+          'a|lib/adv_status.dart': '''
+import 'package:equatable/equatable.dart';
+
+sealed class AdvStatus with EquatableMixin {
+  const AdvStatus();
+}
+
+class BoundedAdvStatus<T extends Comparable<T>> extends AdvStatus {
+  const BoundedAdvStatus(this.value);
+  final T value;
+  @override
+  List<Object?> get props => [value];
+}
+
+class DefaultNamedAdvStatus extends AdvStatus {
+  const DefaultNamedAdvStatus({this.count = 0});
+  final int count;
+  @override
+  List<Object?> get props => [count];
+}
+
+class DefaultPosAdvStatus extends AdvStatus {
+  const DefaultPosAdvStatus([this.tag = 'default']);
+  final String tag;
+  @override
+  List<Object?> get props => [tag];
+}
+''',
+          'a|lib/test_event.dart': _eventHeader,
+          'a|lib/adv_state.dart': '''
+import 'package:bloc_event_status/bloc_event_status.dart';
+import 'package:equatable/equatable.dart';
+import 'adv_status.dart';
+import 'test_event.dart';
+
+class AdvState extends Equatable with EventStatusesMixin<TestEvent, AdvStatus> {
+  const AdvState({this.eventStatuses = const EventStatuses()});
+  @override
+  final EventStatuses<TestEvent, AdvStatus> eventStatuses;
+  @override
+  List<Object?> get props => [eventStatuses];
+  AdvState copyWith({EventStatuses<TestEvent, AdvStatus>? eventStatuses}) {
+    return AdvState(eventStatuses: eventStatuses ?? this.eventStatuses);
+  }
+}
+''',
+          'a|lib/adv_bloc.dart': '''
+import 'package:bloc/bloc.dart';
+import 'adv_status.dart';
+import 'test_event.dart';
+import 'adv_state.dart';
+
+class AdvBloc extends Bloc<TestEvent, AdvState> {
+  AdvBloc() : super(const AdvState());
+}
+''',
+        },
+        'a|lib/adv_bloc.dart',
+      );
+
+      // Bounded type param: <T extends Comparable<T>>
+      expect(output, contains('extends Comparable<T>'));
+      expect(output, contains('BoundedAdvStatus<T>('));
+
+      // Optional named param with default value
+      expect(output, contains('{int count = 0}'));
+
+      // Optional positional param with default value
+      expect(output, contains("[String tag = 'default']"));
+    });
+
+    test('handles subtype name shorter than base name', () async {
+      final output = await _generate(
+        {
+          'a|lib/long_status.dart': '''
+import 'package:equatable/equatable.dart';
+
+sealed class VeryLongStatusBase with EquatableMixin {
+  const VeryLongStatusBase();
+}
+
+class Short extends VeryLongStatusBase {
+  const Short();
+  @override
+  List<Object?> get props => [];
+}
+''',
+          'a|lib/test_event.dart': _eventHeader,
+          'a|lib/long_state.dart': '''
+import 'package:bloc_event_status/bloc_event_status.dart';
+import 'package:equatable/equatable.dart';
+import 'long_status.dart';
+import 'test_event.dart';
+
+class LongState extends Equatable with EventStatusesMixin<TestEvent, VeryLongStatusBase> {
+  const LongState({this.eventStatuses = const EventStatuses()});
+  @override
+  final EventStatuses<TestEvent, VeryLongStatusBase> eventStatuses;
+  @override
+  List<Object?> get props => [eventStatuses];
+  LongState copyWith({EventStatuses<TestEvent, VeryLongStatusBase>? eventStatuses}) {
+    return LongState(eventStatuses: eventStatuses ?? this.eventStatuses);
+  }
+}
+''',
+          'a|lib/long_bloc.dart': '''
+import 'package:bloc/bloc.dart';
+import 'long_status.dart';
+import 'test_event.dart';
+import 'long_state.dart';
+
+class LongBloc extends Bloc<TestEvent, LongState> {
+  LongBloc() : super(const LongState());
+}
+''',
+        },
+        'a|lib/long_bloc.dart',
+      );
+
+      // 'Short' is shorter than 'VeryLongStatusBase', covers min-length branch
+      expect(output, contains('void short<T extends TestEvent>'));
+      expect(output, contains('const Short()'));
     });
   });
 }

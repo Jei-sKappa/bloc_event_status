@@ -18,7 +18,26 @@ typedef EventStatusUpdate<TEvent, TStatus> = ({
 });
 
 /// {@template event_statuses}
-/// // TODO: Add Docs
+/// An immutable container that tracks the status of each event type in a BLoC.
+///
+/// Each event type (`TEventSubType extends TEvent`) can have at most one
+/// associated [EventStatusUpdate]. The container is keyed by the event's
+/// runtime [Type], not by the event instance, so calling [update] for the
+/// same event type replaces the previous entry.
+///
+/// Extends [Equatable] so that BLoC state changes are detected correctly.
+///
+/// Use `const EventStatuses()` as the initial value, then call [update]
+/// inside your event handler and emit the returned copy via `copyWith`:
+///
+/// ```dart
+/// emit(state.copyWith(
+///   eventStatuses: state.eventStatuses.update<LoadRequested>(
+///     event,
+///     const LoadingEventStatus(),
+///   ),
+/// ));
+/// ```
 /// {@endtemplate}
 @immutable
 class EventStatuses<TEvent, TStatus> extends Equatable {
@@ -31,9 +50,10 @@ class EventStatuses<TEvent, TStatus> extends Equatable {
 
   // Key: The type of the event (not the instance of the event itself)
   // Value: The event status
+  /// The internal map from event [Type] to [EventStatusUpdate].
+  ///
+  /// Exposed only for testing; do not depend on this in production code.
   @visibleForTesting
-  // ignore_reason: This is a test-only property
-  // ignore: public_member_api_docs
   final Map<Type, EventStatusUpdate<TEvent, TStatus>> eventStatusMap;
 
   final EventStatusUpdate<TEvent, TStatus>? _lastEventStatus;
@@ -42,7 +62,12 @@ class EventStatuses<TEvent, TStatus> extends Equatable {
   List<Object?> get props => [eventStatusMap, _lastEventStatus];
 
   /// {@template event_statuses.event_status_of}
-  /// // TODO: Add Docs
+  /// Returns the full [EventStatusUpdate] record for [TEventSubType], or
+  /// `null` if no status has been recorded for that event type.
+  ///
+  /// Throws [ArgumentError] if [TEventSubType] is the same as [TEvent]
+  /// (the base event type), because statuses are tracked per concrete
+  /// subtype.
   /// {@endtemplate}
   EventStatusUpdate<TEventSubType, TStatus>?
       eventStatusOf<TEventSubType extends TEvent>() {
@@ -60,24 +85,41 @@ class EventStatuses<TEvent, TStatus> extends Equatable {
   }
 
   /// {@template event_statuses.status_of}
-  /// // TODO: Add Docs
+  /// Returns the current [TStatus] for [TEventSubType], or `null` if no
+  /// status has been recorded for that event type.
+  ///
+  /// Shorthand for `eventStatusOf<TEventSubType>()?.status`.
   /// {@endtemplate}
   TStatus? statusOf<TEventSubType extends TEvent>() =>
       eventStatusOf<TEventSubType>()?.status;
 
   /// {@template event_statuses.event_of}
-  /// // TODO: Add Docs
+  /// Returns the last [TEventSubType] instance that was passed to [update],
+  /// or `null` if no status has been recorded for that event type.
+  ///
+  /// Useful for retry patterns — pass the returned event back to the BLoC.
+  ///
+  /// Shorthand for `eventStatusOf<TEventSubType>()?.event`.
   /// {@endtemplate}
   TEventSubType? eventOf<TEventSubType extends TEvent>() =>
       eventStatusOf<TEventSubType>()?.event;
 
   /// {@template event_statuses.last_event_status}
-  /// // TODO: Add Docs
+  /// Returns the most recently updated [EventStatusUpdate], regardless of
+  /// event type, or `null` if no updates have been recorded.
+  ///
+  /// Useful for driving a global loading indicator or activity log.
   /// {@endtemplate}
   EventStatusUpdate<TEvent, TStatus>? get lastEventStatus => _lastEventStatus;
 
   /// {@template event_statuses.update}
-  /// // TODO: Add Docs
+  /// Returns a **new** [EventStatuses] with the entry for [TEventSubType]
+  /// set to the given [event] and [status].
+  ///
+  /// This does not mutate the current instance. The returned copy also
+  /// records this update as the [lastEventStatus].
+  ///
+  /// Throws [ArgumentError] if [TEventSubType] is the same as [TEvent].
   /// {@endtemplate}
   EventStatuses<TEvent, TStatus> update<TEventSubType extends TEvent>(
     TEventSubType event,

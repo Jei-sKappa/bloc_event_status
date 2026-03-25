@@ -1,7 +1,14 @@
 import 'package:bloc_event_status/bloc_event_status.dart';
 
 /// {@template event_statuses_mixin}
-/// // TODO: Add Docs
+/// A mixin that adds convenience accessors for [EventStatuses] directly
+/// on your BLoC state class.
+///
+/// Requires implementing `EventStatuses<TEvent, TStatus> get eventStatuses`.
+/// Delegates [statusOf], [eventOf], [eventStatusOf], and [lastEventStatus]
+/// to the underlying [eventStatuses] instance, so you can write
+/// `state.statusOf<LoadRequested>()` instead of
+/// `state.eventStatuses.statusOf<LoadRequested>()`.
 /// {@endtemplate}
 mixin EventStatusesMixin<TEvent, TStatus> {
   /// {@macro event_statuses}

@@ -1,3 +1,8 @@
+## [2.1.1]
+
+### Fixed
+- Fixed broken badge images in README.
+
 ## [2.1.0]
 
 ### Changed

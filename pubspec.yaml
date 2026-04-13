@@ -5,4 +5,6 @@ environment:
 workspace:
   - example
   - packages/bloc_event_status
+  - packages/bloc_event_status/example
   - packages/bloc_event_status_generator
+  - packages/bloc_event_status_generator/example

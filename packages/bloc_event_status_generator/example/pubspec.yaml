@@ -1,0 +1,19 @@
+name: example_generator
+description: "bloc_event_status_generator example"
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.6.1
+
+resolution: workspace
+
+dependencies:
+  bloc: '>=8.0.0 <10.0.0'
+  bloc_event_status:
+  bloc_event_status_generator:
+  build_runner: ^2.4.0
+  equatable: ^2.0.8
+
+dev_dependencies:
+  very_good_analysis: ^10.1.0

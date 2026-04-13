@@ -9,16 +9,18 @@ Remember to update this file when you make significant changes that needs to be 
 
 ## Repository Structure
 
-Monorepo with two packages:
+Monorepo with 3 packages:
+- `example/` — full Flutter example app demonstrating real-world usage
 - `packages/bloc_event_status/` — main library package
   - `lib/src/event_statuses.dart` — core `EventStatuses<TEvent, TStatus>` immutable class
   - `lib/src/event_statuses_mixin.dart` — `EventStatusesMixin` convenience accessor mixin
   - `test/` — unit tests (Dart `test` package)
-  - `example/` — Flutter example app demonstrating real-world usage
+  - `example/` — package-local Flutter example
 - `packages/bloc_event_status_generator/` — code generator package
   - `lib/generator.dart` — builder factory (`blocEventStatusGenerator`)
   - `lib/src/bloc_event_status_generator.dart` — `BlocEventStatusGenerator` implementation
   - `test/bloc_event_status_generator_test.dart` — generator tests (uses `build_test`)
+  - `example/` — package-local Dart example
 
 ## Flutter Version
 
@@ -51,6 +53,14 @@ fvm dart format .         # Format
 fvm flutter pub get
 fvm flutter run -d macos
 fvm dart run build_runner build --delete-conflicting-outputs  # Regenerate freezed models
+```
+
+### Package-local example (run from `packages/bloc_event_status/example/`)
+
+```bash
+fvm flutter pub get
+fvm dart run build_runner build --delete-conflicting-outputs  # Regenerate main.bes.g.dart
+fvm flutter run
 ```
 
 ## API Reference

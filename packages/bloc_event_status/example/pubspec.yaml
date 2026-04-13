@@ -1,0 +1,24 @@
+name: example_bes
+description: "bloc_event_status example"
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.6.1
+
+resolution: workspace
+
+dependencies:
+  bloc_event_status: ^2.1.0
+  equatable: ^2.0.8
+  flutter:
+    sdk: flutter
+  flutter_bloc: '>=8.0.0 <10.0.0'
+
+dev_dependencies:
+  bloc_event_status_generator: ^1.0.1
+  build_runner: ^2.11.1
+  very_good_analysis: ^10.1.0
+
+flutter:
+  uses-material-design: true

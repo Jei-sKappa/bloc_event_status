@@ -353,6 +353,21 @@ listenWhen: (previous, current) =>
     current.eventOf<TodoToggled>()!.todo.isDone,
 ```
 
+**Why `eventStatusChangedTo` over `statusChangedTo` for `listenWhen`?**
+
+`eventStatusChangedTo` compares the full `({TEvent event, TStatus status})` record, not just the status. This means it detects changes even when the status type stays the same but a different event instance triggered it. Consider two consecutive failures for `TodoUpdate`:
+
+```
+1st emit → eventStatusOf<TodoUpdate>() = (event: TodoUpdate('item-A'), status: FailureEventStatus(...))
+2nd emit → eventStatusOf<TodoUpdate>() = (event: TodoUpdate('item-B'), status: FailureEventStatus(...))
+```
+
+With `eventStatusChangedTo`: the full record changed (different event instance) → returns `true` → the listener fires for both failures.
+
+With `statusChangedTo`: the status is still `FailureEventStatus` in both cases → returns `false` → the second failure is silently ignored.
+
+For `listenWhen`, where you want to react to every emission (e.g. show a snackbar for each error), always prefer `eventStatusChangedTo`. Use `statusChangedTo` in `buildWhen` when you only care about the status type transition (e.g. loading → success) and don't need to rebuild for re-emissions with the same status.
+
 #### Last event status
 
 `lastEventStatusChanged` and `lastEventStatusChangedTo` work on `lastEventStatus` instead of a specific event type:

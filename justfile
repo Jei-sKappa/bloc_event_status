@@ -45,3 +45,9 @@ test-and-report-generator:
     @echo "---"
     @echo ""
     cd {{bes_generator}} && buggy report
+
+try-publish-bes:
+    cd {{bes}} && fvm dart pub publish --dry-run
+
+try-publish-generator:
+    cd {{bes_generator}} && fvm dart pub publish --dry-run

@@ -1,12 +1,12 @@
 # BlocEventStatus
 
-[![BlocEventStatus CI](https://github.com/Jei-sKappa/bloc_event_status/actions/workflows/bloc_event_status-test.yml/badge.svg)](https://github.com/Jei-sKappa/bloc_event_status/actions/workflows/bloc_event_status-test.yml)
-[![codecov](https://codecov.io/github/Jei-sKappa/bloc_event_status/graph/badge.svg?token=LYNF1FJ8YF)](https://codecov.io/github/Jei-sKappa/bloc_event_status)
-[![pub package](https://img.shields.io/pub/v/bloc_event_status.svg)](https://pub.dev/packages/bloc_event_status)
-![pub points](https://img.shields.io/pub/points/bloc_event_status)
-![pub monthly downloads](https://img.shields.io/pub/dm/bloc_event_status)
-![pub Likes](https://img.shields.io/pub/likes/bloc_event_status)
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
+[BlocEventStatus CI](https://github.com/Jei-sKappa/bloc_event_status/actions/workflows/bloc_event_status-test.yml)
+[codecov](https://codecov.io/github/Jei-sKappa/bloc_event_status)
+[pub package](https://pub.dev/packages/bloc_event_status)
+pub points
+pub monthly downloads
+pub Likes
+[License: MIT](https://opensource.org/licenses/MIT)
 
 Compose event status tracking into your BLoC state.
 
@@ -135,9 +135,7 @@ Use standard `flutter_bloc` widgets. The `EventStatusesMixin` methods (`statusOf
 ```dart
 BlocListener<TodoBloc, TodoState>(
   listenWhen: (previous, current) =>
-      previous.eventStatusOf<TodoLoadRequested>() !=
-          current.eventStatusOf<TodoLoadRequested>() &&
-      current.statusOf<TodoLoadRequested>() is FailureEventStatus,
+      previous.eventStatusChangedTo<TodoLoadRequested, FailureEventStatus>(current),
   listener: (context, state) {
     final eventStatus = state.eventStatusOf<TodoLoadRequested>()!;
     final error = (eventStatus.status as FailureEventStatus).error;
@@ -177,8 +175,7 @@ BlocSelector<TodoBloc, TodoState, EventStatus?>(
 BlocBuilder<TodoBloc, TodoState>(
   buildWhen: (previous, current) =>
       current.eventOf<TodoDeleted>()?.todo.id == todo.id &&
-      previous.eventStatusOf<TodoDeleted>() !=
-          current.eventStatusOf<TodoDeleted>() &&
+      previous.eventStatusChanged<TodoDeleted>(current) &&
       (previous.statusOf<TodoDeleted>() is LoadingEventStatus ||
           current.statusOf<TodoDeleted>() is LoadingEventStatus),
   builder: (context, state) {
@@ -199,18 +196,35 @@ BlocBuilder<TodoBloc, TodoState>(
 
 Immutable class (extends `Equatable`) that stores the status of each event type.
 
-| Member | Description |
-|---|---|
-| `const EventStatuses()` | Creates an empty instance (use as initial value). |
-| `update<TEventSubType>(event, status)` | Returns a **new** `EventStatuses` with the entry for `TEventSubType` updated. |
-| `statusOf<TEventSubType>()` | Returns the current `TStatus` for `TEventSubType`, or `null`. |
-| `eventOf<TEventSubType>()` | Returns the last `TEventSubType` instance that was updated, or `null`. |
-| `eventStatusOf<TEventSubType>()` | Returns the full `EventStatusUpdate` record `({event, status})` for `TEventSubType`, or `null`. |
-| `lastEventStatus` | Returns the most recently updated `EventStatusUpdate`, regardless of event type. |
+
+| Member                                 | Description                                                                                     |
+| -------------------------------------- | ----------------------------------------------------------------------------------------------- |
+| `const EventStatuses()`                | Creates an empty instance (use as initial value).                                               |
+| `update<TEventSubType>(event, status)` | Returns a **new** `EventStatuses` with the entry for `TEventSubType` updated.                   |
+| `statusOf<TEventSubType>()`            | Returns the current `TStatus` for `TEventSubType`, or `null`.                                   |
+| `eventOf<TEventSubType>()`             | Returns the last `TEventSubType` instance that was updated, or `null`.                          |
+| `eventStatusOf<TEventSubType>()`       | Returns the full `EventStatusUpdate` record `({event, status})` for `TEventSubType`, or `null`. |
+| `lastEventStatus`                      | Returns the most recently updated `EventStatusUpdate`, regardless of event type.                |
+
 
 ### `EventStatusesMixin<TEvent, TStatus>`
 
 Optional mixin for your BLoC state. Requires you to implement `EventStatuses<TEvent, TStatus> get eventStatuses`. Delegates all four query methods (`statusOf`, `eventOf`, `eventStatusOf`, `lastEventStatus`) to `eventStatuses`, so you can call them directly on the state.
+
+### `EventStatusConditions` extension
+
+Extension on `EventStatusesMixin` that provides `buildWhen` / `listenWhen` helpers. Call on the **previous** state, passing **current** as the argument.
+
+
+| Method                                 | Description                                                       |
+| -------------------------------------- | ----------------------------------------------------------------- |
+| `statusChanged<E>(current)`            | `true` if `statusOf<E>()` differs.                                |
+| `eventStatusChanged<E>(current)`       | `true` if `eventStatusOf<E>()` differs (full record).             |
+| `statusChangedTo<E, S>(current)`       | `true` if `statusOf<E>()` changed AND current status is `S`.      |
+| `eventStatusChangedTo<E, S>(current)`  | `true` if `eventStatusOf<E>()` changed AND current status is `S`. |
+| `lastEventStatusChanged(current)`      | `true` if `lastEventStatus` differs.                              |
+| `lastEventStatusChangedTo<S>(current)` | `true` if `lastEventStatus` changed AND current status is `S`.    |
+
 
 ### `EventStatusUpdate<TEvent, TStatus>`
 
@@ -273,9 +287,89 @@ listener: (context, state) {
 },
 ```
 
+### `buildWhen` / `listenWhen` helpers
+
+The `EventStatusConditions` extension (available on any state that uses `EventStatusesMixin`) provides helpers that replace the verbose comparison patterns commonly written in `buildWhen` and `listenWhen` callbacks.
+
+#### Status changed
+
+Use `statusChanged` to check if a status value changed, ignoring event instance changes.
+
+```dart
+// Before:
+buildWhen: (previous, current) =>
+    previous.statusOf<TodoLoadRequested>() !=
+        current.statusOf<TodoLoadRequested>(),
+
+// After:
+buildWhen: (previous, current) =>
+    previous.statusChanged<TodoLoadRequested>(current),
+```
+
+Use `eventStatusChanged` to check if the full record (event + status) changed. Prefer this for `listenWhen` because it reacts to every new emission, even when the status type is unchanged:
+
+```dart
+// Before:
+listenWhen: (previous, current) =>
+    previous.eventStatusOf<TodoToggled>() !=
+        current.eventStatusOf<TodoToggled>(),
+
+// After:
+listenWhen: (previous, current) =>
+    previous.eventStatusChanged<TodoToggled>(current),
+```
+
+#### Multiple events — use `||`:
+
+```dart
+buildWhen: (previous, current) =>
+    previous.statusChanged<TodoLoadRequested>(current) ||
+    previous.statusChanged<TodoDeleted>(current),
+```
+
+#### Status changed to a specific type
+
+Use `eventStatusChangedTo` to combine change detection with a type check on the current status. This is the most common `listenWhen` pattern:
+
+```dart
+// Before:
+listenWhen: (previous, current) =>
+    previous.eventStatusOf<TodoLoadRequested>() !=
+        current.eventStatusOf<TodoLoadRequested>() &&
+    current.statusOf<TodoLoadRequested>() is FailureEventStatus,
+
+// After:
+listenWhen: (previous, current) =>
+    previous.eventStatusChangedTo<TodoLoadRequested, FailureEventStatus>(current),
+```
+
+`statusChangedTo` is the equivalent that compares only the status (ignoring event instance changes), suitable for `buildWhen`.
+
+These compose naturally with `&&` / `||` and manual checks:
+
+```dart
+listenWhen: (previous, current) =>
+    previous.eventStatusChangedTo<TodoToggled, SuccessEventStatus>(current) &&
+    current.eventOf<TodoToggled>()!.todo.isDone,
+```
+
+#### Last event status
+
+`lastEventStatusChanged` and `lastEventStatusChangedTo` work on `lastEventStatus` instead of a specific event type:
+
+```dart
+// React to any status change, regardless of event type:
+listenWhen: (previous, current) =>
+    previous.lastEventStatusChanged(current),
+
+// React only when the latest status is a failure:
+listenWhen: (previous, current) =>
+    previous.lastEventStatusChangedTo<FailureEventStatus>(current),
+```
+
 ### Observe any status change with `lastEventStatus`
 
-`lastEventStatus` returns the most recent update regardless of event type. Use it to drive a global loading indicator or activity log:
+`lastEventStatus` returns the most recent update regardless of event type. Use it to drive a global loading indicator or listening for any error in the BLoC.
 
 ```dart
 BlocSelector<TodoBloc, TodoState, EventStatusUpdate<TodoEvent, EventStatus>?>(
@@ -284,7 +378,7 @@ BlocSelector<TodoBloc, TodoState, EventStatusUpdate<TodoEvent, EventStatus>?>(
     if (lastStatus?.status is LoadingEventStatus) {
       return const LinearProgressIndicator();
     }
-    return const SizedBox.shrink();
+    return /* your widget tree */;
   },
 )
 ```

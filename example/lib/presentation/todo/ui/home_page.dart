@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:bloc_event_status/bloc_event_status.dart';
 import 'package:example/core/bloc/bloc.dart';
 import 'package:example/domain/todo.dart';
 import 'package:example/presentation/programmed_failure/components/components.dart';
@@ -104,10 +105,8 @@ class _HomeViewState extends State<HomeView> {
       body: MultiBlocListener(
         listeners: [
           BlocListener<TodoBloc, TodoState>(
-            listenWhen: (previous, current) =>
-                previous.eventStatusOf<TodoLoadRequested>() !=
-                    current.eventStatusOf<TodoLoadRequested>() &&
-                current.statusOf<TodoLoadRequested>() is FailureEventStatus,
+            listenWhen: (previous, current) => previous.eventStatusChangedTo<
+                TodoLoadRequested, FailureEventStatus>(current),
             listener: (context, state) {
               final eventStatus = state.eventStatusOf<TodoLoadRequested>();
 
@@ -137,17 +136,10 @@ class _HomeViewState extends State<HomeView> {
             // filter: (event) => event.todo.isDone,
             // listenWhen: (previous, current) =>
             //     previous != current && current is SuccessEventStatus,
-            listenWhen: (previous, current) {
-              if (previous.eventStatusOf<TodoToggled>() ==
-                  current.eventStatusOf<TodoToggled>()) {
-                return false;
-              }
-
-              final eventStatus = current.eventStatusOf<TodoToggled>();
-              return eventStatus != null &&
-                  eventStatus.status is SuccessEventStatus &&
-                  eventStatus.event.todo.isDone;
-            },
+            listenWhen: (previous, current) =>
+                previous.eventStatusChangedTo<TodoToggled,
+                    SuccessEventStatus<dynamic>>(current) &&
+                current.eventOf<TodoToggled>()!.todo.isDone,
             listener: (context, state) {
               final event = state.eventOf<TodoToggled>()!;
 
@@ -174,10 +166,8 @@ class _HomeViewState extends State<HomeView> {
             },
           ),
           BlocListener<TodoBloc, TodoState>(
-            listenWhen: (previous, current) =>
-                previous.eventStatusOf<TodoToggled>() !=
-                    current.eventStatusOf<TodoToggled>() &&
-                current.statusOf<TodoToggled>() is FailureEventStatus,
+            listenWhen: (previous, current) => previous
+                .eventStatusChangedTo<TodoToggled, FailureEventStatus>(current),
             listener: (context, state) {
               final eventStatus = state.eventStatusOf<TodoToggled>()!;
 
@@ -203,10 +193,8 @@ class _HomeViewState extends State<HomeView> {
             },
           ),
           BlocListener<TodoBloc, TodoState>(
-            listenWhen: (previous, current) =>
-                previous.eventStatusOf<TodoDeleted>() !=
-                    current.eventStatusOf<TodoDeleted>() &&
-                current.statusOf<TodoDeleted>() is FailureEventStatus,
+            listenWhen: (previous, current) => previous
+                .eventStatusChangedTo<TodoDeleted, FailureEventStatus>(current),
             listener: (context, state) {
               final eventStatus = state.eventStatusOf<TodoDeleted>()!;
               final error = (eventStatus.status as FailureEventStatus).error;
@@ -336,26 +324,20 @@ class _TodoTile extends StatelessWidget {
         dimension: _actionSize,
         child: BlocBuilder<TodoBloc, TodoState>(
           buildWhen: (previous, current) {
-            if (current.eventOf<TodoToggled>()?.todo.id == todo.id) {
-              if (previous.eventStatusOf<TodoToggled>() !=
-                  current.eventStatusOf<TodoToggled>()) {
-                if (previous.statusOf<TodoToggled>() is LoadingEventStatus ||
-                    current.statusOf<TodoToggled>() is LoadingEventStatus) {
-                  return true;
-                }
-              }
+            if (current.eventOf<TodoToggled>()?.todo.id == todo.id &&
+                previous.eventStatusChanged<TodoToggled>(current) &&
+                (previous.statusOf<TodoToggled>() is LoadingEventStatus ||
+                    current.statusOf<TodoToggled>() is LoadingEventStatus)) {
+              return true;
             }
 
-            if (current.eventOf<TodoCompletitionSet>()?.todo.id == todo.id) {
-              if (previous.eventStatusOf<TodoCompletitionSet>() !=
-                  current.eventStatusOf<TodoCompletitionSet>()) {
-                if (previous.statusOf<TodoCompletitionSet>()
+            if (current.eventOf<TodoCompletitionSet>()?.todo.id == todo.id &&
+                previous.eventStatusChanged<TodoCompletitionSet>(current) &&
+                (previous.statusOf<TodoCompletitionSet>()
                         is TodoCompletitionSet ||
                     current.statusOf<TodoCompletitionSet>()
-                        is TodoCompletitionSet) {
-                  return true;
-                }
-              }
+                        is TodoCompletitionSet)) {
+              return true;
             }
 
             return false;
@@ -393,8 +375,7 @@ class _TodoTile extends StatelessWidget {
         child: BlocBuilder<TodoBloc, TodoState>(
           buildWhen: (previous, current) =>
               current.eventOf<TodoDeleted>()?.todo.id == todo.id &&
-              previous.eventStatusOf<TodoDeleted>() !=
-                  current.eventStatusOf<TodoDeleted>() &&
+              previous.eventStatusChanged<TodoDeleted>(current) &&
               (previous.statusOf<TodoDeleted>() is LoadingEventStatus ||
                   current.statusOf<TodoDeleted>() is LoadingEventStatus),
           builder: (context, state) {

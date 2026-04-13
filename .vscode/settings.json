@@ -6,8 +6,12 @@
     "main",
     // `packages/bloc_event_status_generator`
     "generator",
+    // `example`
+    "example_full",
     // `packages/bloc_event_status/example`
-    "example"
+    "example_bes",
+    // `packages/bloc_event_status_generator/example`
+    "example_generator"
   ],
   "dart.flutterSdkPath": ".fvm/versions/3.38.6"
 }

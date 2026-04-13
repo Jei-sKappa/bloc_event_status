@@ -293,7 +293,9 @@ class BlocEventStatusGenerator extends GeneratorForAnnotation<BlocEventStatus> {
       stripped = baseSuffix.isEmpty
           ? subtypeMiddle
           : subtypeMiddle.substring(
-              0, subtypeMiddle.length - baseSuffix.length);
+              0,
+              subtypeMiddle.length - baseSuffix.length,
+            );
     } else {
       stripped = subtypeName;
     }

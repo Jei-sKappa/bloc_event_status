@@ -8,7 +8,7 @@ documentation: https://github.com/Jei-sKappa/bloc_event_status/tree/main/package
 topics: [bloc, state-management, code-generation]
 
 environment:
-  sdk: ^3.11.0
+  sdk: ">=3.5.0 <4.0.0"
 
 resolution: workspace
 

@@ -1,5 +1,8 @@
 ## [2.1.0]
 
+### Changed
+- Widened SDK constraint from `^3.6.1` to `>=3.5.0 <4.0.0`.
+
 ### Added
 - `EventStatusConditions` extension on `EventStatusesMixin` with helpers for `buildWhen` / `listenWhen` callbacks:
   - `statusChanged<E>()` — `true` if `statusOf<E>()` differs between previous and current.

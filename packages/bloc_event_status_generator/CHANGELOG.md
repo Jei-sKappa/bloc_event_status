@@ -4,6 +4,7 @@
 
 ### Changed
 - Widened `analyzer` dependency to `>=6.0.0 <13.0.0`.
+- Widened SDK constraint from `^3.6.1` to `>=3.5.0 <4.0.0`.
 
 ## 1.0.0
 

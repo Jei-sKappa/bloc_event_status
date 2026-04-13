@@ -304,8 +304,7 @@ class BlocEventStatusGenerator extends GeneratorForAnnotation<BlocEventStatus> {
       // LoadingEventStatus / CounterEventStatus → Loading).
       final subLen = subtypeName.length;
       final baseLen = baseName.length;
-      final minSufLen =
-          subLen < baseLen ? subLen : baseLen;
+      final minSufLen = subLen < baseLen ? subLen : baseLen;
       var suffixLen = 0;
       while (suffixLen < minSufLen &&
           subtypeName[subLen - 1 - suffixLen] ==

@@ -14,7 +14,7 @@ import 'package:bloc_event_status/bloc_event_status.dart';
 /// [lastEventStatusChangedTo]) the type check is always against `current`.
 extension EventStatusConditions<TEvent, TStatus>
     on EventStatusesMixin<TEvent, TStatus> {
-    /// Returns `true` if `statusOf<E>()` differs between `this` and [current].
+  /// Returns `true` if `statusOf<E>()` differs between `this` and [current].
   ///
   /// Compares only the status value, ignoring event instance changes.
   /// Prefer this for `buildWhen` — avoids rebuilds when the same status

@@ -1,5 +1,5 @@
-import 'package:example/presentation/programmed_failure/cubit/programmed_failure_cubit.dart';
-import 'package:example/presentation/todo/ui/home_page.dart';
+import 'package:example_full/presentation/programmed_failure/cubit/programmed_failure_cubit.dart';
+import 'package:example_full/presentation/todo/ui/home_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 

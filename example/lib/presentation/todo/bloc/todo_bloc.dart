@@ -2,9 +2,9 @@ import 'dart:async';
 
 import 'package:bloc_event_status/bloc_event_status.dart';
 import 'package:equatable/equatable.dart';
-import 'package:example/core/bloc/bloc.dart';
-import 'package:example/domain/domain.dart';
-import 'package:example/presentation/programmed_failure/cubit/programmed_failure_cubit.dart';
+import 'package:example_full/core/bloc/bloc.dart';
+import 'package:example_full/domain/domain.dart';
+import 'package:example_full/presentation/programmed_failure/cubit/programmed_failure_cubit.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 

@@ -1,4 +1,4 @@
-import 'package:example/app/app.dart';
+import 'package:example_full/app/app.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:talker/talker.dart';

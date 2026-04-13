@@ -1,4 +1,4 @@
-import 'package:example/constants/uuid.dart';
+import 'package:example_full/constants/uuid.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'todo.freezed.dart';

@@ -1,10 +1,10 @@
 import 'dart:async';
 
 import 'package:bloc_event_status/bloc_event_status.dart';
-import 'package:example/core/bloc/bloc.dart';
-import 'package:example/domain/todo.dart';
-import 'package:example/presentation/programmed_failure/components/components.dart';
-import 'package:example/presentation/todo/bloc/todo_bloc.dart';
+import 'package:example_full/core/bloc/bloc.dart';
+import 'package:example_full/domain/todo.dart';
+import 'package:example_full/presentation/programmed_failure/components/components.dart';
+import 'package:example_full/presentation/todo/bloc/todo_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 

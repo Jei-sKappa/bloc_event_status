@@ -1,5 +1,5 @@
-name: example
-description: "BlocEventStatus' Example"
+name: example_full
+description: "BlocEventStatus' full example app"
 publish_to: 'none'
 
 version: 1.0.0+1

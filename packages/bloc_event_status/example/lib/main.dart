@@ -63,16 +63,16 @@ class _TodoHomePageState extends State<TodoHomePage> {
     ScaffoldMessenger.of(context)
       ..hideCurrentSnackBar()
       ..showSnackBar(
-      SnackBar(
-        content: Text(message),
-        action: actionLabel == null || onAction == null
-            ? null
-            : SnackBarAction(
-                label: actionLabel,
-                onPressed: onAction,
-              ),
-      ),
-    );
+        SnackBar(
+          content: Text(message),
+          action: actionLabel == null || onAction == null
+              ? null
+              : SnackBarAction(
+                  label: actionLabel,
+                  onPressed: onAction,
+                ),
+        ),
+      );
   }
 
   @override
@@ -152,7 +152,7 @@ class _TodoHomePageState extends State<TodoHomePage> {
       ],
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('bloc_event_status Todo Example'),
+          title: const Text('BlocEventStatus Example'),
           actions: [
             IconButton(
               tooltip: 'Reload sample todos',
@@ -179,47 +179,26 @@ class _TodoHomePageState extends State<TodoHomePage> {
               },
             ),
             Expanded(
-              child: BlocBuilder<TodoBloc, TodoState>(
-                builder: (context, state) {
-                  return ListView(
-                    padding: const EdgeInsets.all(16),
-                    children: [
-                      _ComposerCard(
-                        controller: _controller,
-                        isFailureArmed: state.isFailureArmed,
-                        onAdd: _addTodo,
-                        onFailureModeChanged: (value) {
-                          context
-                              .read<TodoBloc>()
-                              .add(FailureModeToggled(enabled: value));
-                        },
-                      ),
-                      const SizedBox(height: 16),
-                      const _LoadStatusSelectorCard(),
-                      const SizedBox(height: 12),
-                      const _LoadStatusChangedCard(),
-                      const SizedBox(height: 12),
-                      const _TodoAddedEventStatusCard(),
-                      const SizedBox(height: 12),
-                      const _InspectorCard(),
-                      const SizedBox(height: 20),
-                      Text(
-                        'Todos',
-                        style: Theme.of(context).textTheme.titleLarge,
-                      ),
-                      const SizedBox(height: 8),
-                      if (state.todos.isEmpty)
-                        const _EmptyTodosCard()
-                      else
-                        ...state.todos.map(
-                          (todo) => Padding(
-                            padding: const EdgeInsets.only(bottom: 12),
-                            child: _TodoTile(todo: todo),
-                          ),
-                        ),
-                    ],
-                  );
-                },
+              child: ListView(
+                padding: const EdgeInsets.all(16),
+                children: [
+                  _ComposerCard(
+                    controller: _controller,
+                    onAdd: _addTodo,
+                    onFailureModeChanged: (value) {
+                      context
+                          .read<TodoBloc>()
+                          .add(FailureModeToggled(enabled: value));
+                    },
+                  ),
+                  const SizedBox(height: 20),
+                  Text(
+                    'Todos',
+                    style: Theme.of(context).textTheme.titleLarge,
+                  ),
+                  const SizedBox(height: 8),
+                  const _TodoListSection(),
+                ],
               ),
             ),
           ],
@@ -232,187 +211,19 @@ class _TodoHomePageState extends State<TodoHomePage> {
 class _ComposerCard extends StatelessWidget {
   const _ComposerCard({
     required this.controller,
-    required this.isFailureArmed,
     required this.onAdd,
     required this.onFailureModeChanged,
   });
 
   final TextEditingController controller;
-  final bool isFailureArmed;
   final VoidCallback onAdd;
   final ValueChanged<bool> onFailureModeChanged;
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Try the package',
-              style: Theme.of(context).textTheme.titleMedium,
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'This single-file app uses EventStatusesMixin, the generated '
-              'emit helpers, BlocSelector, BlocBuilder, BlocListener, and the '
-              'EventStatusConditions helpers from the README.',
-              style: Theme.of(context).textTheme.bodyMedium,
-            ),
-            const SizedBox(height: 16),
-            Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    controller: controller,
-                    textInputAction: TextInputAction.done,
-                    onSubmitted: (_) => onAdd(),
-                    decoration: const InputDecoration(
-                      labelText: 'New todo',
-                      hintText: 'Write docs, ship package, review PR',
-                      border: OutlineInputBorder(),
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                FilledButton.icon(
-                  onPressed: onAdd,
-                  icon: const Icon(Icons.add_task),
-                  label: const Text('Add'),
-                ),
-              ],
-            ),
-            const SizedBox(height: 12),
-            SwitchListTile.adaptive(
-              contentPadding: EdgeInsets.zero,
-              value: isFailureArmed,
-              onChanged: onFailureModeChanged,
-              title: const Text('Fail the next async todo action'),
-              subtitle: const Text(
-                'The next load, add, toggle, or delete emits '
-                'FailureTodoEventStatus, then the switch turns itself off.',
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _LoadStatusSelectorCard extends StatelessWidget {
-  const _LoadStatusSelectorCard();
-
-  @override
-  Widget build(BuildContext context) {
-    return BlocSelector<TodoBloc, TodoState, TodoEventStatus?>(
-      selector: (state) => state.statusOf<TodoLoadRequested>(),
-      builder: (context, status) {
-        final theme = Theme.of(context);
-
-        return Card(
-          child: ListTile(
-            leading: switch (status) {
-              null => const Icon(Icons.hourglass_empty),
-              LoadingTodoEventStatus() =>
-                const CircularProgressIndicator(strokeWidth: 2),
-              SuccessTodoEventStatus<dynamic>() =>
-                const Icon(Icons.check_circle, color: Colors.green),
-              FailureTodoEventStatus() =>
-                const Icon(Icons.error, color: Colors.red),
-            },
-            title: const Text(
-              'BlocSelector on state.statusOf<TodoLoadRequested>()',
-            ),
-            subtitle: Text(
-              switch (status) {
-                null => 'No load event emitted yet.',
-                LoadingTodoEventStatus() => 'Loading the sample todo list...',
-                SuccessTodoEventStatus<dynamic>() => _describeStatus(status),
-                FailureTodoEventStatus() => _describeStatus(status),
-              },
-              style: theme.textTheme.bodyMedium,
-            ),
-          ),
-        );
-      },
-    );
-  }
-}
-
-class _LoadStatusChangedCard extends StatelessWidget {
-  const _LoadStatusChangedCard();
-
-  @override
-  Widget build(BuildContext context) {
-    return BlocBuilder<TodoBloc, TodoState>(
-      buildWhen: (previous, current) =>
-          previous.statusChanged<TodoLoadRequested>(current),
-      builder: (context, state) {
-        return Card(
-          child: ListTile(
-            title: const Text(
-              'statusChanged<TodoLoadRequested>(current)',
-            ),
-            subtitle: Text(
-              'This card rebuilds only when the load status changes.\n'
-              'Current status: '
-              '${_describeStatus(state.statusOf<TodoLoadRequested>())}',
-            ),
-          ),
-        );
-      },
-    );
-  }
-}
-
-class _TodoAddedEventStatusCard extends StatelessWidget {
-  const _TodoAddedEventStatusCard();
-
-  @override
-  Widget build(BuildContext context) {
-    return BlocBuilder<TodoBloc, TodoState>(
-      buildWhen: (previous, current) =>
-          previous.eventStatusChanged<TodoAdded>(current),
-      builder: (context, state) {
-        final eventStatus = state.eventStatusOf<TodoAdded>();
-
-        return Card(
-          child: ListTile(
-            title: const Text(
-              'eventStatusChanged<TodoAdded>(current)',
-            ),
-            subtitle: Text(
-              eventStatus == null
-                  ? 'Add a todo a few times. This card rebuilds for every '
-                      'new add event, even when the status stays "success".'
-                  : 'Last add event: ${_describeEvent(eventStatus.event)}\n'
-                      'Full event+status record: '
-                      '${_describeEventStatus(eventStatus)}',
-            ),
-          ),
-        );
-      },
-    );
-  }
-}
-
-class _InspectorCard extends StatelessWidget {
-  const _InspectorCard();
-
-  @override
-  Widget build(BuildContext context) {
-    return BlocBuilder<TodoBloc, TodoState>(
-      buildWhen: (previous, current) =>
-          previous.statusChanged<TodoLoadRequested>(current) ||
-          previous.eventStatusChanged<TodoAdded>(current) ||
-          previous.lastEventStatusChanged(current),
-      builder: (context, state) {
-        final loadEvent = state.eventOf<TodoLoadRequested>();
-        final addEventStatus = state.eventStatusOf<TodoAdded>();
-
+    return BlocSelector<TodoBloc, TodoState, bool>(
+      selector: (state) => state.isFailureArmed,
+      builder: (context, isFailureArmed) {
         return Card(
           child: Padding(
             padding: const EdgeInsets.all(16),
@@ -420,29 +231,49 @@ class _InspectorCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Inspector',
+                  'Try the package',
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
+                const SizedBox(height: 8),
+                Text(
+                  'This demo focuses on the Todo flow while still using '
+                  '`bloc_event_status` to drive loading, success, failure, '
+                  'retry, and per-item progress states.',
+                  style: Theme.of(context).textTheme.bodyMedium,
+                ),
+                const SizedBox(height: 16),
+                Row(
+                  children: [
+                    Expanded(
+                      child: TextField(
+                        controller: controller,
+                        textInputAction: TextInputAction.done,
+                        onSubmitted: (_) => onAdd(),
+                        decoration: const InputDecoration(
+                          labelText: 'New todo',
+                          hintText: 'Write docs, ship package, review PR',
+                          border: OutlineInputBorder(),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    FilledButton.icon(
+                      onPressed: onAdd,
+                      icon: const Icon(Icons.add_task),
+                      label: const Text('Add'),
+                    ),
+                  ],
+                ),
                 const SizedBox(height: 12),
-                _InspectorLine(
-                  label: 'statusOf<TodoLoadRequested>()',
-                  value: _describeStatus(state.statusOf<TodoLoadRequested>()),
-                ),
-                _InspectorLine(
-                  label: 'eventOf<TodoLoadRequested>()',
-                  value: loadEvent == null ? 'null' : _describeEvent(loadEvent),
-                ),
-                _InspectorLine(
-                  label: 'eventStatusOf<TodoAdded>()',
-                  value: addEventStatus == null
-                      ? 'null'
-                      : _describeEventStatus(addEventStatus),
-                ),
-                _InspectorLine(
-                  label: 'lastEventStatus',
-                  value: state.lastEventStatus == null
-                      ? 'null'
-                      : _describeEventStatus(state.lastEventStatus!),
+                SwitchListTile.adaptive(
+                  contentPadding: EdgeInsets.zero,
+                  value: isFailureArmed,
+                  onChanged: onFailureModeChanged,
+                  title: const Text('Fail the next async todo action'),
+                  subtitle: const Text(
+                    'The next load, add, toggle, or delete emits '
+                    'FailureTodoEventStatus, then the switch turns itself off.',
+                  ),
                 ),
               ],
             ),
@@ -453,33 +284,30 @@ class _InspectorCard extends StatelessWidget {
   }
 }
 
-class _InspectorLine extends StatelessWidget {
-  const _InspectorLine({
-    required this.label,
-    required this.value,
-  });
-
-  final String label;
-  final String value;
+class _TodoListSection extends StatelessWidget {
+  const _TodoListSection();
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 8),
-      child: Text.rich(
-        TextSpan(
+    return BlocBuilder<TodoBloc, TodoState>(
+      buildWhen: (previous, current) =>
+          previous.todos.map((todo) => todo.id).join(',') !=
+          current.todos.map((todo) => todo.id).join(','),
+      builder: (context, state) {
+        if (state.todos.isEmpty) {
+          return const _EmptyTodosCard();
+        }
+
+        return Column(
           children: [
-            TextSpan(
-              text: '$label\n',
-              style: Theme.of(context).textTheme.labelLarge,
-            ),
-            TextSpan(
-              text: value,
-              style: Theme.of(context).textTheme.bodyMedium,
-            ),
+            for (final todo in state.todos)
+              Padding(
+                padding: const EdgeInsets.only(bottom: 12),
+                child: _TodoTile(todoId: todo.id),
+              ),
           ],
-        ),
-      ),
+        );
+      },
     );
   }
 }
@@ -514,24 +342,31 @@ class _EmptyTodosCard extends StatelessWidget {
 }
 
 class _TodoTile extends StatelessWidget {
-  const _TodoTile({required this.todo});
+  const _TodoTile({required this.todoId});
 
-  final Todo todo;
+  final String todoId;
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      child: ListTile(
-        leading: _TodoToggleButton(todo: todo),
-        title: Text(
-          todo.title,
-          style: TextStyle(
-            decoration: todo.isDone ? TextDecoration.lineThrough : null,
+    return BlocBuilder<TodoBloc, TodoState>(
+      buildWhen: (previous, current) =>
+          previous.eventStatusChanged<TodoToggled>(current) &&
+          current.eventStatusOf<TodoToggled>()?.event.todo.id == todoId,
+      builder: (context, state) {
+        final todo = state.todos.firstWhere((todo) => todo.id == todoId);
+        return Card(
+          child: ListTile(
+            leading: _TodoToggleButton(todo: todo),
+            title: Text(
+              todo.title,
+              style: TextStyle(
+                decoration: todo.isDone ? TextDecoration.lineThrough : null,
+              ),
+            ),
+            trailing: _TodoDeleteButton(todo: todo),
           ),
-        ),
-        subtitle: _TodoLastActivity(todo: todo),
-        trailing: _TodoDeleteButton(todo: todo),
-      ),
+        );
+      },
     );
   }
 }
@@ -611,44 +446,6 @@ class _TodoDeleteButton extends StatelessWidget {
             context.read<TodoBloc>().add(TodoDeleted(todo));
           },
           icon: const Icon(Icons.delete_outline),
-        );
-      },
-    );
-  }
-}
-
-class _TodoLastActivity extends StatelessWidget {
-  const _TodoLastActivity({required this.todo});
-
-  final Todo todo;
-
-  @override
-  Widget build(BuildContext context) {
-    return BlocBuilder<TodoBloc, TodoState>(
-      buildWhen: (previous, current) =>
-          previous.lastEventStatusChanged(current),
-      builder: (context, state) {
-        final lastEventStatus = state.lastEventStatus;
-        if (lastEventStatus == null) {
-          return const Text('No activity yet');
-        }
-
-        final event = lastEventStatus.event;
-        final isRelated = switch (event) {
-          TodoToggled(:final todo) => todo.id == this.todo.id,
-          TodoDeleted(:final todo) => todo.id == this.todo.id,
-          _ => false,
-        };
-
-        if (!isRelated) {
-          return Text(
-            'Latest activity: ${_describeEventStatus(lastEventStatus)}',
-          );
-        }
-
-        return Text(
-          'Latest activity on this item: '
-          '${_describeStatus(lastEventStatus.status)}',
         );
       },
     );
@@ -953,26 +750,6 @@ class TodoBloc extends Bloc<TodoEvent, TodoState> {
   }
 }
 
-String _describeStatus(TodoEventStatus? status) {
-  if (status == null) {
-    return 'null';
-  }
-
-  if (status is LoadingTodoEventStatus) {
-    return 'LoadingTodoEventStatus()';
-  }
-
-  if (status is SuccessTodoEventStatus<dynamic>) {
-    final data = status.data;
-    return data == null
-        ? 'SuccessTodoEventStatus()'
-        : 'SuccessTodoEventStatus($data)';
-  }
-
-  final failure = status as FailureTodoEventStatus;
-  return 'FailureTodoEventStatus(${_formatException(failure.error)})';
-}
-
 String _describeEvent(TodoEvent event) {
   return switch (event) {
     TodoLoadRequested(:final reason) => 'TodoLoadRequested(reason: $reason)',
@@ -982,13 +759,6 @@ String _describeEvent(TodoEvent event) {
     FailureModeToggled(:final enabled) =>
       'FailureModeToggled(enabled: $enabled)',
   };
-}
-
-String _describeEventStatus(
-  EventStatusUpdate<TodoEvent, TodoEventStatus> eventStatus,
-) {
-  return '(${_describeEvent(eventStatus.event)}, '
-      '${_describeStatus(eventStatus.status)})';
 }
 
 String _formatException(Exception error) {

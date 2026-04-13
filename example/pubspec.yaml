@@ -20,8 +20,8 @@ dependencies:
   json_annotation: ^4.10.0
   meta: 1.17.0
   nested: ^1.0.0
-  talker: ^4.9.3
-  talker_bloc_logger: ^4.9.3
+  talker: ^5.1.16
+  talker_bloc_logger: ^5.1.16
   uuid: ^4.5.1
 
 dev_dependencies:

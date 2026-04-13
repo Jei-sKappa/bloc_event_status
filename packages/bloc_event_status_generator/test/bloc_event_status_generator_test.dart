@@ -230,21 +230,23 @@ void main() {
       expect(output, contains('[Exception? error]'));
     });
 
-    test('const constructor produces const instantiation when no args',
-        () async {
-      final output = await _generate(
-        {
-          'a|lib/event_status.dart': _statusHeader,
-          'a|lib/test_event.dart': _eventHeader,
-          'a|lib/test_state.dart': _stateHeader,
-          'a|lib/test_bloc.dart': _blocSource,
-        },
-        'a|lib/test_bloc.dart',
-      );
+    test(
+      'const constructor produces const instantiation when no args',
+      () async {
+        final output = await _generate(
+          {
+            'a|lib/event_status.dart': _statusHeader,
+            'a|lib/test_event.dart': _eventHeader,
+            'a|lib/test_state.dart': _stateHeader,
+            'a|lib/test_bloc.dart': _blocSource,
+          },
+          'a|lib/test_bloc.dart',
+        );
 
-      expect(output, contains('const LoadingEventStatus()'));
-      expect(output, contains('const SuccessEventStatus()'));
-    });
+        expect(output, contains('const LoadingEventStatus()'));
+        expect(output, contains('const SuccessEventStatus()'));
+      },
+    );
 
     test('error when annotation is on a non-Bloc class', () async {
       expect(

@@ -105,8 +105,10 @@ class _HomeViewState extends State<HomeView> {
       body: MultiBlocListener(
         listeners: [
           BlocListener<TodoBloc, TodoState>(
-            listenWhen: (previous, current) => previous.eventStatusChangedTo<
-                TodoLoadRequested, FailureEventStatus>(current),
+            listenWhen: (previous, current) => previous
+                .eventStatusChangedTo<TodoLoadRequested, FailureEventStatus>(
+                  current,
+                ),
             listener: (context, state) {
               final eventStatus = state.eventStatusOf<TodoLoadRequested>();
 
@@ -137,8 +139,10 @@ class _HomeViewState extends State<HomeView> {
             // listenWhen: (previous, current) =>
             //     previous != current && current is SuccessEventStatus,
             listenWhen: (previous, current) =>
-                previous.eventStatusChangedTo<TodoToggled,
-                    SuccessEventStatus<dynamic>>(current) &&
+                previous.eventStatusChangedTo<
+                  TodoToggled,
+                  SuccessEventStatus<dynamic>
+                >(current) &&
                 current.eventOf<TodoToggled>()!.todo.isDone,
             listener: (context, state) {
               final event = state.eventOf<TodoToggled>()!;
@@ -156,9 +160,9 @@ class _HomeViewState extends State<HomeView> {
                       label: 'Oops',
                       onPressed: () {
                         messenger.hideCurrentSnackBar();
-                        context
-                            .read<TodoBloc>()
-                            .add(TodoCompletitionSet(event.todo, isDone: true));
+                        context.read<TodoBloc>().add(
+                          TodoCompletitionSet(event.todo, isDone: true),
+                        );
                       },
                     ),
                   ),

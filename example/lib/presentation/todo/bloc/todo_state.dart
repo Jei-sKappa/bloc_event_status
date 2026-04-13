@@ -37,10 +37,10 @@ class TodoState with _$TodoState, EventStatusesMixin<TodoEvent, EventStatus> {
   });
 
   const TodoState.initial()
-      : todos = const [],
-        selectedFilter = Filter.all,
-        query = '',
-        eventStatuses = const EventStatuses();
+    : todos = const [],
+      selectedFilter = Filter.all,
+      query = '',
+      eventStatuses = const EventStatuses();
   @override
   final List<Todo> todos;
   @override

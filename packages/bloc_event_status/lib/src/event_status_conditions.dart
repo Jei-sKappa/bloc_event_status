@@ -26,8 +26,7 @@ extension EventStatusConditions<TEvent, TStatus>
   /// ```
   bool statusChanged<E extends TEvent>(
     EventStatusesMixin<TEvent, TStatus> current,
-  ) =>
-      statusOf<E>() != current.statusOf<E>();
+  ) => statusOf<E>() != current.statusOf<E>();
 
   /// Returns `true` if `eventStatusOf<E>()` differs between `this` and
   /// [current].
@@ -42,8 +41,7 @@ extension EventStatusConditions<TEvent, TStatus>
   /// ```
   bool eventStatusChanged<E extends TEvent>(
     EventStatusesMixin<TEvent, TStatus> current,
-  ) =>
-      eventStatusOf<E>() != current.eventStatusOf<E>();
+  ) => eventStatusOf<E>() != current.eventStatusOf<E>();
 
   /// Returns `true` if `statusOf<E>()` changed AND [current]'s status
   /// for `E` is of type [S].
@@ -54,8 +52,7 @@ extension EventStatusConditions<TEvent, TStatus>
   /// ```
   bool statusChangedTo<E extends TEvent, S extends TStatus>(
     EventStatusesMixin<TEvent, TStatus> current,
-  ) =>
-      statusOf<E>() != current.statusOf<E>() && current.statusOf<E>() is S;
+  ) => statusOf<E>() != current.statusOf<E>() && current.statusOf<E>() is S;
 
   /// Returns `true` if `eventStatusOf<E>()` changed AND [current]'s status
   /// for `E` is of type [S].
@@ -81,8 +78,7 @@ extension EventStatusConditions<TEvent, TStatus>
   /// ```
   bool lastEventStatusChanged(
     EventStatusesMixin<TEvent, TStatus> current,
-  ) =>
-      lastEventStatus != current.lastEventStatus;
+  ) => lastEventStatus != current.lastEventStatus;
 
   /// Returns `true` if `lastEventStatus` changed AND [current]'s last status
   /// is of type [S].

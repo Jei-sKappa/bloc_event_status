@@ -35,8 +35,10 @@ void main() {
     test('statusOf delegates to eventStatuses', () {
       final event = EventA('1');
       final state = TestState(
-        eventStatuses: const EventStatuses<Event, TestStatus>()
-            .update<EventA>(event, TestStatus.loading),
+        eventStatuses: const EventStatuses<Event, TestStatus>().update<EventA>(
+          event,
+          TestStatus.loading,
+        ),
       );
 
       expect(state.statusOf<EventA>(), TestStatus.loading);
@@ -49,8 +51,10 @@ void main() {
     test('eventOf delegates to eventStatuses', () {
       final event = EventA('abc');
       final state = TestState(
-        eventStatuses: const EventStatuses<Event, TestStatus>()
-            .update<EventA>(event, TestStatus.success),
+        eventStatuses: const EventStatuses<Event, TestStatus>().update<EventA>(
+          event,
+          TestStatus.success,
+        ),
       );
 
       expect(state.eventOf<EventA>(), event);
@@ -63,8 +67,10 @@ void main() {
     test('eventStatusOf delegates to eventStatuses', () {
       final event = EventA('1');
       final state = TestState(
-        eventStatuses: const EventStatuses<Event, TestStatus>()
-            .update<EventA>(event, TestStatus.loading),
+        eventStatuses: const EventStatuses<Event, TestStatus>().update<EventA>(
+          event,
+          TestStatus.loading,
+        ),
       );
 
       final result = state.eventStatusOf<EventA>();
@@ -80,8 +86,10 @@ void main() {
     test('lastEventStatus delegates to eventStatuses', () {
       final event = EventA('1');
       final state = TestState(
-        eventStatuses: const EventStatuses<Event, TestStatus>()
-            .update<EventA>(event, TestStatus.loading),
+        eventStatuses: const EventStatuses<Event, TestStatus>().update<EventA>(
+          event,
+          TestStatus.loading,
+        ),
       );
 
       expect(state.lastEventStatus, isNotNull);

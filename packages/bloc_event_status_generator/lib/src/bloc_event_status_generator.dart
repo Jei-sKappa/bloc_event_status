@@ -199,7 +199,8 @@ class BlocEventStatusGenerator extends GeneratorForAnnotation<BlocEventStatus> {
     }
 
     // Determine if the constructor can be const
-    final canBeConst = constructor != null &&
+    final canBeConst =
+        constructor != null &&
         constructor.isConst &&
         params.every((p) => p.isOptional);
 
@@ -227,8 +228,9 @@ class BlocEventStatusGenerator extends GeneratorForAnnotation<BlocEventStatus> {
         constructorArgs.write('$paramName: $paramName, ');
       } else if (param.isOptionalPositional) {
         if (param.hasDefaultValue) {
-          optionalPositionalParams
-              .add('$paramType $paramName = ${param.defaultValueCode}');
+          optionalPositionalParams.add(
+            '$paramType $paramName = ${param.defaultValueCode}',
+          );
         } else {
           optionalPositionalParams.add('$paramType $paramName');
         }
@@ -251,8 +253,9 @@ class BlocEventStatusGenerator extends GeneratorForAnnotation<BlocEventStatus> {
     }
 
     final constructorArgsStr = constructorArgs.toString();
-    final constPrefix =
-        canBeConst && constructorArgsStr.isEmpty ? 'const ' : '';
+    final constPrefix = canBeConst && constructorArgsStr.isEmpty
+        ? 'const '
+        : '';
 
     buffer
       ..writeln(
@@ -278,8 +281,8 @@ class BlocEventStatusGenerator extends GeneratorForAnnotation<BlocEventStatus> {
         ? subtypeName.length
         : baseName.length;
     var prefixLen = 0;
-    while (
-        prefixLen < minLen && subtypeName[prefixLen] == baseName[prefixLen]) {
+    while (prefixLen < minLen &&
+        subtypeName[prefixLen] == baseName[prefixLen]) {
       prefixLen++;
     }
 

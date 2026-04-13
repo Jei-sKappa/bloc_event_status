@@ -91,32 +91,42 @@ void main() {
 
       test('returns true when status appears (null → value)', () {
         final current = empty.copyWith(
-          eventStatuses:
-              empty.eventStatuses.update<EventA>(EventA('1'), LoadingStatus()),
+          eventStatuses: empty.eventStatuses.update<EventA>(
+            EventA('1'),
+            LoadingStatus(),
+          ),
         );
         expect(empty.statusChanged<EventA>(current), isTrue);
       });
 
       test('returns true when status type changes', () {
         final previous = empty.copyWith(
-          eventStatuses:
-              empty.eventStatuses.update<EventA>(EventA('1'), LoadingStatus()),
+          eventStatuses: empty.eventStatuses.update<EventA>(
+            EventA('1'),
+            LoadingStatus(),
+          ),
         );
         final current = previous.copyWith(
-          eventStatuses: previous.eventStatuses
-              .update<EventA>(EventA('1'), SuccessStatus()),
+          eventStatuses: previous.eventStatuses.update<EventA>(
+            EventA('1'),
+            SuccessStatus(),
+          ),
         );
         expect(previous.statusChanged<EventA>(current), isTrue);
       });
 
       test('returns false when status is the same', () {
         final previous = empty.copyWith(
-          eventStatuses:
-              empty.eventStatuses.update<EventA>(EventA('1'), LoadingStatus()),
+          eventStatuses: empty.eventStatuses.update<EventA>(
+            EventA('1'),
+            LoadingStatus(),
+          ),
         );
         final current = previous.copyWith(
-          eventStatuses: previous.eventStatuses
-              .update<EventA>(EventA('2'), LoadingStatus()),
+          eventStatuses: previous.eventStatuses.update<EventA>(
+            EventA('2'),
+            LoadingStatus(),
+          ),
         );
         // Status is the same (LoadingStatus == LoadingStatus), even though
         // the event instance differs.
@@ -125,20 +135,26 @@ void main() {
 
       test('is symmetric', () {
         final a = empty.copyWith(
-          eventStatuses:
-              empty.eventStatuses.update<EventA>(EventA('1'), LoadingStatus()),
+          eventStatuses: empty.eventStatuses.update<EventA>(
+            EventA('1'),
+            LoadingStatus(),
+          ),
         );
         final b = a.copyWith(
-          eventStatuses:
-              a.eventStatuses.update<EventA>(EventA('1'), SuccessStatus()),
+          eventStatuses: a.eventStatuses.update<EventA>(
+            EventA('1'),
+            SuccessStatus(),
+          ),
         );
         expect(a.statusChanged<EventA>(b), b.statusChanged<EventA>(a));
       });
 
       test('does not cross event types', () {
         final current = empty.copyWith(
-          eventStatuses:
-              empty.eventStatuses.update<EventA>(EventA('1'), LoadingStatus()),
+          eventStatuses: empty.eventStatuses.update<EventA>(
+            EventA('1'),
+            LoadingStatus(),
+          ),
         );
         expect(empty.statusChanged<EventB>(current), isFalse);
       });
@@ -151,20 +167,26 @@ void main() {
 
       test('returns true when event status appears', () {
         final current = empty.copyWith(
-          eventStatuses:
-              empty.eventStatuses.update<EventA>(EventA('1'), LoadingStatus()),
+          eventStatuses: empty.eventStatuses.update<EventA>(
+            EventA('1'),
+            LoadingStatus(),
+          ),
         );
         expect(empty.eventStatusChanged<EventA>(current), isTrue);
       });
 
       test('returns true when event instance changes (same status)', () {
         final previous = empty.copyWith(
-          eventStatuses:
-              empty.eventStatuses.update<EventA>(EventA('1'), LoadingStatus()),
+          eventStatuses: empty.eventStatuses.update<EventA>(
+            EventA('1'),
+            LoadingStatus(),
+          ),
         );
         final current = previous.copyWith(
-          eventStatuses: previous.eventStatuses
-              .update<EventA>(EventA('2'), LoadingStatus()),
+          eventStatuses: previous.eventStatuses.update<EventA>(
+            EventA('2'),
+            LoadingStatus(),
+          ),
         );
         // Unlike statusChanged, this detects the different event instance.
         expect(previous.eventStatusChanged<EventA>(current), isTrue);
@@ -172,8 +194,10 @@ void main() {
 
       test('returns false when event status record is identical', () {
         final state = empty.copyWith(
-          eventStatuses:
-              empty.eventStatuses.update<EventA>(EventA('1'), LoadingStatus()),
+          eventStatuses: empty.eventStatuses.update<EventA>(
+            EventA('1'),
+            LoadingStatus(),
+          ),
         );
         // Same state on both sides.
         expect(state.eventStatusChanged<EventA>(state), isFalse);
@@ -181,8 +205,10 @@ void main() {
 
       test('does not cross event types', () {
         final current = empty.copyWith(
-          eventStatuses:
-              empty.eventStatuses.update<EventA>(EventA('1'), LoadingStatus()),
+          eventStatuses: empty.eventStatuses.update<EventA>(
+            EventA('1'),
+            LoadingStatus(),
+          ),
         );
         expect(empty.eventStatusChanged<EventB>(current), isFalse);
       });
@@ -191,12 +217,16 @@ void main() {
     group('statusChangedTo', () {
       test('returns true when status changes to the matched type', () {
         final previous = empty.copyWith(
-          eventStatuses:
-              empty.eventStatuses.update<EventA>(EventA('1'), LoadingStatus()),
+          eventStatuses: empty.eventStatuses.update<EventA>(
+            EventA('1'),
+            LoadingStatus(),
+          ),
         );
         final current = previous.copyWith(
-          eventStatuses: previous.eventStatuses
-              .update<EventA>(EventA('1'), SuccessStatus()),
+          eventStatuses: previous.eventStatuses.update<EventA>(
+            EventA('1'),
+            SuccessStatus(),
+          ),
         );
         expect(
           previous.statusChangedTo<EventA, SuccessStatus>(current),
@@ -206,12 +236,16 @@ void main() {
 
       test('returns false when status changes but not to the matched type', () {
         final previous = empty.copyWith(
-          eventStatuses:
-              empty.eventStatuses.update<EventA>(EventA('1'), LoadingStatus()),
+          eventStatuses: empty.eventStatuses.update<EventA>(
+            EventA('1'),
+            LoadingStatus(),
+          ),
         );
         final current = previous.copyWith(
-          eventStatuses: previous.eventStatuses
-              .update<EventA>(EventA('1'), FailureStatus()),
+          eventStatuses: previous.eventStatuses.update<EventA>(
+            EventA('1'),
+            FailureStatus(),
+          ),
         );
         expect(
           previous.statusChangedTo<EventA, SuccessStatus>(current),
@@ -221,16 +255,20 @@ void main() {
 
       test('returns false when status has not changed', () {
         final state = empty.copyWith(
-          eventStatuses:
-              empty.eventStatuses.update<EventA>(EventA('1'), SuccessStatus()),
+          eventStatuses: empty.eventStatuses.update<EventA>(
+            EventA('1'),
+            SuccessStatus(),
+          ),
         );
         expect(state.statusChangedTo<EventA, SuccessStatus>(state), isFalse);
       });
 
       test('returns true when status appears and matches (null → match)', () {
         final current = empty.copyWith(
-          eventStatuses:
-              empty.eventStatuses.update<EventA>(EventA('1'), LoadingStatus()),
+          eventStatuses: empty.eventStatuses.update<EventA>(
+            EventA('1'),
+            LoadingStatus(),
+          ),
         );
         expect(empty.statusChangedTo<EventA, LoadingStatus>(current), isTrue);
       });
@@ -239,12 +277,16 @@ void main() {
     group('eventStatusChangedTo', () {
       test('returns true when record changes and status matches', () {
         final previous = empty.copyWith(
-          eventStatuses:
-              empty.eventStatuses.update<EventA>(EventA('1'), LoadingStatus()),
+          eventStatuses: empty.eventStatuses.update<EventA>(
+            EventA('1'),
+            LoadingStatus(),
+          ),
         );
         final current = previous.copyWith(
-          eventStatuses: previous.eventStatuses
-              .update<EventA>(EventA('1'), FailureStatus()),
+          eventStatuses: previous.eventStatuses.update<EventA>(
+            EventA('1'),
+            FailureStatus(),
+          ),
         );
         expect(
           previous.eventStatusChangedTo<EventA, FailureStatus>(current),
@@ -254,12 +296,16 @@ void main() {
 
       test('returns true when event instance changes and status matches', () {
         final previous = empty.copyWith(
-          eventStatuses:
-              empty.eventStatuses.update<EventA>(EventA('1'), FailureStatus()),
+          eventStatuses: empty.eventStatuses.update<EventA>(
+            EventA('1'),
+            FailureStatus(),
+          ),
         );
         final current = previous.copyWith(
-          eventStatuses: previous.eventStatuses
-              .update<EventA>(EventA('2'), FailureStatus()),
+          eventStatuses: previous.eventStatuses.update<EventA>(
+            EventA('2'),
+            FailureStatus(),
+          ),
         );
         // statusChangedTo would return false (same status type),
         // but eventStatusChangedTo detects the different event instance.
@@ -271,12 +317,16 @@ void main() {
 
       test('returns false when record changes but status does not match', () {
         final previous = empty.copyWith(
-          eventStatuses:
-              empty.eventStatuses.update<EventA>(EventA('1'), LoadingStatus()),
+          eventStatuses: empty.eventStatuses.update<EventA>(
+            EventA('1'),
+            LoadingStatus(),
+          ),
         );
         final current = previous.copyWith(
-          eventStatuses: previous.eventStatuses
-              .update<EventA>(EventA('1'), SuccessStatus()),
+          eventStatuses: previous.eventStatuses.update<EventA>(
+            EventA('1'),
+            SuccessStatus(),
+          ),
         );
         expect(
           previous.eventStatusChangedTo<EventA, FailureStatus>(current),
@@ -286,8 +336,10 @@ void main() {
 
       test('returns false when record has not changed', () {
         final state = empty.copyWith(
-          eventStatuses:
-              empty.eventStatuses.update<EventA>(EventA('1'), FailureStatus()),
+          eventStatuses: empty.eventStatuses.update<EventA>(
+            EventA('1'),
+            FailureStatus(),
+          ),
         );
         expect(
           state.eventStatusChangedTo<EventA, FailureStatus>(state),
@@ -297,8 +349,10 @@ void main() {
 
       test('returns true when record appears and status matches', () {
         final current = empty.copyWith(
-          eventStatuses:
-              empty.eventStatuses.update<EventA>(EventA('1'), FailureStatus()),
+          eventStatuses: empty.eventStatuses.update<EventA>(
+            EventA('1'),
+            FailureStatus(),
+          ),
         );
         expect(
           empty.eventStatusChangedTo<EventA, FailureStatus>(current),
@@ -308,8 +362,10 @@ void main() {
 
       test('returns false when record appears but status does not match', () {
         final current = empty.copyWith(
-          eventStatuses:
-              empty.eventStatuses.update<EventA>(EventA('1'), LoadingStatus()),
+          eventStatuses: empty.eventStatuses.update<EventA>(
+            EventA('1'),
+            LoadingStatus(),
+          ),
         );
         expect(
           empty.eventStatusChangedTo<EventA, FailureStatus>(current),
@@ -325,28 +381,36 @@ void main() {
 
       test('returns true when last event status appears', () {
         final current = empty.copyWith(
-          eventStatuses:
-              empty.eventStatuses.update<EventA>(EventA('1'), LoadingStatus()),
+          eventStatuses: empty.eventStatuses.update<EventA>(
+            EventA('1'),
+            LoadingStatus(),
+          ),
         );
         expect(empty.lastEventStatusChanged(current), isTrue);
       });
 
       test('returns true when last event status changes', () {
         final previous = empty.copyWith(
-          eventStatuses:
-              empty.eventStatuses.update<EventA>(EventA('1'), LoadingStatus()),
+          eventStatuses: empty.eventStatuses.update<EventA>(
+            EventA('1'),
+            LoadingStatus(),
+          ),
         );
         final current = previous.copyWith(
-          eventStatuses: previous.eventStatuses
-              .update<EventB>(EventB(42), SuccessStatus()),
+          eventStatuses: previous.eventStatuses.update<EventB>(
+            EventB(42),
+            SuccessStatus(),
+          ),
         );
         expect(previous.lastEventStatusChanged(current), isTrue);
       });
 
       test('returns false when last event status is the same', () {
         final state = empty.copyWith(
-          eventStatuses:
-              empty.eventStatuses.update<EventA>(EventA('1'), LoadingStatus()),
+          eventStatuses: empty.eventStatuses.update<EventA>(
+            EventA('1'),
+            LoadingStatus(),
+          ),
         );
         expect(state.lastEventStatusChanged(state), isFalse);
       });
@@ -355,12 +419,16 @@ void main() {
     group('lastEventStatusChangedTo', () {
       test('returns true when last event status changes and matches', () {
         final previous = empty.copyWith(
-          eventStatuses:
-              empty.eventStatuses.update<EventA>(EventA('1'), LoadingStatus()),
+          eventStatuses: empty.eventStatuses.update<EventA>(
+            EventA('1'),
+            LoadingStatus(),
+          ),
         );
         final current = previous.copyWith(
-          eventStatuses: previous.eventStatuses
-              .update<EventA>(EventA('1'), FailureStatus()),
+          eventStatuses: previous.eventStatuses.update<EventA>(
+            EventA('1'),
+            FailureStatus(),
+          ),
         );
         expect(
           previous.lastEventStatusChangedTo<FailureStatus>(current),
@@ -372,12 +440,16 @@ void main() {
         'returns false when last event status changes but does not match',
         () {
           final previous = empty.copyWith(
-            eventStatuses: empty.eventStatuses
-                .update<EventA>(EventA('1'), LoadingStatus()),
+            eventStatuses: empty.eventStatuses.update<EventA>(
+              EventA('1'),
+              LoadingStatus(),
+            ),
           );
           final current = previous.copyWith(
-            eventStatuses: previous.eventStatuses
-                .update<EventA>(EventA('1'), SuccessStatus()),
+            eventStatuses: previous.eventStatuses.update<EventA>(
+              EventA('1'),
+              SuccessStatus(),
+            ),
           );
           expect(
             previous.lastEventStatusChangedTo<FailureStatus>(current),
@@ -388,8 +460,10 @@ void main() {
 
       test('returns false when last event status has not changed', () {
         final state = empty.copyWith(
-          eventStatuses:
-              empty.eventStatuses.update<EventA>(EventA('1'), FailureStatus()),
+          eventStatuses: empty.eventStatuses.update<EventA>(
+            EventA('1'),
+            FailureStatus(),
+          ),
         );
         expect(state.lastEventStatusChangedTo<FailureStatus>(state), isFalse);
       });
@@ -398,8 +472,10 @@ void main() {
         'returns true when last event status appears and matches',
         () {
           final current = empty.copyWith(
-            eventStatuses: empty.eventStatuses
-                .update<EventA>(EventA('1'), FailureStatus()),
+            eventStatuses: empty.eventStatuses.update<EventA>(
+              EventA('1'),
+              FailureStatus(),
+            ),
           );
           expect(
             empty.lastEventStatusChangedTo<FailureStatus>(current),
@@ -412,8 +488,10 @@ void main() {
         'returns false when last event status appears but does not match',
         () {
           final current = empty.copyWith(
-            eventStatuses: empty.eventStatuses
-                .update<EventA>(EventA('1'), LoadingStatus()),
+            eventStatuses: empty.eventStatuses.update<EventA>(
+              EventA('1'),
+              LoadingStatus(),
+            ),
           );
           expect(
             empty.lastEventStatusChangedTo<FailureStatus>(current),
@@ -424,8 +502,10 @@ void main() {
 
       test('returns false when current lastEventStatus is null', () {
         final previous = empty.copyWith(
-          eventStatuses:
-              empty.eventStatuses.update<EventA>(EventA('1'), FailureStatus()),
+          eventStatuses: empty.eventStatuses.update<EventA>(
+            EventA('1'),
+            FailureStatus(),
+          ),
         );
         // current is empty → lastEventStatus is null
         expect(
@@ -438,40 +518,52 @@ void main() {
     group('composition', () {
       test('multiple statusChanged with || (Pattern 2)', () {
         final current = empty.copyWith(
-          eventStatuses:
-              empty.eventStatuses.update<EventB>(EventB(1), SuccessStatus()),
+          eventStatuses: empty.eventStatuses.update<EventB>(
+            EventB(1),
+            SuccessStatus(),
+          ),
         );
         // EventA did not change, but EventB did.
-        final result = empty.statusChanged<EventA>(current) ||
+        final result =
+            empty.statusChanged<EventA>(current) ||
             empty.statusChanged<EventB>(current);
         expect(result, isTrue);
       });
 
       test('multiple eventStatusChangedTo with || (Pattern 4)', () {
         final previous = empty.copyWith(
-          eventStatuses:
-              empty.eventStatuses.update<EventA>(EventA('1'), LoadingStatus()),
+          eventStatuses: empty.eventStatuses.update<EventA>(
+            EventA('1'),
+            LoadingStatus(),
+          ),
         );
         final current = previous.copyWith(
-          eventStatuses: previous.eventStatuses
-              .update<EventA>(EventA('1'), SuccessStatus()),
+          eventStatuses: previous.eventStatuses.update<EventA>(
+            EventA('1'),
+            SuccessStatus(),
+          ),
         );
         final result =
             previous.eventStatusChangedTo<EventA, SuccessStatus>(current) ||
-                previous.eventStatusChangedTo<EventB, SuccessStatus>(current);
+            previous.eventStatusChangedTo<EventB, SuccessStatus>(current);
         expect(result, isTrue);
       });
 
       test('eventStatusChanged combined with manual check', () {
         final previous = empty.copyWith(
-          eventStatuses:
-              empty.eventStatuses.update<EventA>(EventA('1'), LoadingStatus()),
+          eventStatuses: empty.eventStatuses.update<EventA>(
+            EventA('1'),
+            LoadingStatus(),
+          ),
         );
         final current = previous.copyWith(
-          eventStatuses: previous.eventStatuses
-              .update<EventA>(EventA('1'), SuccessStatus()),
+          eventStatuses: previous.eventStatuses.update<EventA>(
+            EventA('1'),
+            SuccessStatus(),
+          ),
         );
-        final result = previous.eventStatusChanged<EventA>(current) &&
+        final result =
+            previous.eventStatusChanged<EventA>(current) &&
             current.statusOf<EventA>() is SuccessStatus;
         expect(result, isTrue);
       });

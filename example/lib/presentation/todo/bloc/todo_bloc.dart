@@ -17,8 +17,8 @@ part 'todo_state.dart';
 class TodoBloc extends Bloc<TodoEvent, TodoState> {
   TodoBloc({
     required ProgrammedFailureCubit programmedFailureCubit,
-  })  : _programmedFailureCubit = programmedFailureCubit,
-        super(const TodoState.initial()) {
+  }) : _programmedFailureCubit = programmedFailureCubit,
+       super(const TodoState.initial()) {
     on<TodoLoadRequested>(_onLoadRequested);
     on<TodoAdded>(_onTodoAdded);
     on<TodoToggled>(_onTodoToggled);
@@ -93,7 +93,7 @@ class TodoBloc extends Bloc<TodoEvent, TodoState> {
   ) async {
     final isAlreadySet =
         state.todos.firstWhere((todo) => todo.id == event.todo.id).isDone ==
-            event.isDone;
+        event.isDone;
 
     if (isAlreadySet) return;
 

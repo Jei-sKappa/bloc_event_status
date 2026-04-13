@@ -80,8 +80,11 @@ class _TodoHomePageState extends State<TodoHomePage> {
     return MultiBlocListener(
       listeners: [
         BlocListener<TodoBloc, TodoState>(
-          listenWhen: (previous, current) => previous.statusChangedTo<
-              TodoLoadRequested, SuccessTodoEventStatus<String>>(current),
+          listenWhen: (previous, current) =>
+              previous.statusChangedTo<
+                TodoLoadRequested,
+                SuccessTodoEventStatus<String>
+              >(current),
           listener: (context, state) {
             final loadEvent = state.eventOf<TodoLoadRequested>();
             if (loadEvent?.reason == 'app start') {
@@ -111,8 +114,10 @@ class _TodoHomePageState extends State<TodoHomePage> {
           },
         ),
         BlocListener<TodoBloc, TodoState>(
-          listenWhen: (previous, current) => previous.eventStatusChangedTo<
-              TodoLoadRequested, FailureTodoEventStatus>(current),
+          listenWhen: (previous, current) => previous
+              .eventStatusChangedTo<TodoLoadRequested, FailureTodoEventStatus>(
+                current,
+              ),
           listener: (context, state) {
             final eventStatus = state.eventStatusOf<TodoLoadRequested>()!;
             final error = (eventStatus.status as FailureTodoEventStatus).error;
@@ -157,9 +162,9 @@ class _TodoHomePageState extends State<TodoHomePage> {
             IconButton(
               tooltip: 'Reload sample todos',
               onPressed: () {
-                context
-                    .read<TodoBloc>()
-                    .add(const TodoLoadRequested(reason: 'toolbar reload'));
+                context.read<TodoBloc>().add(
+                  const TodoLoadRequested(reason: 'toolbar reload'),
+                );
               },
               icon: const Icon(Icons.refresh),
             ),
@@ -167,8 +172,11 @@ class _TodoHomePageState extends State<TodoHomePage> {
         ),
         body: Column(
           children: [
-            BlocSelector<TodoBloc, TodoState,
-                EventStatusUpdate<TodoEvent, TodoEventStatus>?>(
+            BlocSelector<
+              TodoBloc,
+              TodoState,
+              EventStatusUpdate<TodoEvent, TodoEventStatus>?
+            >(
               selector: (state) => state.lastEventStatus,
               builder: (context, lastEventStatus) {
                 if (lastEventStatus?.status is LoadingTodoEventStatus) {
@@ -186,9 +194,9 @@ class _TodoHomePageState extends State<TodoHomePage> {
                     controller: _controller,
                     onAdd: _addTodo,
                     onFailureModeChanged: (value) {
-                      context
-                          .read<TodoBloc>()
-                          .add(FailureModeToggled(enabled: value));
+                      context.read<TodoBloc>().add(
+                        FailureModeToggled(enabled: value),
+                      );
                     },
                   ),
                   const SizedBox(height: 20),
@@ -383,7 +391,8 @@ class _TodoToggleButton extends StatelessWidget {
         final previousEvent = previous.eventOf<TodoToggled>();
         final currentEvent = current.eventOf<TodoToggled>();
 
-        final isThisTodo = previousEvent?.todo.id == todo.id ||
+        final isThisTodo =
+            previousEvent?.todo.id == todo.id ||
             currentEvent?.todo.id == todo.id;
 
         return isThisTodo && previous.eventStatusChanged<TodoToggled>(current);
@@ -391,7 +400,7 @@ class _TodoToggleButton extends StatelessWidget {
       builder: (context, state) {
         final isLoading =
             state.statusOf<TodoToggled>() is LoadingTodoEventStatus &&
-                state.eventOf<TodoToggled>()?.todo.id == todo.id;
+            state.eventOf<TodoToggled>()?.todo.id == todo.id;
 
         if (isLoading) {
           return const SizedBox.square(
@@ -423,7 +432,8 @@ class _TodoDeleteButton extends StatelessWidget {
         final previousEvent = previous.eventOf<TodoDeleted>();
         final currentEvent = current.eventOf<TodoDeleted>();
 
-        final isThisTodo = previousEvent?.todo.id == todo.id ||
+        final isThisTodo =
+            previousEvent?.todo.id == todo.id ||
             currentEvent?.todo.id == todo.id;
 
         return isThisTodo && previous.eventStatusChanged<TodoDeleted>(current);
@@ -431,7 +441,7 @@ class _TodoDeleteButton extends StatelessWidget {
       builder: (context, state) {
         final isLoading =
             state.statusOf<TodoDeleted>() is LoadingTodoEventStatus &&
-                state.eventOf<TodoDeleted>()?.todo.id == todo.id;
+            state.eventOf<TodoDeleted>()?.todo.id == todo.id;
 
         if (isLoading) {
           return const SizedBox.square(
@@ -570,10 +580,10 @@ class TodoState extends Equatable
   });
 
   const TodoState.initial()
-      : todos = const [],
-        nextId = 1,
-        isFailureArmed = false,
-        eventStatuses = const EventStatuses();
+    : todos = const [],
+      nextId = 1,
+      isFailureArmed = false,
+      eventStatuses = const EventStatuses();
 
   final List<Todo> todos;
   final int nextId;
@@ -598,11 +608,11 @@ class TodoState extends Equatable
 
   @override
   List<Object?> get props => [
-        todos,
-        nextId,
-        isFailureArmed,
-        eventStatuses,
-      ];
+    todos,
+    nextId,
+    isFailureArmed,
+    eventStatuses,
+  ];
 }
 
 @blocEventStatus

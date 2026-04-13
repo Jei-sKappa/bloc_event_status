@@ -103,8 +103,10 @@ void main() {
 
     group('statusOf', () {
       test('returns the status for an existing entry', () {
-        final updated =
-            eventStatuses.update<EventA>(EventA('1'), TestStatus.loading);
+        final updated = eventStatuses.update<EventA>(
+          EventA('1'),
+          TestStatus.loading,
+        );
 
         expect(updated.statusOf<EventA>(), TestStatus.loading);
       });
@@ -228,8 +230,10 @@ void main() {
       });
 
       test('includes event status entries', () {
-        final updated =
-            eventStatuses.update<EventA>(EventA('1'), TestStatus.loading);
+        final updated = eventStatuses.update<EventA>(
+          EventA('1'),
+          TestStatus.loading,
+        );
         final result = updated.toString();
 
         expect(result, contains('EventA'));

@@ -298,7 +298,26 @@ class BlocEventStatusGenerator extends GeneratorForAnnotation<BlocEventStatus> {
               subtypeMiddle.length - baseSuffix.length,
             );
     } else {
-      stripped = subtypeName;
+      // Prefix-based stripping didn't match. Fall back to stripping the
+      // common *suffix* between subtype and base names. This covers the case
+      // where both names share only a trailing part (e.g.
+      // LoadingEventStatus / CounterEventStatus → Loading).
+      final subLen = subtypeName.length;
+      final baseLen = baseName.length;
+      final minSufLen =
+          subLen < baseLen ? subLen : baseLen;
+      var suffixLen = 0;
+      while (suffixLen < minSufLen &&
+          subtypeName[subLen - 1 - suffixLen] ==
+              baseName[baseLen - 1 - suffixLen]) {
+        suffixLen++;
+      }
+
+      if (suffixLen > 0) {
+        stripped = subtypeName.substring(0, subLen - suffixLen);
+      } else {
+        stripped = subtypeName;
+      }
     }
 
     if (stripped.isEmpty) return _lowerCamelCase(subtypeName);

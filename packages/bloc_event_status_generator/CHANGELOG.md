@@ -2,6 +2,9 @@
 
 ## 1.0.1
 
+### Fixed
+- Fixed method name derivation when subtype and base class share only a common suffix with different prefixes (e.g. `LoadingEventStatus` / `CounterEventStatus` now correctly derives `loading` instead of `loadingEventStatus`).
+
 ### Changed
 - Widened `analyzer` dependency to `>=6.0.0 <13.0.0`.
 - Widened SDK constraint from `^3.6.1` to `>=3.5.0 <4.0.0`.

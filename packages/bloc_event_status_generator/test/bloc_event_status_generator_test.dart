@@ -715,5 +715,81 @@ class LongBloc extends Bloc<TestEvent, LongState> {
       expect(output, contains('void short<T extends TestEvent>'));
       expect(output, contains('const Short()'));
     });
+
+    test('strips common suffix when base has a different prefix', () async {
+      // LoadingEventStatus / CounterEventStatus → loading
+      // (no shared prefix, but shared suffix "EventStatus")
+      final output = await _generate(
+        {
+          'a|lib/counter_status.dart': '''
+import 'package:equatable/equatable.dart';
+
+sealed class CounterEventStatus with EquatableMixin {
+  const CounterEventStatus();
+}
+
+class LoadingEventStatus extends CounterEventStatus {
+  const LoadingEventStatus();
+  @override
+  List<Object?> get props => [];
+}
+
+class SuccessEventStatus extends CounterEventStatus {
+  const SuccessEventStatus();
+  @override
+  List<Object?> get props => [];
+}
+
+class FailureEventStatus extends CounterEventStatus {
+  const FailureEventStatus(this.message);
+  final String message;
+  @override
+  List<Object?> get props => [message];
+}
+''',
+          'a|lib/test_event.dart': _eventHeader,
+          'a|lib/counter_state.dart': '''
+import 'package:bloc_event_status/bloc_event_status.dart';
+import 'package:equatable/equatable.dart';
+import 'counter_status.dart';
+import 'test_event.dart';
+
+class CounterState extends Equatable with EventStatusesMixin<TestEvent, CounterEventStatus> {
+  const CounterState({
+    this.eventStatuses = const EventStatuses(),
+  });
+
+  @override
+  final EventStatuses<TestEvent, CounterEventStatus> eventStatuses;
+
+  @override
+  List<Object?> get props => [eventStatuses];
+
+  CounterState copyWith({EventStatuses<TestEvent, CounterEventStatus>? eventStatuses}) {
+    return CounterState(eventStatuses: eventStatuses ?? this.eventStatuses);
+  }
+}
+''',
+          'a|lib/counter_bloc.dart': '''
+import 'package:bloc/bloc.dart';
+import 'counter_status.dart';
+import 'test_event.dart';
+import 'counter_state.dart';
+
+class CounterBloc extends Bloc<TestEvent, CounterState> {
+  CounterBloc() : super(const CounterState());
+}
+''',
+        },
+        'a|lib/counter_bloc.dart',
+      );
+
+      // LoadingEventStatus → loading (not loadingEventStatus)
+      expect(output, contains('void loading<T extends TestEvent>'));
+      // SuccessEventStatus → success
+      expect(output, contains('void success<T extends TestEvent>'));
+      // FailureEventStatus → failure
+      expect(output, contains('void failure'));
+    });
   });
 }

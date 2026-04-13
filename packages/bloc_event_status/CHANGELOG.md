@@ -1,3 +1,14 @@
+## [2.1.0]
+
+### Added
+- `EventStatusConditions` extension on `EventStatusesMixin` with helpers for `buildWhen` / `listenWhen` callbacks:
+  - `statusChanged<E>()` — `true` if `statusOf<E>()` differs between previous and current.
+  - `eventStatusChanged<E>()` — `true` if `eventStatusOf<E>()` differs (full record comparison).
+  - `statusChangedTo<E, S>()` — `true` if `statusOf<E>()` changed and current status is of type `S`.
+  - `eventStatusChangedTo<E, S>()` — `true` if `eventStatusOf<E>()` changed and current status is of type `S`.
+  - `lastEventStatusChanged()` — `true` if `lastEventStatus` differs.
+  - `lastEventStatusChangedTo<S>()` — `true` if `lastEventStatus` changed and current status is of type `S`.
+
 ## [2.0.0]
 
 ### Breaking Changes

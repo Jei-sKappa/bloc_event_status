@@ -1,7 +1,7 @@
 name: _
 publish_to: none
 environment:
-  sdk: ^3.6.1
+  sdk: ^3.11.0
 workspace:
   - example
   - packages/bloc_event_status

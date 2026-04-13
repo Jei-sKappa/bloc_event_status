@@ -4,7 +4,7 @@ publish_to: 'none'
 version: 1.0.0+1
 
 environment:
-  sdk: ^3.6.1
+  sdk: ^3.11.0
 
 resolution: workspace
 
@@ -18,7 +18,7 @@ dependencies:
 dev_dependencies:
   bloc_event_status_generator: ^1.0.1
   build_runner: ^2.11.1
-  very_good_analysis: ^10.1.0
+  very_good_analysis: ^10.2.0
 
 flutter:
   uses-material-design: true

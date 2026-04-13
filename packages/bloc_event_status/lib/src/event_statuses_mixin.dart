@@ -16,8 +16,8 @@ mixin EventStatusesMixin<TEvent, TStatus> {
 
   /// {@macro event_statuses.event_status_of}
   EventStatusUpdate<TEventSubType, TStatus>?
-  eventStatusOf<TEventSubType extends TEvent>() =>
-      eventStatuses.eventStatusOf<TEventSubType>();
+      eventStatusOf<TEventSubType extends TEvent>() =>
+          eventStatuses.eventStatusOf<TEventSubType>();
 
   /// {@macro event_statuses.status_of}
   TStatus? statusOf<TEventSubType extends TEvent>() =>

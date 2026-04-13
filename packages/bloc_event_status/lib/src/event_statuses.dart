@@ -42,7 +42,9 @@ typedef EventStatusUpdate<TEvent, TStatus> = ({
 @immutable
 class EventStatuses<TEvent, TStatus> extends Equatable {
   /// {@macro event_statuses}
-  const EventStatuses() : eventStatusMap = const {}, _lastEventStatus = null;
+  const EventStatuses()
+      : eventStatusMap = const {},
+        _lastEventStatus = null;
 
   const EventStatuses._(this.eventStatusMap, this._lastEventStatus);
 
@@ -68,7 +70,7 @@ class EventStatuses<TEvent, TStatus> extends Equatable {
   /// subtype.
   /// {@endtemplate}
   EventStatusUpdate<TEventSubType, TStatus>?
-  eventStatusOf<TEventSubType extends TEvent>() {
+      eventStatusOf<TEventSubType extends TEvent>() {
     if (TEventSubType == TEvent) {
       throw ArgumentError(
         'The type parameter cannot be TEvent',

@@ -524,8 +524,7 @@ void main() {
           ),
         );
         // EventA did not change, but EventB did.
-        final result =
-            empty.statusChanged<EventA>(current) ||
+        final result = empty.statusChanged<EventA>(current) ||
             empty.statusChanged<EventB>(current);
         expect(result, isTrue);
       });
@@ -545,7 +544,7 @@ void main() {
         );
         final result =
             previous.eventStatusChangedTo<EventA, SuccessStatus>(current) ||
-            previous.eventStatusChangedTo<EventB, SuccessStatus>(current);
+                previous.eventStatusChangedTo<EventB, SuccessStatus>(current);
         expect(result, isTrue);
       });
 
@@ -562,8 +561,7 @@ void main() {
             SuccessStatus(),
           ),
         );
-        final result =
-            previous.eventStatusChanged<EventA>(current) &&
+        final result = previous.eventStatusChanged<EventA>(current) &&
             current.statusOf<EventA>() is SuccessStatus;
         expect(result, isTrue);
       });
